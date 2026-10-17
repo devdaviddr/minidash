@@ -9,6 +9,7 @@ import { MemoryCard } from './components/MemoryCard'
 import { NetworkCard } from './components/NetworkCard'
 import { ProcessesCard } from './components/ProcessesCard'
 import { Summary } from './components/Summary'
+import { TokenForm } from './components/TokenForm'
 import { SharesCard } from './components/SharesCard'
 
 const TOKEN_KEY = 'minidash.token'
@@ -28,29 +29,6 @@ const STATUS_STYLE: Record<StreamStatus, string> = {
   connecting: 'bg-amber-500/15 text-amber-300',
   disconnected: 'bg-red-500/15 text-red-300',
   unauthorized: 'bg-red-500/15 text-red-300',
-}
-
-function TokenForm({ onSave }: { onSave: (t: string) => void }) {
-  const [value, setValue] = useState('')
-  return (
-    <form
-      className="flex gap-2"
-      onSubmit={(e) => {
-        e.preventDefault()
-        onSave(value.trim())
-      }}
-    >
-      <input
-        type="password"
-        autoFocus
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Access token"
-        className="rounded-md bg-neutral-900 px-3 py-2 ring-1 ring-neutral-700 focus:ring-neutral-400 outline-none"
-      />
-      <button className="rounded-md bg-neutral-100 px-3 py-2 text-neutral-900 font-medium">Connect</button>
-    </form>
-  )
 }
 
 export default function App() {

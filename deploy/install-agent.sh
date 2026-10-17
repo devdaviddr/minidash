@@ -22,7 +22,7 @@ DOMAIN="gui/$(id -u)"
 run() { if [ "$DRY" = 1 ]; then echo "[dry-run] $*"; else "$@"; fi; }
 say() { echo "minidash: $*"; }
 
-install() {
+do_install() {
   [ "$(uname)" = "Darwin" ] || { echo "macOS only" >&2; exit 1; }
   command -v macmon >/dev/null || say "warning: macmon not found; GPU and power cards will be unavailable (brew install macmon)"
   command -v go >/dev/null || [ -x "$ROOT/bin/minidash-agent" ] || { echo "need Go to build, or a prebuilt $ROOT/bin/minidash-agent" >&2; exit 1; }
@@ -64,14 +64,14 @@ ENV
   say "installed. Token: grep MINIDASH_TOKEN $CONF/agent.env   Logs: $LOGS/agent.log"
 }
 
-uninstall() {
+do_uninstall() {
   run launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
   run rm -f "$PLIST" "$SHARE/minidash-agent" "$SHARE/run-agent.sh"
   say "removed the service. Kept $CONF/agent.env (your token) and $LOGS."
 }
 
 case "$CMD" in
-  install) install ;;
-  uninstall) uninstall ;;
+  install) do_install ;;
+  uninstall) do_uninstall ;;
   *) echo "usage: $0 install|uninstall [--dry-run]" >&2; exit 2 ;;
 esac

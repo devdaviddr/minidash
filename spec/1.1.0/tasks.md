@@ -32,7 +32,7 @@ updated: 2026-10-18
 | T-10 | Design pass: theme, layout, wall-display mode | NFR UI | T-3..T-9 | visual review by owner | [x] |
 | T-11 | launchd packaging and install docs | NFR network | T-1 | manual install on Mac mini | [x] |
 | T-12 | Design tokens and theme system: `data-theme`, System/Light/Dark switch, `theme-init.js`, chart re-theme | FR-10, FR-11 | T-10 | AC-9 | [x] |
-| T-13 | Restyle shell and cards to the illustration (brand mark, pill, summary strip, card type, gradient charts) in both themes; contrast test | FR-11 | T-12 | AC-10, owner visual review | [ ] |
+| T-13 | Restyle shell and cards to the illustration (brand mark, pill, summary strip, card type, gradient charts) in both themes; contrast test | FR-11 | T-12 | AC-10, owner visual review | [x] |
 | T-14 | Layout model: types, defaults, validator, reducer, storage with fallbacks (pure, unit-tested) | FR-12..FR-16 | T-10 | AC-15 (model half), AC-17 | [ ] |
 | T-15 | Card registry and grid rendered from the layout: visibility, width, hidden parts, empty state | FR-12, FR-14, FR-15, FR-17 | T-14 | AC-11, AC-13, AC-14, AC-16 | [ ] |
 | T-16 | Customise panel: card visibility, width, part toggles, move earlier/later | FR-12..FR-15 | T-15 | AC-11, AC-13, AC-14 | [ ] |

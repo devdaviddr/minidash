@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -95,6 +96,9 @@ func TestMatchesContract(t *testing.T) {
 
 // AC-5: the top-memory process the collector reports matches `ps` within one sample.
 func TestTopMemoryMatchesPS(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("uses BSD ps -m")
+	}
 	c := New()
 	r := testutil.AssertMatchesContract(t, c)
 	if !r.OK {

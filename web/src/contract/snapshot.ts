@@ -27,6 +27,7 @@ export interface Snapshot {
     memory?: MemoryResult;
     soc?: SocResult;
     disks?: DisksResult;
+    network?: NetworkResult;
   };
 }
 export interface CpuResult {
@@ -130,4 +131,26 @@ export interface DisksData {
     readBps: number;
     writeBps: number;
   }[];
+}
+export interface NetworkResult {
+  ok: boolean;
+  error?: string;
+  data?: NetworkData;
+}
+export interface NetworkData {
+  interfaces: {
+    name: string;
+    ipv4: string[];
+    rxBps: number;
+    txBps: number;
+    /**
+     * Cumulative since boot.
+     */
+    rxBytes: number;
+    txBytes: number;
+  }[];
+  total: {
+    rxBps: number;
+    txBps: number;
+  };
 }

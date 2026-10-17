@@ -10,6 +10,7 @@ import (
 	"github.com/devdaviddr/minidash/agent/internal/collect/cpu"
 	"github.com/devdaviddr/minidash/agent/internal/collect/disk"
 	"github.com/devdaviddr/minidash/agent/internal/collect/memory"
+	"github.com/devdaviddr/minidash/agent/internal/collect/network"
 	"github.com/devdaviddr/minidash/agent/internal/collect/soc"
 	"github.com/devdaviddr/minidash/agent/internal/config"
 	"github.com/devdaviddr/minidash/agent/internal/hub"
@@ -30,6 +31,7 @@ func main() {
 		memory.New(),
 		soc.New(mm),
 		disk.New(),
+		network.New(),
 	)
 	go agg.Run(context.Background(), h.Publish)
 

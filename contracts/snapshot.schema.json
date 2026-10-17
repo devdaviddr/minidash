@@ -46,6 +46,9 @@
         },
         "disks": {
           "$ref": "#/$defs/disksResult"
+        },
+        "network": {
+          "$ref": "#/$defs/networkResult"
         }
       }
     }
@@ -457,6 +460,95 @@
         },
         "data": {
           "$ref": "#/$defs/disksData"
+        }
+      }
+    },
+    "networkData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interfaces",
+        "total"
+      ],
+      "properties": {
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "ipv4",
+              "rxBps",
+              "txBps",
+              "rxBytes",
+              "txBytes"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "ipv4": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "rxBps": {
+                "type": "number",
+                "minimum": 0
+              },
+              "txBps": {
+                "type": "number",
+                "minimum": 0
+              },
+              "rxBytes": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Cumulative since boot."
+              },
+              "txBytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "total": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rxBps",
+            "txBps"
+          ],
+          "properties": {
+            "rxBps": {
+              "type": "number",
+              "minimum": 0
+            },
+            "txBps": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "networkResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/networkData"
         }
       }
     }

@@ -25,7 +25,7 @@ updated: 2026-10-18
 | T-3 | CPU collector + live CPU view | FR-1 | T-2 | AC-1 | [x] |
 | T-4 | Memory + GPU collector (macmon) + views | FR-2, FR-9 | T-2 | AC-2 | [x] |
 | T-5 | Disk + external drive collector + view | FR-3 | T-2 | AC-3 | [x] |
-| T-6 | Network collector + view | FR-4 | T-2 | AC-4 | [ ] |
+| T-6 | Network collector + view | FR-4 | T-2 | AC-4 | [x] |
 | T-7 | Process collector + sortable table | FR-5 | T-3 | AC-5 | [ ] |
 | T-8 | Container collectors (Docker/Podman/Colima) + view | FR-6 | T-2 | AC-6 | [ ] |
 | T-9 | Shares and accounts collector + view | FR-7 | T-2 | AC-7 | [ ] |

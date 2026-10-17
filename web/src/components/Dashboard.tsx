@@ -2,9 +2,8 @@ import type { Dispatch } from 'react'
 import type { Snapshot } from '../contract/snapshot'
 import { CARD_IDS } from '../layout/catalogue'
 import { visibleCards, type Layout, type LayoutAction } from '../layout/model'
-import { COMPONENTS } from '../layout/registry'
-import { SPAN_CLASS } from '../layout/spans'
 import { Summary } from './Summary'
+import { SortableGrid } from './SortableGrid'
 
 function EmptyState({ onShowAll, wall }: { onShowAll: () => void; wall: boolean }) {
   return (
@@ -31,11 +30,13 @@ interface Props {
   history: Snapshot[]
   layout: Layout
   wall: boolean
+  /** True while the customise panel is open: cards show drag handles. */
+  editing?: boolean
   dispatch: Dispatch<LayoutAction>
 }
 
 /** Renders the summary strip and the cards exactly as the layout says. */
-export function Dashboard({ history, layout, wall, dispatch }: Props) {
+export function Dashboard({ history, layout, wall, editing = false, dispatch }: Props) {
   const snapshot = history.at(-1)
   const cards = visibleCards(layout, wall)
 
@@ -50,16 +51,7 @@ export function Dashboard({ history, layout, wall, dispatch }: Props) {
       {cards.length === 0 ? (
         <EmptyState onShowAll={showAll} wall={wall} />
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
-          {cards.map((c) => {
-            const Card = COMPONENTS[c.id]
-            return (
-              <div key={c.id} data-card={c.id} data-span={c.span} className={`min-w-0 ${SPAN_CLASS[c.span]}`}>
-                <Card history={history} hidden={new Set(c.hidden)} />
-              </div>
-            )
-          })}
-        </div>
+        <SortableGrid cards={cards} history={history} editing={editing && !wall} dispatch={dispatch} />
       )}
     </main>
   )

@@ -2,6 +2,11 @@ package network
 
 import (
 	"context"
+	"encoding/binary"
+	"os/exec"
+	"runtime"
+	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -74,5 +79,60 @@ func TestMatchesContract(t *testing.T) {
 func TestRealHostSane(t *testing.T) {
 	if r := testutil.AssertMatchesContract(t, New()); !r.OK {
 		t.Fatal(r.Error)
+	}
+}
+
+func ifmib(rx, tx uint64) []byte {
+	b := make([]byte, minIfmibLen)
+	binary.NativeEndian.PutUint64(b[offIBytes:], rx)
+	binary.NativeEndian.PutUint64(b[offOBytes:], tx)
+	return b
+}
+
+func TestParseIfMibKeeps64Bits(t *testing.T) {
+	const big = 55_397_471_690 // > 2^32: the old IFLIST2 path wrapped values like this
+	c, ok := parseIfMib(ifmib(big, big+7))
+	if !ok || c.Rx != big || c.Tx != big+7 {
+		t.Fatalf("got %+v ok=%v", c, ok)
+	}
+	if _, ok := parseIfMib(make([]byte, 10)); ok {
+		t.Fatal("a short blob must be rejected")
+	}
+}
+
+// Cross-check the kernel table against `netstat -ib` on a real Mac: same interface, nearly same bytes.
+func TestKernelCountersAgreeWithNetstat(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("macOS only")
+	}
+	got, err := newRealOS().Counters(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	out, err := exec.Command("netstat", "-ib").Output()
+	if err != nil {
+		t.Skip("netstat unavailable")
+	}
+	checked := 0
+	for _, line := range strings.Split(string(out), "\n")[1:] {
+		f := strings.Fields(line)
+		if len(f) < 10 || !strings.HasPrefix(f[2], "<Link#") {
+			continue
+		}
+		ib, err1 := strconv.ParseUint(f[6], 10, 64)
+		if err1 != nil || ib < 1<<20 {
+			continue // only compare busy interfaces; tiny counters are noisy
+		}
+		c, ok := got[f[0]]
+		if !ok {
+			t.Fatalf("interface %s missing from kernel table", f[0])
+		}
+		if c.Rx < ib || c.Rx-ib > 64<<20 { // netstat ran first, so the kernel value is >= it, within a modest window
+			t.Fatalf("%s: kernel rx %d vs netstat %d (32-bit wrap?)", f[0], c.Rx, ib)
+		}
+		checked++
+	}
+	if checked == 0 {
+		t.Skip("no busy interface to compare")
 	}
 }

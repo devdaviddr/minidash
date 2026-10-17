@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"regexp"
 	"strconv"
+	"sync"
+	"time"
 
 	"github.com/shirou/gopsutil/v4/mem"
 )
@@ -32,14 +34,25 @@ type OS interface {
 	VMStat(ctx context.Context) ([]byte, error)
 }
 
+// compressedTTL is how long the compressed-memory figure is reused. It comes from forking
+// vm_stat, which dominated this collector's cost, and it moves slowly.
+const compressedTTL = 5 * time.Second
+
 // Collector implements snapshot.Collector for memory.
-type Collector struct{ os OS }
+type Collector struct {
+	os  OS
+	now func() time.Time
+
+	mu         sync.Mutex
+	compressed uint64
+	at         time.Time
+}
 
 // New returns a memory collector using the real OS.
-func New() *Collector { return &Collector{os: realOS{}} }
+func New() *Collector { return NewWith(realOS{}) }
 
 // NewWith returns a collector using the given OS (tests).
-func NewWith(o OS) *Collector { return &Collector{os: o} }
+func NewWith(o OS) *Collector { return &Collector{os: o, now: time.Now} }
 
 // Name implements snapshot.Collector.
 func (*Collector) Name() string { return "memory" }
@@ -54,15 +67,27 @@ func (c *Collector) Collect(ctx context.Context) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	var compressed uint64
-	if out, err := c.os.VMStat(ctx); err == nil { // compressed is best-effort
-		compressed = ParseCompressed(out)
-	}
+	compressed := c.compressedBytes(ctx)
 	return Data{
 		Total: vm.Total, Available: vm.Available, Wired: vm.Wired, Active: vm.Active, Inactive: vm.Inactive,
 		Compressed: compressed, Used: vm.Active + vm.Wired + compressed,
 		SwapUsed: sw.Used, SwapTotal: sw.Total,
 	}, nil
+}
+
+// compressedBytes returns bytes held by the compressor, refreshed at most every compressedTTL.
+// It is best-effort: a vm_stat failure keeps the previous value.
+func (c *Collector) compressedBytes(ctx context.Context) uint64 {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if !c.at.IsZero() && c.now().Sub(c.at) < compressedTTL {
+		return c.compressed
+	}
+	if out, err := c.os.VMStat(ctx); err == nil {
+		c.compressed = ParseCompressed(out)
+	}
+	c.at = c.now()
+	return c.compressed
 }
 
 var (

@@ -7,8 +7,6 @@ import (
 	"sort"
 	"sync"
 	"time"
-
-	gnet "github.com/shirou/gopsutil/v4/net"
 )
 
 // Data is the network collector payload (contracts/snapshot.schema.json#/$defs/networkData).
@@ -59,7 +57,7 @@ type Collector struct {
 }
 
 // New returns a network collector using the real OS.
-func New() *Collector { return NewWith(realOS{}) }
+func New() *Collector { return NewWith(newRealOS()) }
 
 // NewWith returns a collector using the given OS (tests).
 func NewWith(o OS) *Collector { return &Collector{os: o, now: time.Now} }
@@ -103,43 +101,42 @@ func (c *Collector) Collect(ctx context.Context) (any, error) {
 	return d, nil
 }
 
-type realOS struct{}
+// ifaceCacheTTL is how long the interface list (flags, addresses) is reused. It changes rarely;
+// byte counters are still read every tick.
+const ifaceCacheTTL = 5 * time.Second
 
-func (realOS) Interfaces(ctx context.Context) ([]Iface, error) {
-	ifs, err := gnet.InterfacesWithContext(ctx)
+type realOS struct {
+	mu    sync.Mutex
+	ifs   []Iface
+	ifsAt time.Time
+	byIdx map[int]string // interface index -> name, for the kernel counter table
+	nowFn func() time.Time
+}
+
+func newRealOS() *realOS { return &realOS{byIdx: map[int]string{}, nowFn: time.Now} }
+
+func (r *realOS) Interfaces(context.Context) ([]Iface, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.ifs != nil && r.nowFn().Sub(r.ifsAt) < ifaceCacheTTL {
+		return r.ifs, nil
+	}
+	all, err := net.Interfaces()
 	if err != nil {
 		return nil, err
 	}
-	out := make([]Iface, 0, len(ifs))
-	for _, i := range ifs {
-		f := Iface{Name: i.Name}
-		for _, fl := range i.Flags {
-			switch fl {
-			case "up":
-				f.Up = true
-			case "loopback":
-				f.Loopback = true
-			}
-		}
-		for _, a := range i.Addrs {
-			ip, _, err := net.ParseCIDR(a.Addr)
-			if err == nil && ip.To4() != nil {
-				f.IPv4 = append(f.IPv4, ip.String())
+	out := make([]Iface, 0, len(all))
+	for _, i := range all {
+		f := Iface{Name: i.Name, Up: i.Flags&net.FlagUp != 0, Loopback: i.Flags&net.FlagLoopback != 0}
+		r.byIdx[i.Index] = i.Name
+		addrs, _ := i.Addrs()
+		for _, a := range addrs {
+			if ipn, ok := a.(*net.IPNet); ok && ipn.IP.To4() != nil {
+				f.IPv4 = append(f.IPv4, ipn.IP.String())
 			}
 		}
 		out = append(out, f)
 	}
-	return out, nil
-}
-
-func (realOS) Counters(ctx context.Context) (map[string]Counter, error) {
-	cs, err := gnet.IOCountersWithContext(ctx, true)
-	if err != nil {
-		return nil, err
-	}
-	out := make(map[string]Counter, len(cs))
-	for _, c := range cs {
-		out[c.Name] = Counter{Rx: c.BytesRecv, Tx: c.BytesSent}
-	}
+	r.ifs, r.ifsAt = out, r.nowFn()
 	return out, nil
 }

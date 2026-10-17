@@ -9,7 +9,7 @@ jobs:
   governance:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { fetch-depth: 0 }
       - name: Spec tool runs and a current version exists
         run: python3 -I tools/sdd/scripts/spec_tool.py list
@@ -27,14 +27,14 @@ jobs:
   agent:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-go@v5
         with: { go-version-file: agent/go.mod }
       - run: cd agent && go vet ./... && go test ./...
   web:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm, cache-dependency-path: web/package-lock.json }
       - run: cd web && npm ci && npm run lint && npm test && npm run build

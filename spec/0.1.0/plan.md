@@ -15,7 +15,7 @@ updated: 2026-10-18
 > constraints before choosing. Mark unknowns as `[NEEDS INPUT: question]`.
 
 ## 1. Approach summary
-A small native agent on the Mac mini samples system metrics once a second and streams one JSON snapshot per tick over a WebSocket to a single-page web app. The agent also serves that app as static files, so deployment is one binary under launchd. Status: PROPOSED, awaiting approval (spec §9).
+A small native agent on the Mac mini samples system metrics once a second and streams one JSON snapshot per tick over a WebSocket to a single-page web app. The agent also serves that app as static files, so deployment is one binary under launchd. Status: stack approved by owner 2026-10-18; spec approval pending (spec §9).
 
 ## 2. Technology choices
 <!-- Languages, frameworks, services, libraries. State WHY each, and the alternative rejected. -->
@@ -43,6 +43,8 @@ collectors (cpu, gpu, mem, disk, net, procs, containers, shares) -> snapshot agg
 <!-- The decisions a future reader would otherwise re-litigate. One line each: decision → rationale. -->
 - **DD-1.** Collectors fail independently: one broken source never blanks the dashboard. (FR-6, FR-8)
 - **DD-2.** Read-only agent, localhost bind by default. (NFR network exposure)
+- **DD-4.** Deployment is container-based, but a container on macOS runs in a Linux VM and cannot see the host's CPU, GPU, memory, disks, shares or `macmon`. So the collecting agent is a small native process under launchd (host access, read-only), and the web UI plus its static server is the container. The container reaches the agent over the LAN with the shared token. Owner asked for "container"; this is the part that cannot be one. (FR-1..FR-9)
+- **DD-5.** Access control is a shared token (config, constant-time compare, refuses to start without one), over LAN. (NFR network exposure)
 - **DD-3.** Privileged data (e.g. powermetrics) is isolated in a separate optional helper, never in the main agent.
 
 ## 6. Risks & mitigations

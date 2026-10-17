@@ -27,7 +27,7 @@ func TestParseRejectsGarbage(t *testing.T) {
 }
 
 func TestStaleSampleIsUnavailable(t *testing.T) {
-	r := NewRunner("macmon")
+	r := NewRunner("macmon", time.Second)
 	if _, err := r.Latest(); err != ErrUnavailable {
 		t.Fatalf("empty runner: %v", err)
 	}

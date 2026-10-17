@@ -6,7 +6,7 @@ Each collector is one entry in the snapshot's `collectors` map. A failure shows 
 | --- | --- | --- | --- |
 | `cpu` | gopsutil, delta since the previous tick | percent 0-100, load average | none expected |
 | `memory` | gopsutil `VirtualMemory` + `SwapMemory`; `vm_stat` for the compressor | bytes. `used = active + wired + compressed` | `vm_stat` failing only zeroes `compressed` |
-| `soc` | `macmon pipe` subprocess (no root) | percent, MHz, watts, °C, rpm | macmon missing or silent for 5 s: `ok:false` "macmon unavailable (install with: brew install macmon)" |
+| `soc` | `macmon pipe` subprocess (no root), 2 s default | percent, MHz, watts, °C, rpm | macmon missing or silent for 5 s: `ok:false` "macmon unavailable (install with: brew install macmon)" |
 
 ## Notes
 - **Used memory** follows Activity Monitor's idea of "memory pressure" (active + wired + compressed). Inactive pages are reclaimable and excluded.
@@ -29,7 +29,7 @@ Each collector is one entry in the snapshot's `collectors` map. A failure shows 
 - **List:** union of the top 25 by CPU and the top 25 by resident memory, so the browser can sort either way. `total` is every process the agent can read.
 - **CPU** is percent of one core (can exceed 100), from CPU-time deltas over real elapsed time.
 - **Privacy:** executable name only. Command-line arguments are never collected, since they can contain secrets.
-- **Refresh:** every 2 s (wrapped in `snapshot.Throttle`) to stay inside the CPU budget; the stream still ticks at 1 Hz and repeats the last result in between.
+- **Refresh:** every 3 s (wrapped in `snapshot.Throttle`) to stay inside the CPU budget; the stream still ticks at 1 Hz and repeats the last result in between.
 - Unreadable processes (other users', without root) are skipped.
 
 ## containers
@@ -47,4 +47,11 @@ Each collector is one entry in the snapshot's `collectors` map. A failure shows 
 - **Accounts, mounts:** the user in the SMB URL. Passwords are never read or kept. Apple ID style identifiers (`com.apple.idms.*`, which embed account UUIDs) are shown as "Apple ID".
 - **Shared by this Mac:** shares with SMB enabled, from `sharing -l`. Folder paths are not reported.
 - **Connected clients:** established inbound connections on TCP 445 (SMB) and 2049 (NFS) from `netstat -anv`. The account is the owner of the serving process (`ps`). When macOS serves the connection as root, the real user is not visible without privileges and the account is blank ("unknown account" in the UI).
-- **Refresh:** every 5 s.
+- **Refresh:** every 10 s.
+
+## CPU budget (NFR: under 2% of one core)
+Measured on an M4-class Mac over 60 s with a client connected: agent about 0.8%, `macmon` about 0.55% (at its default 2 s interval), total about 1.4%. What got it there:
+- `vm_stat` (compressed memory) is cached for 5 s instead of forking every tick.
+- Network counters come from the kernel's 64-bit `ifmib` sysctl, not a forked `netstat`. (`NET_RT_IFLIST2` was rejected: its byte counters are 32-bit and wrap at 4 GB. A test cross-checks against `netstat -ib`.)
+- Process handles are built from PIDs directly, skipping one start-time sysctl per process. Processes refresh every 3 s, containers every 2 s, shares every 10 s.
+- `macmon` samples every 2 s by default. Set `MINIDASH_SOC_INTERVAL_MS=1000` for 1 s GPU/power updates; that costs about 0.7% more.

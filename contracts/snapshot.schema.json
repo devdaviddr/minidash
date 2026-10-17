@@ -52,6 +52,9 @@
         },
         "processes": {
           "$ref": "#/$defs/processesResult"
+        },
+        "containers": {
+          "$ref": "#/$defs/containersResult"
         }
       }
     }
@@ -626,6 +629,122 @@
         },
         "data": {
           "$ref": "#/$defs/processesData"
+        }
+      }
+    },
+    "containersData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtimes"
+      ],
+      "properties": {
+        "runtimes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "status",
+              "containers"
+            ],
+            "properties": {
+              "name": {
+                "enum": [
+                  "docker",
+                  "podman",
+                  "colima"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "running",
+                  "not-running",
+                  "error"
+                ],
+                "description": "not-running is normal (runtime stopped or absent); error means the API misbehaved."
+              },
+              "error": {
+                "type": "string"
+              },
+              "containers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "name",
+                    "image",
+                    "state",
+                    "status",
+                    "cpu",
+                    "memUsed",
+                    "memLimit",
+                    "rxBps",
+                    "txBps"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "image": {
+                      "type": "string"
+                    },
+                    "state": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "cpu": {
+                      "type": "number",
+                      "minimum": 0,
+                      "description": "Percent of one core."
+                    },
+                    "memUsed": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "memLimit": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "rxBps": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "txBps": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "containersResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/containersData"
         }
       }
     }

@@ -40,3 +40,11 @@ Each collector is one entry in the snapshot's `collectors` map. A failure shows 
 - **Read-only:** only `GET` requests are made, and a test asserts it. Stats use `one-shot=true`; CPU and network rates come from deltas between ticks. Memory is usage minus reclaimable cache, like `docker stats`.
 - **Refresh:** every 2 s, at most 100 containers per runtime.
 - The agent must run as the user who owns the runtimes (a launchd LaunchAgent), so the per-user sockets are reachable.
+
+## shares
+- **Mounted shares:** parsed from `mount` output (SMB and NFS only; AFP is out of scope). Each has protocol, server, share, mount point, remote account, the local user who mounted it, reachability and capacity.
+- **Capacity** comes from `statfs` with a 2 s timeout and at most one call in flight per mount, because a dead server can hang `statfs` forever. A timeout shows the share as `unreachable`.
+- **Accounts, mounts:** the user in the SMB URL. Passwords are never read or kept. Apple ID style identifiers (`com.apple.idms.*`, which embed account UUIDs) are shown as "Apple ID".
+- **Shared by this Mac:** shares with SMB enabled, from `sharing -l`. Folder paths are not reported.
+- **Connected clients:** established inbound connections on TCP 445 (SMB) and 2049 (NFS) from `netstat -anv`. The account is the owner of the serving process (`ps`). When macOS serves the connection as root, the real user is not visible without privileges and the account is blank ("unknown account" in the UI).
+- **Refresh:** every 5 s.

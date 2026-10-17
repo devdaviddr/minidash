@@ -28,7 +28,7 @@ updated: 2026-10-18
 | T-6 | Network collector + view | FR-4 | T-2 | AC-4 | [x] |
 | T-7 | Process collector + sortable table | FR-5 | T-3 | AC-5 | [x] |
 | T-8 | Container collectors (Docker/Podman/Colima) + view | FR-6 | T-2 | AC-6 | [x] |
-| T-9 | Shares and accounts collector + view | FR-7 | T-2 | AC-7 | [ ] |
+| T-9 | Shares and accounts collector + view | FR-7 | T-2 | AC-7 | [x] |
 | T-10 | Design pass: theme, layout, wall-display mode | NFR UI | T-3..T-9 | visual review by owner | [ ] |
 | T-11 | launchd packaging and install docs | NFR network | T-1 | manual install on Mac mini | [ ] |
 

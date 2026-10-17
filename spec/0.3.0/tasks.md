@@ -39,7 +39,7 @@ updated: 2026-10-18
 | T-17 | Drag-and-drop reordering with dnd-kit (pointer, touch, keyboard) | FR-13 | T-16 | AC-12 | [x] |
 | T-18 | Persistence UX: reset, export, import with validation and clear errors, corrupt-storage fallback | FR-16 | T-14, T-16 | AC-15 | [x] |
 | T-19 | Docs (README, user guide for customising, ADR 0009), bundle-size measurement, deploy the UI to the Mac mini | all | T-12..T-18 | AC-17, manual check on the mini | [x] |
-| T-20 | Allow width 3: catalogue, validator, span classes, panel width control; 0.2.0 files still import | FR-14 | T-14 | AC-13 | [ ] |
+| T-20 | Allow width 3: catalogue, validator, span classes, panel width control; 0.2.0 files still import | FR-14 | T-14 | AC-13 | [x] |
 | T-21 | Responsive grid (1/2/4 columns by viewport) and container-aware cards: `@container` on Card and container variants inside every card; guard test | FR-20, FR-21 | T-20 | AC-20, AC-21, owner visual review | [ ] |
 | T-22 | Selection: click a card to select, selected outline, sidebar detail view with the overview and a way back; select from the overview list | FR-19 | T-21 | AC-19 | [ ] |
 | T-23 | Drag-to-resize: pure `spanFromPointer`, pointer hook, keyboard slider, live preview, Escape cancels | FR-18 | T-22 | AC-18 | [ ] |

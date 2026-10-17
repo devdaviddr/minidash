@@ -76,7 +76,7 @@ export function SortableGrid({ cards, history, editing, dispatch }: Props) {
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
       <SortableContext items={cards.map((c) => c.id)} strategy={rectSortingStrategy}>
-        <div className={`grid grid-cols-1 gap-4 lg:grid-cols-4 ${editing ? 'pt-3' : ''}`}>
+        <div className={`grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 ${editing ? "pt-3" : ""}`}>
           {cards.map((c) => (
             <Item key={c.id} card={c} history={history} editing={editing} />
           ))}

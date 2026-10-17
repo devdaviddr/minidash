@@ -13,6 +13,7 @@ import (
 	"github.com/devdaviddr/minidash/agent/internal/collect/memory"
 	"github.com/devdaviddr/minidash/agent/internal/collect/network"
 	"github.com/devdaviddr/minidash/agent/internal/collect/processes"
+	"github.com/devdaviddr/minidash/agent/internal/collect/shares"
 	"github.com/devdaviddr/minidash/agent/internal/collect/soc"
 	"github.com/devdaviddr/minidash/agent/internal/config"
 	"github.com/devdaviddr/minidash/agent/internal/hub"
@@ -36,6 +37,7 @@ func main() {
 		network.New(),
 		snapshot.Throttle(processes.New(), 2*time.Second),
 		snapshot.Throttle(containers.New(), 2*time.Second),
+		snapshot.Throttle(shares.New(), 5*time.Second),
 	)
 	go agg.Run(context.Background(), h.Publish)
 

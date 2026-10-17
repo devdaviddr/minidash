@@ -55,6 +55,9 @@
         },
         "containers": {
           "$ref": "#/$defs/containersResult"
+        },
+        "shares": {
+          "$ref": "#/$defs/sharesResult"
         }
       }
     }
@@ -745,6 +748,147 @@
         },
         "data": {
           "$ref": "#/$defs/containersData"
+        }
+      }
+    },
+    "sharesData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mounts",
+        "sharing",
+        "sessions"
+      ],
+      "properties": {
+        "mounts": {
+          "type": "array",
+          "description": "Remote SMB/NFS shares mounted on this Mac.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "protocol",
+              "server",
+              "share",
+              "mount",
+              "account",
+              "mountedBy",
+              "reachable",
+              "total",
+              "used",
+              "free"
+            ],
+            "properties": {
+              "protocol": {
+                "enum": [
+                  "smb",
+                  "nfs"
+                ]
+              },
+              "server": {
+                "type": "string"
+              },
+              "share": {
+                "type": "string"
+              },
+              "mount": {
+                "type": "string"
+              },
+              "account": {
+                "type": "string",
+                "description": "Remote account; Apple ID identifiers are shown as \"Apple ID\". Never a password."
+              },
+              "mountedBy": {
+                "type": "string"
+              },
+              "reachable": {
+                "type": "boolean"
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "used": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "free": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "sharing": {
+          "type": "array",
+          "description": "Folders this Mac shares over SMB.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "protocols"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "protocols": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "smb"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sessions": {
+          "type": "array",
+          "description": "Clients connected to this Mac file sharing.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "protocol",
+              "remote",
+              "account"
+            ],
+            "properties": {
+              "protocol": {
+                "enum": [
+                  "smb",
+                  "nfs"
+                ]
+              },
+              "remote": {
+                "type": "string"
+              },
+              "account": {
+                "type": "string",
+                "description": "Empty when the owner is not visible without privileges."
+              }
+            }
+          }
+        }
+      }
+    },
+    "sharesResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/sharesData"
         }
       }
     }

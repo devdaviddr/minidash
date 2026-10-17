@@ -33,13 +33,19 @@ Open `http://<mini>:8080`, enter the token once. The page connects to `ws://<sam
 The container is read-only, drops all capabilities and runs unprivileged (`nginx-unprivileged`). It holds no secrets: the token stays in your browser.
 
 ## Verification status
-- Agent scripts: dry run, plist lint and a real `run-agent.sh` start were tested on a development Mac (not the mini).
-- **Not yet tested:** the container image build and a real launchd install on the Mac mini. Those are the manual check for task T-11.
+Deployed to the Mac mini (M4, macOS 26.4, 693 processes, 14 Podman containers) and tested over the LAN from another Mac:
+- All eight collectors report `ok`. The external Media drive shows as external; Podman shows its containers; Colima and Docker read "not-running" (Docker's socket resolves to Podman's and is counted once).
+- A wrong token is closed with 1008. WebSocket origins from the UI's host are accepted; other origins are refused at the handshake.
+- The container is read-only, unprivileged (uid 101), drops capabilities, and every response carries the CSP and related headers.
+- Killing the agent: launchd restarts it in about a second and the stream resumes.
+- CPU on the mini: agent about 1.3% plus `macmon` about 0.35%, total about 1.65% of one core (budget: 2%).
+
+Still needs a human: the GPU-load check (AC-2) and the visual review of the UI in a browser.
 
 ## Manual acceptance checks (need the real mini)
-1. Install the agent, open the UI from another device on the LAN: values update every second (AC-1, AC-4, AC-8).
-2. Stop the agent (`launchctl bootout gui/$(id -u)/com.minidash.agent`): the UI shows "disconnected" within 5 s; start it again: it recovers without a reload (AC-8).
+1. Open the UI from another device on the LAN: values update every second (AC-1, AC-4).
+2. Stop the agent (`launchctl bootout gui/$(id -u)/com.minidash.agent`): the UI shows "disconnected" within 5 s; start it again (`launchctl bootstrap ...`): it recovers without a reload (AC-8).
 3. Run a GPU-heavy app: GPU % and power rise (AC-2).
-4. Plug in and eject the external drive: it appears, then disappears (AC-3).
-5. Start only Colima: it lists containers; Docker and Podman read "not running" (AC-6).
-6. Connect to a share from another Mac: a connected client appears (AC-7; the account may show as unknown if macOS serves it as root).
+4. Eject the external drive: it disappears; plug it in: it returns (AC-3).
+5. Start Colima: it lists its containers (AC-6).
+6. Mount a share on the mini: it is listed with its server and mount point (AC-7).

@@ -41,7 +41,7 @@ updated: 2026-10-18
 | T-19 | Docs (README, user guide for customising, ADR 0009), bundle-size measurement, deploy the UI to the Mac mini | all | T-12..T-18 | AC-17, manual check on the mini | [x] |
 | T-20 | Allow width 3: catalogue, validator, span classes, panel width control; 1.1.0 files still import | FR-14 | T-14 | AC-13 | [x] |
 | T-21 | Responsive grid (1/2/4 columns by viewport) and container-aware cards: `@container` on Card and container variants inside every card; guard test | FR-20, FR-21 | T-20 | AC-20, AC-21, owner visual review | [x] |
-| T-22 | Selection: click a card to select, selected outline, sidebar detail view with the overview and a way back; select from the overview list | FR-19 | T-21 | AC-19 | [ ] |
+| T-22 | Selection: click a card to select, selected outline, sidebar detail view with the overview and a way back; select from the overview list | FR-19 | T-21 | AC-19 | [x] |
 | T-23 | Drag-to-resize: pure `spanFromPointer`, pointer hook, keyboard slider, live preview, Escape cancels | FR-18 | T-22 | AC-18 | [ ] |
 | T-24 | Docs (customising guide, ADR 0010), update illustration if needed, measure bundle, deploy the UI to the Mac mini | all | T-20..T-23 | manual check on the mini | [ ] |
 

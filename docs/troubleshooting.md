@@ -1,0 +1,55 @@
+# Troubleshooting
+
+Find the symptom, then the cause.
+
+## The page will not load
+| You see | Likely cause | Fix |
+| --- | --- | --- |
+| `ERR_ADDRESS_UNREACHABLE` in Chrome, but `curl` works from the same Mac | macOS blocks browsers from local-network addresses until allowed | System Settings → Privacy & Security → Local Network → enable your browser, then restart it. Over Tailscale the problem usually does not occur. |
+| `ERR_ADDRESS_UNREACHABLE` using `name.local` | The `.local` name also resolves to an IPv6 link-local address (`fe80::`) that some browsers cannot use | Use the IPv4 address (`http://<mini-ip>:8080`) or the Tailscale address |
+| Nothing loads from a phone or other device | Different Wi-Fi or VLAN, guest or IoT network, client isolation, or a VPN on that device | Join the mini's network, disable the VPN, or use Tailscale |
+| Connection refused on `:8080` | The UI container is not running | `docker ps`, then `docker compose -f deploy/compose.yaml up -d` |
+
+To tell whether a request ever reached the mini, look at the UI container's access log (`docker logs deploy-web-1`). If your browser's requests are absent, the block is between your device and the mini.
+
+## The page loads but shows no data
+| You see | Cause | Fix |
+| --- | --- | --- |
+| A box and **Connect**, pill says "token required" | No token saved in this browser | Enter the token from `~/.config/minidash/agent.env` |
+| Pill says **unauthorized** | Wrong token, or it was rotated | Enter the current token |
+| Pill says **disconnected** and keeps retrying | The agent is down, or the browser cannot reach `:8787` | `curl http://<mini>:8787/healthz`; check `launchctl print` and the agent log |
+| Disconnected, and the agent is up | The page's origin is not allowed | Add it to `MINIDASH_ORIGINS` (for example `*:8080`) and restart. A refused origin fails at the WebSocket handshake. |
+| Page is on one host but the agent is on another | The UI defaults to the page's own host | Build with `VITE_AGENT_URL=ws://agent-host:8787/ws` |
+
+## A card says "Unavailable"
+Each card reports its own collector. One failing collector never affects the others.
+
+| Card | Message | Fix |
+| --- | --- | --- |
+| GPU & power | `macmon unavailable (install with: brew install macmon)` | `brew install macmon`, then restart the agent. Also appears if macmon stops sampling for more than 5 seconds. |
+| Containers | a runtime says "not running" | Normal when that runtime is stopped or absent. It is not an error. |
+| Containers | a runtime says "error" | The runtime's API answered badly; the card shows the message. Restart that runtime. |
+| Shares | a share says "unreachable" | The server did not answer within 2 seconds. Check the server and your connection. |
+
+## Data looks different from what you expect
+- **A connected SMB client shows "unknown account".** macOS can serve SMB sessions as root, and the real user is not visible without privileges.
+- **No GPU column in the process table.** macOS does not expose per-process GPU use without root.
+- **A mounted share shows an Apple ID instead of a user name.** Shares authenticated with an Apple ID are shown as "Apple ID" on purpose.
+- **A volume you expect is missing from Storage.** Only the internal Data volume and local filesystems mounted under `/Volumes` are listed. Network shares appear under Shares.
+- **Podman containers appear under Podman, not Docker, though `docker` works.** The Docker socket resolves to Podman's, and each socket is counted once (Colima and Podman are checked first).
+- **Process list lags the CPU graph.** Processes refresh every 3 s; the CPU graph every second.
+
+## The agent will not start
+| Log or exit | Cause |
+| --- | --- |
+| `MINIDASH_TOKEN is required` | Empty token. Set it in `agent.env`. |
+| `MINIDASH_SOC_INTERVAL_MS must be an integer >= 250` | Bad interval value. |
+| `missing ~/.config/minidash/agent.env` (exit 78) | The env file is absent. Re-run `deploy/install-agent.sh install`. |
+| `address already in use` | Something else holds port 8787. `lsof -nP -iTCP:8787 -sTCP:LISTEN`. |
+| Starts, then nothing listens | Check `~/Library/Logs/minidash/agent.log`. |
+
+## It is using too much CPU
+Expect about 1.5% in total. If it is higher, check whether you lowered `MINIDASH_SOC_INTERVAL_MS`, have thousands of processes, or many containers (statistics are requested per container every 2 seconds, up to 100 per runtime).
+
+## Still stuck
+Open an issue with: macOS version, how you deployed, the relevant lines from `agent.log`, and what the status pill says. Do not paste your token.

@@ -28,6 +28,7 @@ export interface Snapshot {
     soc?: SocResult;
     disks?: DisksResult;
     network?: NetworkResult;
+    processes?: ProcessesResult;
   };
 }
 export interface CpuResult {
@@ -153,4 +154,32 @@ export interface NetworkData {
     rxBps: number;
     txBps: number;
   };
+}
+export interface ProcessesResult {
+  ok: boolean;
+  error?: string;
+  data?: ProcessesData;
+}
+/**
+ * list = union of top 25 by CPU and top 25 by memory, sorted by CPU.
+ */
+export interface ProcessesData {
+  total: number;
+  list: {
+    pid: number;
+    /**
+     * Executable name only; never arguments.
+     */
+    name: string;
+    user: string;
+    /**
+     * Percent of one core; may exceed 100.
+     */
+    cpu: number;
+    /**
+     * Resident bytes.
+     */
+    rss: number;
+    threads: number;
+  }[];
 }

@@ -29,6 +29,7 @@ export interface Snapshot {
     disks?: DisksResult;
     network?: NetworkResult;
     processes?: ProcessesResult;
+    containers?: ContainersResult;
   };
 }
 export interface CpuResult {
@@ -181,5 +182,35 @@ export interface ProcessesData {
      */
     rss: number;
     threads: number;
+  }[];
+}
+export interface ContainersResult {
+  ok: boolean;
+  error?: string;
+  data?: ContainersData;
+}
+export interface ContainersData {
+  runtimes: {
+    name: "docker" | "podman" | "colima";
+    /**
+     * not-running is normal (runtime stopped or absent); error means the API misbehaved.
+     */
+    status: "running" | "not-running" | "error";
+    error?: string;
+    containers: {
+      id: string;
+      name: string;
+      image: string;
+      state: string;
+      status: string;
+      /**
+       * Percent of one core.
+       */
+      cpu: number;
+      memUsed: number;
+      memLimit: number;
+      rxBps: number;
+      txBps: number;
+    }[];
   }[];
 }

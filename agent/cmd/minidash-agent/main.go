@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/devdaviddr/minidash/agent/internal/collect/containers"
 	"github.com/devdaviddr/minidash/agent/internal/collect/cpu"
 	"github.com/devdaviddr/minidash/agent/internal/collect/disk"
 	"github.com/devdaviddr/minidash/agent/internal/collect/memory"
@@ -34,6 +35,7 @@ func main() {
 		disk.New(),
 		network.New(),
 		snapshot.Throttle(processes.New(), 2*time.Second),
+		snapshot.Throttle(containers.New(), 2*time.Second),
 	)
 	go agg.Run(context.Background(), h.Publish)
 

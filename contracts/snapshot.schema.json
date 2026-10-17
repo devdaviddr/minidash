@@ -4,28 +4,127 @@
   "title": "Snapshot",
   "description": "One message per sampling tick, pushed agent -> browser. Additive changes only within a major spec version.",
   "type": "object",
-  "required": ["schema", "seq", "ts", "intervalMs", "collectors"],
+  "required": [
+    "schema",
+    "seq",
+    "ts",
+    "intervalMs",
+    "collectors"
+  ],
   "additionalProperties": false,
   "properties": {
-    "schema": { "const": 1 },
-    "seq": { "type": "integer", "minimum": 1, "description": "Increases by 1 per tick; a gap means dropped ticks." },
-    "ts": { "type": "string", "format": "date-time" },
-    "intervalMs": { "type": "integer", "minimum": 100, "description": "Tick period, used by clients to detect a stalled feed." },
+    "schema": {
+      "const": 1
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Increases by 1 per tick; a gap means dropped ticks."
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "intervalMs": {
+      "type": "integer",
+      "minimum": 100,
+      "description": "Tick period, used by clients to detect a stalled feed."
+    },
     "collectors": {
       "type": "object",
       "description": "One entry per collector. A failing collector reports ok=false and never blanks the others.",
-      "additionalProperties": { "$ref": "#/$defs/collectorResult" }
+      "additionalProperties": false,
+      "properties": {
+        "cpu": {
+          "$ref": "#/$defs/cpuResult"
+        }
+      }
     }
   },
   "$defs": {
     "collectorResult": {
       "type": "object",
-      "required": ["ok"],
+      "required": [
+        "ok"
+      ],
       "additionalProperties": false,
       "properties": {
-        "ok": { "type": "boolean" },
-        "error": { "type": "string" },
-        "data": { "description": "Collector-specific payload, typed per collector as each lands." }
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "description": "Collector-specific payload, typed per collector as each lands."
+        }
+      }
+    },
+    "cpuData": {
+      "type": "object",
+      "required": [
+        "total",
+        "cores",
+        "load"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Percent across all logical cores."
+        },
+        "cores": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "description": "Percent per logical core."
+        },
+        "load": {
+          "type": "object",
+          "required": [
+            "one",
+            "five",
+            "fifteen"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "one": {
+              "type": "number",
+              "minimum": 0
+            },
+            "five": {
+              "type": "number",
+              "minimum": 0
+            },
+            "fifteen": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "cpuResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/cpuData"
+        }
       }
     }
   }

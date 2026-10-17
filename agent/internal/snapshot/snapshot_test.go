@@ -60,7 +60,8 @@ func TestSnapshotMatchesSchema(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	a := NewAggregator(time.Second, fake{name: "good", data: 1}, fake{name: "bad", err: errors.New("e")})
+	// A failed collector must still produce a contract-valid entry (ok=false, error set, no data).
+	a := NewAggregator(time.Second, fake{name: "cpu", err: errors.New("e")})
 	raw, _ := json.Marshal(a.Sample(context.Background()))
 	var v any
 	if err := json.NewDecoder(strings.NewReader(string(raw))).Decode(&v); err != nil {

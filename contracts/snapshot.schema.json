@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/devdaviddr/minidash/contracts/snapshot.schema.json",
+  "title": "Snapshot",
+  "description": "One message per sampling tick, pushed agent -> browser. Additive changes only within a major spec version.",
+  "type": "object",
+  "required": ["schema", "seq", "ts", "intervalMs", "collectors"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": 1 },
+    "seq": { "type": "integer", "minimum": 1, "description": "Increases by 1 per tick; a gap means dropped ticks." },
+    "ts": { "type": "string", "format": "date-time" },
+    "intervalMs": { "type": "integer", "minimum": 100, "description": "Tick period, used by clients to detect a stalled feed." },
+    "collectors": {
+      "type": "object",
+      "description": "One entry per collector. A failing collector reports ok=false and never blanks the others.",
+      "additionalProperties": { "$ref": "#/$defs/collectorResult" }
+    }
+  },
+  "$defs": {
+    "collectorResult": {
+      "type": "object",
+      "required": ["ok"],
+      "additionalProperties": false,
+      "properties": {
+        "ok": { "type": "boolean" },
+        "error": { "type": "string" },
+        "data": { "description": "Collector-specific payload, typed per collector as each lands." }
+      }
+    }
+  }
+}

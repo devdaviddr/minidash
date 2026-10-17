@@ -26,7 +26,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	mm := macmon.NewRunner(cfg.MacmonBin)
+	mm := macmon.NewRunner(cfg.MacmonBin, cfg.SoCInterval)
 	go mm.Run(context.Background())
 	h := hub.New(cfg.Token, cfg.Origins)
 	agg := snapshot.NewAggregator(time.Second,
@@ -35,9 +35,9 @@ func main() {
 		soc.New(mm),
 		disk.New(),
 		network.New(),
-		snapshot.Throttle(processes.New(), 2*time.Second),
+		snapshot.Throttle(processes.New(), 3*time.Second),
 		snapshot.Throttle(containers.New(), 2*time.Second),
-		snapshot.Throttle(shares.New(), 5*time.Second),
+		snapshot.Throttle(shares.New(), 10*time.Second),
 	)
 	go agg.Run(context.Background(), h.Publish)
 

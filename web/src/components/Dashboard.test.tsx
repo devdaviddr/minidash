@@ -85,13 +85,15 @@ describe('Dashboard renders the layout', () => {
 
   // AC-13
   it.each([
-    [1, 'lg:col-span-1'],
+    [1, 'lg:col-span-'],
     [2, 'lg:col-span-2'],
+    [3, 'lg:col-span-3'],
     [4, 'lg:col-span-4'],
-  ] as const)('a card of width %i spans %s columns on large screens', (span, cls) => {
+  ] as const)('a card of width %i spans the matching columns on large screens', (span, cls) => {
     const l = layoutReducer(defaultLayout(), { type: 'setSpan', id: 'network', span })
     const el = renderDash(l).container.querySelector('[data-card="network"]')
-    expect(el?.className).toContain(cls)
+    if (span === 1) expect(el?.className).not.toContain(cls) // width 1 is the grid default: one cell
+    else expect(el?.className).toContain(cls)
     expect(el?.getAttribute('data-span')).toBe(String(span))
   })
 

@@ -3,8 +3,8 @@ import { CARDS, SPANS, SUMMARY_PARTS, cardDef, type PartDef, type Span } from '.
 import type { CardLayout, Layout, LayoutAction } from '../layout/model'
 import { LayoutFileControls } from './LayoutFileControls'
 
-const SPAN_LABEL: Record<Span, string> = { 1: '1 column', 2: '2 columns', 4: 'Full width' }
-const SPAN_SHORT: Record<Span, string> = { 1: '1', 2: '2', 4: 'Full' }
+const SPAN_LABEL: Record<Span, string> = { 1: '1 column', 2: '2 columns', 3: '3 columns', 4: 'Full width' }
+const SPAN_SHORT: Record<Span, string> = { 1: '1', 2: '2', 3: '3', 4: 'Full' }
 
 const focusRing = 'outline-none focus-visible:ring-2 focus-visible:ring-accent/50'
 const iconButton = `grid size-7 place-items-center rounded-md border border-line text-muted hover:text-fg disabled:opacity-40 disabled:hover:text-muted ${focusRing}`

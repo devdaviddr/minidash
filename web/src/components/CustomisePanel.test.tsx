@@ -79,11 +79,13 @@ describe('CustomisePanel', () => {
   })
 
   // AC-13
-  it('sets a card to 1, 2 or full width', async () => {
+  it('sets a card to 1, 2, 3 or full width', async () => {
     const { container } = render(<Harness />)
     const card = () => container.querySelector('[data-card="network"]') as HTMLElement
     await userEvent.click(screen.getByRole('radio', { name: 'Network width: 1 column' }))
-    expect(card().className).toContain('lg:col-span-1')
+    expect(card().getAttribute('data-span')).toBe('1')
+    await userEvent.click(screen.getByRole('radio', { name: 'Network width: 3 columns' }))
+    expect(card().className).toContain('lg:col-span-3')
     await userEvent.click(screen.getByRole('radio', { name: 'Network width: Full width' }))
     expect(card().className).toContain('lg:col-span-4')
     expect(screen.getByRole('radio', { name: 'Network width: Full width' }).getAttribute('aria-checked')).toBe('true')

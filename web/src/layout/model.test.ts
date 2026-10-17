@@ -57,7 +57,7 @@ describe('validateLayout', () => {
       ...l,
       summary: { visible: true, hidden: ['power', 'bogus'] },
       cards: [
-        { id: 'gpu', visible: false, span: 3, hidden: ['fans', 'nope', 'fans'] },
+        { id: 'gpu', visible: false, span: 5, hidden: ['fans', 'nope', 'fans'] },
         { id: 'warp-drive', visible: true, span: 1, hidden: [] },
         { id: 'gpu', visible: true, span: 1, hidden: [] },
         ...l.cards.filter((c) => c.id !== 'gpu'),
@@ -66,7 +66,7 @@ describe('validateLayout', () => {
     const v = validateLayout(input)
     expect(v.ok).toBe(true)
     if (!v.ok) return
-    expect(v.layout.cards[0]).toEqual({ id: 'gpu', visible: false, span: 2, hidden: ['fans'] }) // span reset to the default 2
+    expect(v.layout.cards[0]).toEqual({ id: 'gpu', visible: false, span: 2, hidden: ['fans'] }) // span 5 is not a width: reset to the default 2
     expect(v.layout.summary.hidden).toEqual(['power'])
     expect(ids(v.layout)).not.toContain('warp-drive')
     expect(v.layout.cards.length).toBe(CARDS.length)
@@ -92,7 +92,8 @@ describe('reducer', () => {
   })
   it('sets widths', () => {
     expect(layoutReducer(base, { type: 'setSpan', id: 'cpu', span: 4 }).cards[0].span).toBe(4)
-    expect(layoutReducer(base, { type: 'setSpan', id: 'cpu', span: 3 as never })).toBe(base)
+    expect(layoutReducer(base, { type: 'setSpan', id: 'cpu', span: 3 }).cards[0].span).toBe(3)
+    expect(layoutReducer(base, { type: 'setSpan', id: 'cpu', span: 5 as never })).toBe(base)
   })
   it('toggles known parts only', () => {
     let l = layoutReducer(base, { type: 'togglePart', id: 'cpu', part: 'cores' })
@@ -199,5 +200,34 @@ describe('no network access (AC-17)', () => {
     const sources = readdirSync(dir).filter((f) => /\.tsx?$/.test(f) && !/\.test\./.test(f))
     expect(sources.length).toBeGreaterThan(1)
     for (const f of sources) expect(readFileSync(join(dir, f), 'utf8'), f).not.toMatch(/\b(fetch|WebSocket|XMLHttpRequest|sendBeacon)\b/)
+  })
+})
+
+// AC-13 (1.2.0): width 3 exists, and layout files written by 1.1.0 (widths 1, 2 and 4 only) import unchanged.
+describe('widths 1 to 4', () => {
+  it('accepts every width from 1 to 4', () => {
+    for (const span of [1, 2, 3, 4]) {
+      const l = defaultLayout()
+      l.cards[0].span = span as 1 | 2 | 3 | 4
+      const v = validateLayout(l)
+      expect(v.ok && v.layout.cards[0].span).toBe(span)
+    }
+  })
+  it('repairs a width that is not a width', () => {
+    for (const bad of [0, 5, 2.5, '2', null]) {
+      const l = { ...defaultLayout(), cards: defaultLayout().cards.map((c) => ({ ...c, span: bad })) }
+      const v = validateLayout(l)
+      expect(v.ok && v.layout.cards.map((c) => c.span)).toEqual([2, 2, 2, 2, 2, 2, 4, 4])
+    }
+  })
+  it('imports a 1.1.0 layout file unchanged', () => {
+    const file = {
+      version: 1,
+      summary: { visible: true, hidden: ['power'] },
+      cards: defaultLayout().cards.map((c, i) => ({ ...c, span: ([1, 2, 4] as const)[i % 3] })),
+    }
+    const v = parseLayoutFile(JSON.stringify(file))
+    expect(v.ok && v.layout.cards.map((c) => c.span)).toEqual(file.cards.map((c) => c.span))
+    expect(v.ok && v.notes).toEqual([])
   })
 })

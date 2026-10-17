@@ -1,8 +1,8 @@
 /** Pure data describing every card and the parts inside it. The single source of truth: layout
  * validation, the customise panel and the grid all derive from it, so a new card is one entry. */
 
-export type Span = 1 | 2 | 4
-export const SPANS: Span[] = [1, 2, 4]
+export type Span = 1 | 2 | 3 | 4
+export const SPANS: Span[] = [1, 2, 3, 4]
 
 export interface PartDef {
   id: string

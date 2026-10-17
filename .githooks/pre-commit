@@ -4,8 +4,10 @@ branch=$(git branch --show-current)
 if [[ "$branch" == "main" ]]; then echo "pre-commit: do not commit on main; use a type/slug branch" >&2; exit 1; fi
 
 current=$(ls -1 spec 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)
+# A bump commit adds the new current version dir, so finishing the previous draft in the same commit is allowed.
+bumping=$(git diff --cached --name-status | awk -v c="spec/$current/" '$1=="A" && index($2,c)==1 {print "y"; exit}')
 while read -r status f; do
-  if [[ "$f" =~ ^spec/([0-9]+\.[0-9]+\.[0-9]+)/ && "${BASH_REMATCH[1]}" != "$current" && "$status" != "A" ]]; then
+  if [[ "$f" =~ ^spec/([0-9]+\.[0-9]+\.[0-9]+)/ && "${BASH_REMATCH[1]}" != "$current" && "$status" != "A" && -z "$bumping" ]]; then
     echo "pre-commit: spec/${BASH_REMATCH[1]} is frozen; edit spec/$current or bump" >&2; exit 1
   fi
 done < <(git diff --cached --name-status | awk '{print $1, $2}')

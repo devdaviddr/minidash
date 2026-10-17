@@ -24,6 +24,8 @@ export interface Snapshot {
    */
   collectors: {
     cpu?: CpuResult;
+    memory?: MemoryResult;
+    soc?: SocResult;
   };
 }
 export interface CpuResult {
@@ -45,4 +47,61 @@ export interface CpuData {
     five: number;
     fifteen: number;
   };
+}
+export interface MemoryResult {
+  ok: boolean;
+  error?: string;
+  data?: MemoryData;
+}
+/**
+ * Bytes. used = active + wired + compressed.
+ */
+export interface MemoryData {
+  total: number;
+  used: number;
+  available: number;
+  wired: number;
+  active: number;
+  inactive: number;
+  compressed: number;
+  swapUsed: number;
+  swapTotal: number;
+}
+export interface SocResult {
+  ok: boolean;
+  error?: string;
+  data?: SocData;
+}
+export interface SocData {
+  gpu: {
+    usage: number;
+    freqMhz: number;
+  };
+  clusters: {
+    label: string;
+    usage: number;
+    freqMhz: number;
+  }[];
+  /**
+   * Watts.
+   */
+  power: {
+    system: number;
+    cpu: number;
+    gpu: number;
+    ane: number;
+    ram: number;
+  };
+  /**
+   * Average die temperature, Celsius.
+   */
+  tempC: {
+    cpu: number;
+    gpu: number;
+  };
+  fans: {
+    name: string;
+    rpm: number;
+    maxRpm: number;
+  }[];
 }

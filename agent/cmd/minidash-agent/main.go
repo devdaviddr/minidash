@@ -8,8 +8,11 @@ import (
 	"time"
 
 	"github.com/devdaviddr/minidash/agent/internal/collect/cpu"
+	"github.com/devdaviddr/minidash/agent/internal/collect/memory"
+	"github.com/devdaviddr/minidash/agent/internal/collect/soc"
 	"github.com/devdaviddr/minidash/agent/internal/config"
 	"github.com/devdaviddr/minidash/agent/internal/hub"
+	"github.com/devdaviddr/minidash/agent/internal/macmon"
 	"github.com/devdaviddr/minidash/agent/internal/snapshot"
 )
 
@@ -18,9 +21,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	mm := macmon.NewRunner(cfg.MacmonBin)
+	go mm.Run(context.Background())
 	h := hub.New(cfg.Token, cfg.Origins)
 	agg := snapshot.NewAggregator(time.Second,
 		cpu.New(),
+		memory.New(),
+		soc.New(mm),
 	)
 	go agg.Run(context.Background(), h.Publish)
 

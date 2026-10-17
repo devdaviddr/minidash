@@ -1,0 +1,26 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Spec tool runs and a current version exists
+        run: python3 -I tools/sdd/scripts/spec_tool.py list
+      - name: Approved spec has no open questions
+        run: |
+          cur=$(ls spec | sort -V | tail -1)
+          if grep -q '^status: *\(approved\|implemented\)' "spec/$cur/spec.md" && grep -q 'NEEDS INPUT' "spec/$cur/spec.md"; then
+            echo "Approved spec $cur still has [NEEDS INPUT] markers"; exit 1
+          fi
+      - name: PR title is a Conventional Commit
+        if: github.event_name == 'pull_request'
+        env: { TITLE: "${{ github.event.pull_request.title }}" }
+        run: |
+          echo "$TITLE" | grep -Eq '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._-]+\))?!?: .+' || { echo "Bad PR title: $TITLE"; exit 1; }

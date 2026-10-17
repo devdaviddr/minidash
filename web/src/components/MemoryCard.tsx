@@ -3,6 +3,7 @@ import { bytes, pct } from '../lib/format'
 import { toSeries } from '../lib/history'
 import { Card, Stat, Unavailable } from './Card'
 import { Chart } from './Chart'
+import { NONE, Part, type CardProps } from '../layout/parts'
 
 const SERIES = [{ label: 'Used', color: '--accent2' }]
 const mem = (s: Snapshot) => s.collectors.memory
@@ -11,7 +12,7 @@ const usedPct = (s: Snapshot) => {
   return d && d.total ? (d.used / d.total) * 100 : null
 }
 
-export function MemoryCard({ history }: { history: Snapshot[] }) {
+export function MemoryCard({ history, hidden = NONE }: CardProps) {
   const r = history.at(-1) && mem(history.at(-1)!)
   const d = r?.ok ? r.data : undefined
   const parts = d
@@ -23,18 +24,23 @@ export function MemoryCard({ history }: { history: Snapshot[] }) {
       ]
     : []
   return (
-    <Card title="Unified memory" className="lg:col-span-2">
+    <Card title="Unified memory">
       {!d ? (
         <Unavailable error={r?.error} />
       ) : (
         <div className="flex flex-col gap-4">
           <div className="flex items-end justify-between">
             <Stat value={bytes(d.used)} label={`of ${bytes(d.total, 0)} · ${pct((d.used / d.total) * 100)} used`} />
-            <div className="text-right text-xs text-muted">
-              swap {bytes(d.swapUsed)} / {bytes(d.swapTotal, 0)}
-            </div>
+            <Part id="swap" hidden={hidden}>
+              <div className="text-right text-xs text-muted">
+                swap {bytes(d.swapUsed)} / {bytes(d.swapTotal, 0)}
+              </div>
+            </Part>
           </div>
-          <Chart data={toSeries(history, usedPct)} series={SERIES} yMax={100} format={pct} />
+          <Part id="chart" hidden={hidden}>
+            <Chart data={toSeries(history, usedPct)} series={SERIES} yMax={100} format={pct} />
+          </Part>
+          <Part id="breakdown" hidden={hidden}>
           <div>
             <div className="flex h-3 overflow-hidden rounded-full bg-line" role="img" aria-label="Memory breakdown">
               {parts.map((p) => (
@@ -50,6 +56,7 @@ export function MemoryCard({ history }: { history: Snapshot[] }) {
               ))}
             </ul>
           </div>
+          </Part>
         </div>
       )}
     </Card>

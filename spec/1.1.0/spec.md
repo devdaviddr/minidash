@@ -153,7 +153,7 @@ No open questions.
 
 | Version | Date | Level | Note |
 | --- | --- | --- | --- |
+| 1.1.0 | 2026-10-18 | approve | Approved by the owner's answers: all four customisation features, per-browser layout with export/import, System/Light/Dark switch |
 | 1.1.0 | 2026-10-18 | minor | UX: restyle to match the README illustration, theme switch, customisable layout (show/hide, reorder, resize, hide parts) |
 | 1.0.0 | 2026-10-18 | major | Approved: LAN+token, SMB/NFS, 2% budget, native agent + container UI |
 | 0.1.0 | 2026-10-18 | init | Initial draft |
-| 1.1.0 | 2026-10-18 | approve | Approved by the owner's answers: all four customisation features, per-browser layout with export/import, System/Light/Dark switch |

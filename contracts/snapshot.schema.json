@@ -49,6 +49,9 @@
         },
         "network": {
           "$ref": "#/$defs/networkResult"
+        },
+        "processes": {
+          "$ref": "#/$defs/processesResult"
         }
       }
     }
@@ -549,6 +552,80 @@
         },
         "data": {
           "$ref": "#/$defs/networkData"
+        }
+      }
+    },
+    "processesData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "list"
+      ],
+      "description": "list = union of top 25 by CPU and top 25 by memory, sorted by CPU.",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pid",
+              "name",
+              "user",
+              "cpu",
+              "rss",
+              "threads"
+            ],
+            "properties": {
+              "pid": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string",
+                "description": "Executable name only; never arguments."
+              },
+              "user": {
+                "type": "string"
+              },
+              "cpu": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Percent of one core; may exceed 100."
+              },
+              "rss": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Resident bytes."
+              },
+              "threads": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "processesResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/processesData"
         }
       }
     }

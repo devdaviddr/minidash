@@ -3,7 +3,7 @@
 Realtime monitoring dashboard for an M4 Mac mini: CPU, GPU, unified memory, disks (internal and external), network, processes, containers (Docker, Podman, Colima), shares and network accounts. Public repo: github.com/devdaviddr/minidash.
 
 ## Status
-Pre-implementation. The spec lives in `spec/` and is a draft with two items left to confirm. Deployment: native agent under launchd plus containerised web UI (plan DD-4). **No application code until the spec is approved** (see `.claude/rules/sdd.md`).
+Implementation phase. The spec lives in `spec/` and is approved (1.0.0). Deployment: native agent under launchd plus containerised web UI (plan DD-4). Work tasks in `spec/1.0.0/tasks.md` order; scope changes bump the spec first (see `.claude/rules/sdd.md`).
 
 ## Where things are
 - `spec/<version>/{spec,plan,tasks}.md`: the contract. Highest version is current. Older versions are frozen.

@@ -1,6 +1,6 @@
 import type { Dispatch } from 'react'
 import type { Snapshot } from '../contract/snapshot'
-import { CARD_IDS } from '../layout/catalogue'
+import { CARD_IDS, type CardId } from '../layout/catalogue'
 import { visibleCards, type Layout, type LayoutAction } from '../layout/model'
 import { Summary } from './Summary'
 import { SortableGrid } from './SortableGrid'
@@ -32,11 +32,14 @@ interface Props {
   wall: boolean
   /** True while the customise panel is open: cards show drag handles. */
   editing?: boolean
+  /** The selected card (only meaningful while editing). */
+  selectedId?: CardId | null
+  onSelect?: (id: CardId) => void
   dispatch: Dispatch<LayoutAction>
 }
 
 /** Renders the summary strip and the cards exactly as the layout says. */
-export function Dashboard({ history, layout, wall, editing = false, dispatch }: Props) {
+export function Dashboard({ history, layout, wall, editing = false, selectedId = null, onSelect, dispatch }: Props) {
   const snapshot = history.at(-1)
   const cards = visibleCards(layout, wall)
 
@@ -51,7 +54,7 @@ export function Dashboard({ history, layout, wall, editing = false, dispatch }: 
       {cards.length === 0 ? (
         <EmptyState onShowAll={showAll} wall={wall} />
       ) : (
-        <SortableGrid cards={cards} history={history} editing={editing && !wall} dispatch={dispatch} />
+        <SortableGrid cards={cards} history={history} editing={editing && !wall} selectedId={selectedId} onSelect={onSelect} dispatch={dispatch} />
       )}
     </main>
   )

@@ -20,7 +20,7 @@ export function NetworkCard({ history, hidden = NONE }: CardProps) {
         <Unavailable error={r?.error} />
       ) : (
         <div className="flex flex-col gap-4">
-          <div className="flex gap-8">
+          <div className="flex flex-wrap gap-x-8 gap-y-3">
             <Stat value={rate(d.total.rxBps)} label="↓ download" />
             <Stat value={rate(d.total.txBps)} label="↑ upload" />
           </div>
@@ -35,7 +35,8 @@ export function NetworkCard({ history, hidden = NONE }: CardProps) {
                   {i.name} <span className="text-xs font-normal text-muted">{i.ipv4.join(', ')}</span>
                 </span>
                 <span className="text-xs text-muted">
-                  ↓ {rate(i.rxBps)} · ↑ {rate(i.txBps)} · {bytes(i.rxBytes)} in / {bytes(i.txBytes)} out
+                  ↓ {rate(i.rxBps)} · ↑ {rate(i.txBps)}
+                  <span className="hidden @xl:inline"> · {bytes(i.rxBytes)} in / {bytes(i.txBytes)} out</span>
                 </span>
               </li>
             ))}

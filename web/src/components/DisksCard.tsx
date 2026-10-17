@@ -24,7 +24,7 @@ export function DisksCard({ history, hidden = NONE }: CardProps) {
           <Part id="chart" hidden={hidden}>
             <Chart data={toSeries(history, (s) => sum(s, 'readBps'), (s) => sum(s, 'writeBps'))} series={SERIES} format={rate} height={100} />
           </Part>
-          <ul className="flex flex-col gap-3">
+          <ul className="grid grid-cols-1 gap-x-8 gap-y-4 @3xl:grid-cols-2">
             {d.volumes.map((v) => {
               const io = d.devices.find((x) => x.name === v.device)
               const used = v.total ? (v.used / v.total) * 100 : 0

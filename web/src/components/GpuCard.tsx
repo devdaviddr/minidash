@@ -26,14 +26,14 @@ export function GpuCard({ history, hidden = NONE }: CardProps) {
         <Unavailable error={r?.error} />
       ) : (
         <div className="flex flex-col gap-4">
-          <div className="flex items-end justify-between">
+          <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
             <Stat value={d.gpu.usage.toFixed(0)} unit="%" label={`${d.gpu.freqMhz.toFixed(0)} MHz`} />
             <Stat value={d.power.system.toFixed(1)} unit="W" label="system power" />
           </div>
           <Part id="chart" hidden={hidden}>
             <Chart data={toSeries(history, (s) => soc(s)?.data?.gpu.usage ?? null)} series={SERIES} yMax={100} format={pct} />
           </Part>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid grid-cols-1 gap-2 @2xs:grid-cols-2 @3xl:grid-cols-4">
             <Part id="clusters" hidden={hidden}>
               {d.clusters.map((c) => (
                 <Metric key={c.label} label={`${c.label} cluster`} value={`${c.usage.toFixed(0)}% · ${c.freqMhz.toFixed(0)} MHz`} />

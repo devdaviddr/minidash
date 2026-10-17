@@ -5,6 +5,7 @@ import { CpuCard } from './components/CpuCard'
 import { DisksCard } from './components/DisksCard'
 import { GpuCard } from './components/GpuCard'
 import { MemoryCard } from './components/MemoryCard'
+import { NetworkCard } from './components/NetworkCard'
 
 const TOKEN_KEY = 'minidash.token'
 const AGENT_URL = import.meta.env.VITE_AGENT_URL ?? `ws://${location.hostname}:8787/ws`
@@ -81,6 +82,7 @@ export default function App() {
           <GpuCard history={history} />
           <MemoryCard history={history} />
           <DisksCard history={history} />
+          <NetworkCard history={history} />
         </main>
       )}
     </div>

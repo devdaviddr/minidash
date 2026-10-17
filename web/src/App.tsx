@@ -8,6 +8,7 @@ import { GpuCard } from './components/GpuCard'
 import { MemoryCard } from './components/MemoryCard'
 import { NetworkCard } from './components/NetworkCard'
 import { ProcessesCard } from './components/ProcessesCard'
+import { ThemeSwitch } from './components/ThemeSwitch'
 import { Summary } from './components/Summary'
 import { TokenForm } from './components/TokenForm'
 import { SharesCard } from './components/SharesCard'
@@ -51,7 +52,8 @@ export default function App() {
     <div className="min-h-screen p-4 sm:p-6">
       <header className="mx-auto mb-4 flex max-w-7xl flex-wrap items-center justify-between gap-2">
         <h1 className="text-lg font-semibold tracking-tight">minidash</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <ThemeSwitch />
           <button
             onClick={() => setWall((w) => !w)}
             aria-pressed={wall}

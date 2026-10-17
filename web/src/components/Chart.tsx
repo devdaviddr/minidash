@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import uPlot from 'uplot'
 import 'uplot/dist/uPlot.min.css'
+import { useResolvedTheme } from '../lib/theme'
 
 export interface ChartSeries {
   label: string
@@ -26,6 +27,7 @@ export function Chart({ data, series, height = 120, yMax, format }: Props) {
   const plot = useRef<uPlot | null>(null)
   const latest = useRef(data)
   latest.current = data
+  const theme = useResolvedTheme() // rebuild when the theme changes so canvas colours follow it
 
   useEffect(() => {
     const el = host.current
@@ -68,16 +70,13 @@ export function Chart({ data, series, height = 120, yMax, format }: Props) {
     build()
     const ro = new ResizeObserver(() => plot.current?.setSize({ width: el.clientWidth, height }))
     ro.observe(el)
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    mq.addEventListener('change', build)
     return () => {
       ro.disconnect()
-      mq.removeEventListener('change', build)
       plot.current?.destroy()
       plot.current = null
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [height, yMax, series.map((s) => s.color).join()])
+  }, [height, yMax, theme, series.map((s) => s.color).join()])
 
   useEffect(() => {
     plot.current?.setData(data as uPlot.AlignedData)

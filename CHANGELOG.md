@@ -3,6 +3,16 @@
 All notable changes are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow the spec version in `spec/` rather than git tags until a first release is cut.
 
 ## [Unreleased]
+### Added (spec 1.1.0)
+- **Theme switch:** System, Light and Dark, remembered per browser and applied before first paint; charts recolour immediately.
+- **Customisable layout:** show or hide cards, the summary strip and details inside cards; reorder by drag and drop (mouse, touch, keyboard) or with move buttons; set each card to 1, 2 or full width. Saved in the browser, with reset, export and import (validated, never destructive).
+- Restyle to match the README illustration: brand mark, status pill with a live dot, larger summary values, gradient chart fills.
+- Guide: `docs/customising.md`; ADR 0009.
+
+### Changed
+- Light and dark colour tokens adjusted so every text pair meets WCAG AA (4.5:1); a test reads the real CSS. This also fixed white-on-accent button text at 2.9:1 in dark.
+- Status pill uses theme tokens instead of fixed pale colours that were unreadable on light.
+- Page title is now `minidash`.
 ### Added
 - Production-grade documentation: architecture with diagrams, configuration, operations, troubleshooting, security model, development guide, and decision records 0002 to 0008.
 - README with a banner, a dashboard layout illustration (clearly labelled, made-up values), badges, requirements, performance table and a quick start.

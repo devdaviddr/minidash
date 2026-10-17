@@ -5,6 +5,7 @@
 | [Project README](../README.md) | understand what minidash is and get it running |
 | [Architecture](architecture.md) | see how it fits together, with diagrams |
 | [Deploying](deploy.md) | install the agent and UI on the Mac mini and verify it |
+| [Customising the dashboard](customising.md) | pick a theme, choose which cards and details show, reorder and resize them |
 | [Configuration](configuration.md) | change settings, rotate the token |
 | [Operations](operations.md) | check health, read logs, restart, upgrade, uninstall |
 | [Troubleshooting](troubleshooting.md) | fix something that is not working |
@@ -13,4 +14,4 @@
 | [Stream protocol](stream-protocol.md) | build a client or debug the WebSocket |
 | [Development](development.md) | build, test, add a collector, follow the workflow |
 | [Decisions (ADRs)](adr/README.md) | learn why it is built this way |
-| [Spec](../spec/1.0.0/spec.md), [plan](../spec/1.0.0/plan.md), [tasks](../spec/1.0.0/tasks.md) | read the requirements and acceptance criteria |
+| [Spec](../spec/1.1.0/spec.md), [plan](../spec/1.1.0/plan.md), [tasks](../spec/1.1.0/tasks.md) | read the requirements and acceptance criteria |

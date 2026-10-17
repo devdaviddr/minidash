@@ -23,16 +23,26 @@ export interface Snapshot {
    * One entry per collector. A failing collector reports ok=false and never blanks the others.
    */
   collectors: {
-    [k: string]: CollectorResult;
+    cpu?: CpuResult;
   };
 }
-export interface CollectorResult {
+export interface CpuResult {
   ok: boolean;
   error?: string;
+  data?: CpuData;
+}
+export interface CpuData {
   /**
-   * Collector-specific payload, typed per collector as each lands.
+   * Percent across all logical cores.
    */
-  data?: {
-    [k: string]: unknown;
+  total: number;
+  /**
+   * Percent per logical core.
+   */
+  cores: number[];
+  load: {
+    one: number;
+    five: number;
+    fifteen: number;
   };
 }

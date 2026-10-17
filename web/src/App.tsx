@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSnapshot } from './lib/useSnapshot'
 import type { StreamStatus } from './lib/stream'
+import { CpuCard } from './components/CpuCard'
 
 const TOKEN_KEY = 'minidash.token'
 const AGENT_URL = import.meta.env.VITE_AGENT_URL ?? `ws://${location.hostname}:8787/ws`
@@ -45,7 +46,8 @@ function TokenForm({ onSave }: { onSave: (t: string) => void }) {
 
 export default function App() {
   const [token, setToken] = useState(loadToken)
-  const { status, snapshot } = useSnapshot(AGENT_URL, token)
+  const { status, history } = useSnapshot(AGENT_URL, token)
+  const snapshot = history.at(-1)
   const effective = token ? status : 'unauthorized'
 
   const save = (t: string) => {
@@ -58,15 +60,23 @@ export default function App() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100 grid place-items-center p-4">
-      <div className="flex flex-col items-center gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight">minidash</h1>
-        <span role="status" className={`rounded-full px-3 py-1 text-sm ${STATUS_STYLE[effective]}`}>
+    <div className="min-h-screen p-4 sm:p-6">
+      <header className="mx-auto mb-4 flex max-w-7xl items-center justify-between">
+        <h1 className="text-lg font-semibold tracking-tight">minidash</h1>
+        <span role="status" className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLE[effective]}`}>
           {token ? status : 'token required'}
           {snapshot && status === 'live' ? ` · tick ${snapshot.seq}` : ''}
         </span>
-        {effective === 'unauthorized' && <TokenForm onSave={save} />}
-      </div>
-    </main>
+      </header>
+      {effective === 'unauthorized' ? (
+        <div className="mx-auto grid max-w-7xl place-items-center py-24">
+          <TokenForm onSave={save} />
+        </div>
+      ) : (
+        <main className="mx-auto grid max-w-7xl grid-cols-1 gap-4 lg:grid-cols-4">
+          <CpuCard history={history} />
+        </main>
+      )}
+    </div>
   )
 }

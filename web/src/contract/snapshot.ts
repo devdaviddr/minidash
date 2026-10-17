@@ -26,6 +26,7 @@ export interface Snapshot {
     cpu?: CpuResult;
     memory?: MemoryResult;
     soc?: SocResult;
+    disks?: DisksResult;
   };
 }
 export interface CpuResult {
@@ -103,5 +104,30 @@ export interface SocData {
     name: string;
     rpm: number;
     maxRpm: number;
+  }[];
+}
+export interface DisksResult {
+  ok: boolean;
+  error?: string;
+  data?: DisksData;
+}
+export interface DisksData {
+  volumes: {
+    name: string;
+    mount: string;
+    fsType: string;
+    total: number;
+    used: number;
+    free: number;
+    external: boolean;
+    /**
+     * Physical disk the volume lives on; joins to devices[].name.
+     */
+    device: string;
+  }[];
+  devices: {
+    name: string;
+    readBps: number;
+    writeBps: number;
   }[];
 }

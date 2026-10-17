@@ -43,6 +43,9 @@
         },
         "soc": {
           "$ref": "#/$defs/socResult"
+        },
+        "disks": {
+          "$ref": "#/$defs/disksResult"
         }
       }
     }
@@ -354,6 +357,106 @@
         },
         "data": {
           "$ref": "#/$defs/socData"
+        }
+      }
+    },
+    "disksData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "volumes",
+        "devices"
+      ],
+      "properties": {
+        "volumes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "mount",
+              "fsType",
+              "total",
+              "used",
+              "free",
+              "external",
+              "device"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "mount": {
+                "type": "string"
+              },
+              "fsType": {
+                "type": "string"
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "used": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "free": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "external": {
+                "type": "boolean"
+              },
+              "device": {
+                "type": "string",
+                "description": "Physical disk the volume lives on; joins to devices[].name."
+              }
+            }
+          }
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "readBps",
+              "writeBps"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "readBps": {
+                "type": "number",
+                "minimum": 0
+              },
+              "writeBps": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "disksResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/disksData"
         }
       }
     }

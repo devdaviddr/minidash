@@ -12,3 +12,4 @@ Short, numbered, append-only. Supersede a decision with a new ADR rather than ed
 | [0006](0006-cpu-budget-and-throttling.md) | CPU budget, throttling and lazy lookups | accepted |
 | [0007](0007-contract-first-json-schema.md) | Contract-first JSON Schema shared by Go and TypeScript | accepted |
 | [0008](0008-git-flow-and-merge-strategy.md) | Trunk-based git flow and merge strategy | accepted |
+| [0009](0009-browser-side-layout-and-theme.md) | Browser-side layout and theme state | accepted |

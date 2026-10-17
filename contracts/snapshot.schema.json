@@ -1,0 +1,896 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/devdaviddr/minidash/contracts/snapshot.schema.json",
+  "title": "Snapshot",
+  "description": "One message per sampling tick, pushed agent -> browser. Additive changes only within a major spec version.",
+  "type": "object",
+  "required": [
+    "schema",
+    "seq",
+    "ts",
+    "intervalMs",
+    "collectors"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Increases by 1 per tick; a gap means dropped ticks."
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "intervalMs": {
+      "type": "integer",
+      "minimum": 100,
+      "description": "Tick period, used by clients to detect a stalled feed."
+    },
+    "collectors": {
+      "type": "object",
+      "description": "One entry per collector. A failing collector reports ok=false and never blanks the others.",
+      "additionalProperties": false,
+      "properties": {
+        "cpu": {
+          "$ref": "#/$defs/cpuResult"
+        },
+        "memory": {
+          "$ref": "#/$defs/memoryResult"
+        },
+        "soc": {
+          "$ref": "#/$defs/socResult"
+        },
+        "disks": {
+          "$ref": "#/$defs/disksResult"
+        },
+        "network": {
+          "$ref": "#/$defs/networkResult"
+        },
+        "processes": {
+          "$ref": "#/$defs/processesResult"
+        },
+        "containers": {
+          "$ref": "#/$defs/containersResult"
+        },
+        "shares": {
+          "$ref": "#/$defs/sharesResult"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "collectorResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "description": "Collector-specific payload, typed per collector as each lands."
+        }
+      }
+    },
+    "cpuData": {
+      "type": "object",
+      "required": [
+        "total",
+        "cores",
+        "load"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Percent across all logical cores."
+        },
+        "cores": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "description": "Percent per logical core."
+        },
+        "load": {
+          "type": "object",
+          "required": [
+            "one",
+            "five",
+            "fifteen"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "one": {
+              "type": "number",
+              "minimum": 0
+            },
+            "five": {
+              "type": "number",
+              "minimum": 0
+            },
+            "fifteen": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "cpuResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/cpuData"
+        }
+      }
+    },
+    "memoryData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "used",
+        "available",
+        "wired",
+        "active",
+        "inactive",
+        "compressed",
+        "swapUsed",
+        "swapTotal"
+      ],
+      "description": "Bytes. used = active + wired + compressed.",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "used": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "available": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "wired": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inactive": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "compressed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "swapUsed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "swapTotal": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "memoryResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/memoryData"
+        }
+      }
+    },
+    "socData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gpu",
+        "clusters",
+        "power",
+        "tempC",
+        "fans"
+      ],
+      "properties": {
+        "gpu": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "usage",
+            "freqMhz"
+          ],
+          "properties": {
+            "usage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "freqMhz": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "usage",
+              "freqMhz"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "usage": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "freqMhz": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "power": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Watts.",
+          "required": [
+            "system",
+            "cpu",
+            "gpu",
+            "ane",
+            "ram"
+          ],
+          "properties": {
+            "system": {
+              "type": "number",
+              "minimum": 0
+            },
+            "cpu": {
+              "type": "number",
+              "minimum": 0
+            },
+            "gpu": {
+              "type": "number",
+              "minimum": 0
+            },
+            "ane": {
+              "type": "number",
+              "minimum": 0
+            },
+            "ram": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "tempC": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Average die temperature, Celsius.",
+          "required": [
+            "cpu",
+            "gpu"
+          ],
+          "properties": {
+            "cpu": {
+              "type": "number"
+            },
+            "gpu": {
+              "type": "number"
+            }
+          }
+        },
+        "fans": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "rpm",
+              "maxRpm"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "rpm": {
+                "type": "number",
+                "minimum": 0
+              },
+              "maxRpm": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "socResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/socData"
+        }
+      }
+    },
+    "disksData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "volumes",
+        "devices"
+      ],
+      "properties": {
+        "volumes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "mount",
+              "fsType",
+              "total",
+              "used",
+              "free",
+              "external",
+              "device"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "mount": {
+                "type": "string"
+              },
+              "fsType": {
+                "type": "string"
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "used": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "free": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "external": {
+                "type": "boolean"
+              },
+              "device": {
+                "type": "string",
+                "description": "Physical disk the volume lives on; joins to devices[].name."
+              }
+            }
+          }
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "readBps",
+              "writeBps"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "readBps": {
+                "type": "number",
+                "minimum": 0
+              },
+              "writeBps": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "disksResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/disksData"
+        }
+      }
+    },
+    "networkData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interfaces",
+        "total"
+      ],
+      "properties": {
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "ipv4",
+              "rxBps",
+              "txBps",
+              "rxBytes",
+              "txBytes"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "ipv4": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "rxBps": {
+                "type": "number",
+                "minimum": 0
+              },
+              "txBps": {
+                "type": "number",
+                "minimum": 0
+              },
+              "rxBytes": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Cumulative since boot."
+              },
+              "txBytes": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "total": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rxBps",
+            "txBps"
+          ],
+          "properties": {
+            "rxBps": {
+              "type": "number",
+              "minimum": 0
+            },
+            "txBps": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "networkResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/networkData"
+        }
+      }
+    },
+    "processesData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "list"
+      ],
+      "description": "list = union of top 25 by CPU and top 25 by memory, sorted by CPU.",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pid",
+              "name",
+              "user",
+              "cpu",
+              "rss",
+              "threads"
+            ],
+            "properties": {
+              "pid": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string",
+                "description": "Executable name only; never arguments."
+              },
+              "user": {
+                "type": "string"
+              },
+              "cpu": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Percent of one core; may exceed 100."
+              },
+              "rss": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Resident bytes."
+              },
+              "threads": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "processesResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/processesData"
+        }
+      }
+    },
+    "containersData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtimes"
+      ],
+      "properties": {
+        "runtimes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "status",
+              "containers"
+            ],
+            "properties": {
+              "name": {
+                "enum": [
+                  "docker",
+                  "podman",
+                  "colima"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "running",
+                  "not-running",
+                  "error"
+                ],
+                "description": "not-running is normal (runtime stopped or absent); error means the API misbehaved."
+              },
+              "error": {
+                "type": "string"
+              },
+              "containers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "name",
+                    "image",
+                    "state",
+                    "status",
+                    "cpu",
+                    "memUsed",
+                    "memLimit",
+                    "rxBps",
+                    "txBps"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "image": {
+                      "type": "string"
+                    },
+                    "state": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "cpu": {
+                      "type": "number",
+                      "minimum": 0,
+                      "description": "Percent of one core."
+                    },
+                    "memUsed": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "memLimit": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "rxBps": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "txBps": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "containersResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/containersData"
+        }
+      }
+    },
+    "sharesData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mounts",
+        "sharing",
+        "sessions"
+      ],
+      "properties": {
+        "mounts": {
+          "type": "array",
+          "description": "Remote SMB/NFS shares mounted on this Mac.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "protocol",
+              "server",
+              "share",
+              "mount",
+              "account",
+              "mountedBy",
+              "reachable",
+              "total",
+              "used",
+              "free"
+            ],
+            "properties": {
+              "protocol": {
+                "enum": [
+                  "smb",
+                  "nfs"
+                ]
+              },
+              "server": {
+                "type": "string"
+              },
+              "share": {
+                "type": "string"
+              },
+              "mount": {
+                "type": "string"
+              },
+              "account": {
+                "type": "string",
+                "description": "Remote account; Apple ID identifiers are shown as \"Apple ID\". Never a password."
+              },
+              "mountedBy": {
+                "type": "string"
+              },
+              "reachable": {
+                "type": "boolean"
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "used": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "free": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "sharing": {
+          "type": "array",
+          "description": "Folders this Mac shares over SMB.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "protocols"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "protocols": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "smb"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sessions": {
+          "type": "array",
+          "description": "Clients connected to this Mac file sharing.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "protocol",
+              "remote",
+              "account"
+            ],
+            "properties": {
+              "protocol": {
+                "enum": [
+                  "smb",
+                  "nfs"
+                ]
+              },
+              "remote": {
+                "type": "string"
+              },
+              "account": {
+                "type": "string",
+                "description": "Empty when the owner is not visible without privileges."
+              }
+            }
+          }
+        }
+      }
+    },
+    "sharesResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/sharesData"
+        }
+      }
+    }
+  }
+}

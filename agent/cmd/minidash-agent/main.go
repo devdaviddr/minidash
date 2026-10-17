@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/devdaviddr/minidash/agent/internal/collect/cpu"
+	"github.com/devdaviddr/minidash/agent/internal/collect/disk"
 	"github.com/devdaviddr/minidash/agent/internal/collect/memory"
 	"github.com/devdaviddr/minidash/agent/internal/collect/soc"
 	"github.com/devdaviddr/minidash/agent/internal/config"
@@ -28,6 +29,7 @@ func main() {
 		cpu.New(),
 		memory.New(),
 		soc.New(mm),
+		disk.New(),
 	)
 	go agg.Run(context.Background(), h.Publish)
 

@@ -3,7 +3,7 @@
 Realtime monitoring dashboard for an M4 Mac mini: CPU, GPU, unified memory, disks (internal and external), network, processes, containers (Docker, Podman, Colima), shares and network accounts. Public repo: github.com/devdaviddr/minidash.
 
 ## Status
-Implementation phase. The spec lives in `spec/` and is approved (0.1.0). Deployment: native agent under launchd plus containerised web UI (plan DD-4). Work tasks in `spec/0.1.0/tasks.md` order; scope changes bump the spec first (see `.claude/rules/sdd.md`).
+Spec 0.1.0 is approved and all tasks T-1..T-11 are implemented. Left: the manual acceptance checks on the real Mac mini and the owner's visual review, then bump the spec to `implemented`. Deployment: native agent under launchd plus containerised web UI (plan DD-4). Work tasks in `spec/0.1.0/tasks.md` order; scope changes bump the spec first (see `.claude/rules/sdd.md`).
 
 ## Where things are
 - `spec/<version>/{spec,plan,tasks}.md`: the contract. Highest version is current. Older versions are frozen.
@@ -20,7 +20,7 @@ Implementation phase. The spec lives in `spec/` and is approved (0.1.0). Deploym
 5. **Security.** No secrets in the repo (it is public). Agent is LAN-reachable only with a shared access token.
 
 ## Commands
-`make setup` once after cloning (git hooks + web deps). `make check` runs gofmt, vet, tests, golangci-lint, oxlint and tsc. `make build` produces `bin/minidash-agent` and `web/dist/`. Run the agent: `MINIDASH_TOKEN=dev go run ./agent/cmd/minidash-agent`.
+`make setup` once after cloning (git hooks + web deps). `make check` runs gofmt, vet, tests, golangci-lint, oxlint and tsc. `make build` produces `bin/minidash-agent` and `web/dist/`. Run the agent: `MINIDASH_TOKEN=dev go run ./agent/cmd/minidash-agent`. Web tests: `cd web && npm test`. Deploy: `docs/deploy.md`.
 
 ## Working style
 Ask before assuming. Unknowns go in the spec as `[NEEDS INPUT: ...]`, not guesses. Do not drive Chrome to test the UI; verify headlessly and let the owner review visuals.

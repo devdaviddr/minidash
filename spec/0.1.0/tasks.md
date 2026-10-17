@@ -30,7 +30,7 @@ updated: 2026-10-18
 | T-8 | Container collectors (Docker/Podman/Colima) + view | FR-6 | T-2 | AC-6 | [x] |
 | T-9 | Shares and accounts collector + view | FR-7 | T-2 | AC-7 | [x] |
 | T-10 | Design pass: theme, layout, wall-display mode | NFR UI | T-3..T-9 | visual review by owner | [x] |
-| T-11 | launchd packaging and install docs | NFR network | T-1 | manual install on Mac mini | [ ] |
+| T-11 | launchd packaging and install docs | NFR network | T-1 | manual install on Mac mini | [x] |
 
 ## Definition of done (this version)
 - [ ] Every functional requirement (FR-N) has at least one task.

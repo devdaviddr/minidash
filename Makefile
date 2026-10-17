@@ -3,9 +3,9 @@ setup:
 	git config core.hooksPath .githooks
 	cd web && npm ci
 agent-check:
-	cd agent && gofmt -l . | (! grep .) && go vet ./... && go test ./... && golangci-lint run
+	cd agent && gofmt -l . | (! grep .) && go vet ./... && go test -race ./... && golangci-lint run
 web-check:
-	cd web && npm run lint && npx tsc -b
+	cd web && npm run lint && npx tsc -b && npm test
 check: agent-check web-check
 build:
 	cd agent && go build -o ../bin/minidash-agent ./cmd/minidash-agent

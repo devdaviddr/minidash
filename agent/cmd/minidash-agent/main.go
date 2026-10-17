@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/devdaviddr/minidash/agent/internal/collect/cpu"
 	"github.com/devdaviddr/minidash/agent/internal/config"
 	"github.com/devdaviddr/minidash/agent/internal/hub"
 	"github.com/devdaviddr/minidash/agent/internal/snapshot"
@@ -18,7 +19,9 @@ func main() {
 		log.Fatal(err)
 	}
 	h := hub.New(cfg.Token, cfg.Origins)
-	agg := snapshot.NewAggregator(time.Second) // collectors register here as they land (T-3...)
+	agg := snapshot.NewAggregator(time.Second,
+		cpu.New(),
+	)
 	go agg.Run(context.Background(), h.Publish)
 
 	mux := http.NewServeMux()

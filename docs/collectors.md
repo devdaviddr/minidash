@@ -23,3 +23,11 @@ Each collector is one entry in the snapshot's `collectors` map. A failure shows 
 - **Source:** gopsutil interface list and per-interface byte counters.
 - **Active interface** = up, not loopback, with an IPv4 address. This hides `awdl0`, `llw0` and IPv6-only tunnels.
 - **Rates** are bytes/s from counter deltas. First tick and counter resets read 0. `rxBytes`/`txBytes` are cumulative since boot.
+
+## processes
+- **Source:** gopsutil process table. Per process: resident memory, user+system CPU time, thread count. Name and owner are looked up only for the processes that make the list, because those two calls cost about 80% of a full scan.
+- **List:** union of the top 25 by CPU and the top 25 by resident memory, so the browser can sort either way. `total` is every process the agent can read.
+- **CPU** is percent of one core (can exceed 100), from CPU-time deltas over real elapsed time.
+- **Privacy:** executable name only. Command-line arguments are never collected, since they can contain secrets.
+- **Refresh:** every 2 s (wrapped in `snapshot.Throttle`) to stay inside the CPU budget; the stream still ticks at 1 Hz and repeats the last result in between.
+- Unreadable processes (other users', without root) are skipped.

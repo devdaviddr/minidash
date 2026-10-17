@@ -3,6 +3,7 @@ package memory
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/shirou/gopsutil/v4/mem"
 
@@ -56,5 +57,37 @@ func TestRealHostSane(t *testing.T) {
 	d := r.Data.(Data)
 	if !r.OK || d.Total == 0 || d.Used > d.Total {
 		t.Fatalf("implausible: %+v", r)
+	}
+}
+
+type countingOS struct {
+	fakeOS
+	n *int
+}
+
+func (c countingOS) VMStat(ctx context.Context) ([]byte, error) {
+	*c.n++
+	return c.fakeOS.VMStat(ctx)
+}
+
+// vm_stat forks a process, so it must not run every tick.
+func TestVMStatIsCached(t *testing.T) {
+	n := 0
+	c := NewWith(countingOS{fakeOS{stat: vmstat}, &n})
+	now := time.Unix(0, 0)
+	c.now = func() time.Time { return now }
+	for i := 0; i < 5; i++ { // 5 ticks over 4 s
+		if _, err := c.Collect(context.Background()); err != nil {
+			t.Fatal(err)
+		}
+		now = now.Add(time.Second)
+	}
+	if n != 1 {
+		t.Fatalf("vm_stat ran %d times in 4 s, want 1", n)
+	}
+	now = now.Add(2 * time.Second) // past the TTL
+	_, _ = c.Collect(context.Background())
+	if n != 2 {
+		t.Fatalf("vm_stat should refresh after the TTL, ran %d times", n)
 	}
 }

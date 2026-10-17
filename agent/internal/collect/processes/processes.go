@@ -142,12 +142,15 @@ func (r *realOS) username(uid uint32) string {
 }
 
 func (r *realOS) List(ctx context.Context) ([]Raw, error) {
-	ps, err := process.ProcessesWithContext(ctx)
+	pids, err := process.PidsWithContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	out := make([]Raw, 0, len(ps))
-	for _, p := range ps {
+	out := make([]Raw, 0, len(pids))
+	for _, pid := range pids {
+		// Build the handle directly: process.NewProcess would sysctl each PID for its start
+		// time, a cost we do not need since we key on PID alone.
+		p := &process.Process{Pid: pid}
 		mi, err := p.MemoryInfoWithContext(ctx)
 		if err != nil {
 			continue // other users' processes may be unreadable

@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -79,15 +80,20 @@ type Source interface {
 
 // Runner keeps a `macmon pipe` subprocess alive and remembers its newest sample.
 type Runner struct {
-	bin string
-	mu  sync.RWMutex
-	cur Sample
-	at  time.Time
-	now func() time.Time
+	bin      string
+	interval time.Duration
+	mu       sync.RWMutex
+	cur      Sample
+	at       time.Time
+	now      func() time.Time
 }
 
-// NewRunner returns a Runner for the given macmon binary path (or name on PATH).
-func NewRunner(bin string) *Runner { return &Runner{bin: bin, now: time.Now} }
+// NewRunner returns a Runner for the given macmon binary path (or name on PATH), sampling every
+// interval. macmon itself costs roughly 1.3% of a core at 1 s, so the interval is a direct
+// trade between freshness and the CPU budget.
+func NewRunner(bin string, interval time.Duration) *Runner {
+	return &Runner{bin: bin, interval: interval, now: time.Now}
+}
 
 // Latest returns the newest sample, or ErrUnavailable if none is recent.
 func (r *Runner) Latest() (Sample, error) {
@@ -117,7 +123,7 @@ func (r *Runner) Run(ctx context.Context) {
 }
 
 func (r *Runner) runOnce(ctx context.Context) error {
-	cmd := exec.CommandContext(ctx, r.bin, "pipe", "-i", "1000")
+	cmd := exec.CommandContext(ctx, r.bin, "pipe", "-i", strconv.FormatInt(r.interval.Milliseconds(), 10))
 	out, err := cmd.StdoutPipe()
 	if err != nil {
 		return err

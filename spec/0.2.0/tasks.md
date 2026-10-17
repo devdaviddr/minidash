@@ -37,7 +37,7 @@ updated: 2026-10-18
 | T-15 | Card registry and grid rendered from the layout: visibility, width, hidden parts, empty state | FR-12, FR-14, FR-15, FR-17 | T-14 | AC-11, AC-13, AC-14, AC-16 | [x] |
 | T-16 | Customise panel: card visibility, width, part toggles, move earlier/later | FR-12..FR-15 | T-15 | AC-11, AC-13, AC-14 | [x] |
 | T-17 | Drag-and-drop reordering with dnd-kit (pointer, touch, keyboard) | FR-13 | T-16 | AC-12 | [ ] |
-| T-18 | Persistence UX: reset, export, import with validation and clear errors, corrupt-storage fallback | FR-16 | T-14, T-16 | AC-15 | [ ] |
+| T-18 | Persistence UX: reset, export, import with validation and clear errors, corrupt-storage fallback | FR-16 | T-14, T-16 | AC-15 | [x] |
 | T-19 | Docs (README, user guide for customising, ADR 0009), bundle-size measurement, deploy the UI to the Mac mini | all | T-12..T-18 | AC-17, manual check on the mini | [ ] |
 
 ## Definition of done (this version)

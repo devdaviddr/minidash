@@ -1,6 +1,7 @@
 import { useEffect, useRef, type Dispatch } from 'react'
 import { CARDS, SPANS, SUMMARY_PARTS, cardDef, type PartDef, type Span } from '../layout/catalogue'
 import type { CardLayout, Layout, LayoutAction } from '../layout/model'
+import { LayoutFileControls } from './LayoutFileControls'
 
 const SPAN_LABEL: Record<Span, string> = { 1: '1 column', 2: '2 columns', 4: 'Full width' }
 const SPAN_SHORT: Record<Span, string> = { 1: '1', 2: '2', 4: 'Full' }
@@ -159,6 +160,7 @@ export function CustomisePanel({ layout, dispatch, onClose, saved }: Props) {
         </ul>
         <p className="mt-2 text-xs text-muted">{CARDS.length} cards. Hidden cards keep their place in the list.</p>
       </section>
+      <LayoutFileControls layout={layout} dispatch={dispatch} />
     </aside>
   )
 }

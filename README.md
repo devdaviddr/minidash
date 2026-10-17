@@ -47,7 +47,7 @@ CPU, GPU, memory, power, disks, network, processes, containers and shares. Read-
 | **Containers** | Docker, Podman and Colima side by side, with per-container CPU, memory and network |
 | **Shares and accounts** | Mounted SMB and NFS shares, folders this Mac shares, connected clients and their accounts |
 
-It also has light and dark themes that follow your system, and a wall-display mode (add `?wall` to the URL).
+Make it yours: a **System / Light / Dark** theme switch, and a **Customise** panel to show or hide cards and details, reorder them by drag and drop, and resize them. Your layout is saved in the browser and can be exported and imported ([guide](docs/customising.md)). A wall-display mode (add `?wall` to the URL) hides the heavy cards for a big screen.
 
 ## How it works
 
@@ -71,7 +71,7 @@ flowchart LR
 
 A small Go **agent** runs natively on the Mac. Once a second it samples the machine and pushes one JSON snapshot to every connected browser over an authenticated WebSocket. A React **web UI**, served from a container, draws the stream. The agent is native because a container on macOS runs in a Linux VM and cannot see the Mac's real hardware ([why](docs/adr/0002-native-agent-containerised-ui.md)).
 
-Both sides are checked against one JSON Schema, so they cannot drift apart. More diagrams and the reasoning: **[docs/architecture.md](docs/architecture.md)**.
+Both sides are checked against one JSON Schema, so they cannot drift apart. Layout and theme live only in the browser: the agent stays read-only. More diagrams and the reasoning: **[docs/architecture.md](docs/architecture.md)**.
 
 ## Quick start
 
@@ -137,16 +137,17 @@ How it stays this light: [ADR 0006](docs/adr/0006-cpu-budget-and-throttling.md).
 | --- | --- |
 | [Deploying](docs/deploy.md) | [Architecture](docs/architecture.md) |
 | [Configuration](docs/configuration.md) | [Collectors](docs/collectors.md) |
-| [Operations](docs/operations.md) | [Stream protocol](docs/stream-protocol.md) |
-| [Troubleshooting](docs/troubleshooting.md) | [Security](docs/security.md) |
-| [Contributing](CONTRIBUTING.md) | [Development](docs/development.md) |
-| [Changelog](CHANGELOG.md) | [Decision records](docs/adr/README.md) and the [spec](spec/0.1.0/spec.md) |
+| [Customising the dashboard](docs/customising.md) | [Stream protocol](docs/stream-protocol.md) |
+| [Operations](docs/operations.md) | [Security](docs/security.md) |
+| [Troubleshooting](docs/troubleshooting.md) | [Development](docs/development.md) |
+| [Contributing](CONTRIBUTING.md) | [Decision records](docs/adr/README.md) |
+| [Changelog](CHANGELOG.md) | The [spec](spec/0.2.0/spec.md) |
 
 The full index is [docs/README.md](docs/README.md).
 
 ## Status
 
-Spec 0.1.0 is approved and all eleven tasks are implemented and tested, and deployed to a real Mac mini. A GPU-load check and a visual review in a browser are still pending before the spec is marked `implemented`. See the [spec](spec/0.1.0/spec.md) and the [changelog](CHANGELOG.md).
+Spec 0.1.0 (the monitor) is implemented, tested and deployed to a real Mac mini. Spec 0.2.0 (themes, restyle and a customisable layout) is approved and implemented in code. A GPU-load check and a visual review in a browser are still pending before the specs are marked `implemented`. See the [spec](spec/0.2.0/spec.md) and the [changelog](CHANGELOG.md).
 
 <details>
 <summary><strong>Known limits</strong></summary>

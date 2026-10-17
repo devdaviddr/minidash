@@ -19,6 +19,14 @@ interface Props {
   format?: (v: number) => string
 }
 
+/** Vertical fade from the line colour to transparent. uPlot calls this with the live canvas. */
+const gradient = (color: string) => (u: uPlot) => {
+  const g = u.ctx.createLinearGradient(0, u.bbox.top, 0, u.bbox.top + u.bbox.height)
+  g.addColorStop(0, color + '55')
+  g.addColorStop(1, color + '00')
+  return g
+}
+
 const css = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 
 /** Streaming area chart on uPlot. Re-themes itself when the OS colour scheme changes. */
@@ -59,7 +67,7 @@ export function Chart({ data, series, height = 120, yMax, format }: Props) {
             {},
             ...series.map((s) => {
               const c = css(s.color)
-              return { label: s.label, stroke: c, width: 2, fill: c + '26', points: { show: false } }
+              return { label: s.label, stroke: c, width: 2, fill: gradient(c), points: { show: false } }
             }),
           ],
         },

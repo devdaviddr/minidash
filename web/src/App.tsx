@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useSnapshot } from './lib/useSnapshot'
-import type { StreamStatus } from './lib/stream'
 import { CpuCard } from './components/CpuCard'
 import { ContainersCard } from './components/ContainersCard'
 import { DisksCard } from './components/DisksCard'
@@ -8,6 +7,8 @@ import { GpuCard } from './components/GpuCard'
 import { MemoryCard } from './components/MemoryCard'
 import { NetworkCard } from './components/NetworkCard'
 import { ProcessesCard } from './components/ProcessesCard'
+import { Header, HeaderButton } from './components/Header'
+import { StatusPill } from './components/StatusPill'
 import { ThemeSwitch } from './components/ThemeSwitch'
 import { Summary } from './components/Summary'
 import { TokenForm } from './components/TokenForm'
@@ -23,13 +24,6 @@ function loadToken() {
   } catch {
     return ''
   }
-}
-
-const STATUS_STYLE: Record<StreamStatus, string> = {
-  live: 'bg-emerald-500/15 text-emerald-300',
-  connecting: 'bg-amber-500/15 text-amber-300',
-  disconnected: 'bg-red-500/15 text-red-300',
-  unauthorized: 'bg-red-500/15 text-red-300',
 }
 
 export default function App() {
@@ -50,23 +44,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen p-4 sm:p-6">
-      <header className="mx-auto mb-4 flex max-w-7xl flex-wrap items-center justify-between gap-2">
-        <h1 className="text-lg font-semibold tracking-tight">minidash</h1>
-        <div className="flex flex-wrap items-center gap-2">
-          <ThemeSwitch />
-          <button
-            onClick={() => setWall((w) => !w)}
-            aria-pressed={wall}
-            className="rounded-full border border-line px-3 py-1 text-xs font-medium text-muted hover:text-fg"
-          >
-            Wall display
-          </button>
-          <span role="status" className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLE[effective]}`}>
-            {token ? status : 'token required'}
-            {snapshot && status === 'live' ? ` · tick ${snapshot.seq}` : ''}
-          </span>
-        </div>
-      </header>
+      <Header>
+        <ThemeSwitch />
+        <HeaderButton pressed={wall} onClick={() => setWall((w) => !w)}>
+          Wall display
+        </HeaderButton>
+        <StatusPill status={status} hasToken={!!token} tick={snapshot?.seq} />
+      </Header>
       {effective === 'unauthorized' ? (
         <div className="mx-auto grid max-w-7xl place-items-center py-24">
           <TokenForm onSave={save} />

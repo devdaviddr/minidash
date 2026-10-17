@@ -37,6 +37,12 @@
       "properties": {
         "cpu": {
           "$ref": "#/$defs/cpuResult"
+        },
+        "memory": {
+          "$ref": "#/$defs/memoryResult"
+        },
+        "soc": {
+          "$ref": "#/$defs/socResult"
         }
       }
     }
@@ -124,6 +130,230 @@
         },
         "data": {
           "$ref": "#/$defs/cpuData"
+        }
+      }
+    },
+    "memoryData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "used",
+        "available",
+        "wired",
+        "active",
+        "inactive",
+        "compressed",
+        "swapUsed",
+        "swapTotal"
+      ],
+      "description": "Bytes. used = active + wired + compressed.",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "used": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "available": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "wired": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inactive": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "compressed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "swapUsed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "swapTotal": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "memoryResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/memoryData"
+        }
+      }
+    },
+    "socData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gpu",
+        "clusters",
+        "power",
+        "tempC",
+        "fans"
+      ],
+      "properties": {
+        "gpu": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "usage",
+            "freqMhz"
+          ],
+          "properties": {
+            "usage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "freqMhz": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "usage",
+              "freqMhz"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "usage": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "freqMhz": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "power": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Watts.",
+          "required": [
+            "system",
+            "cpu",
+            "gpu",
+            "ane",
+            "ram"
+          ],
+          "properties": {
+            "system": {
+              "type": "number",
+              "minimum": 0
+            },
+            "cpu": {
+              "type": "number",
+              "minimum": 0
+            },
+            "gpu": {
+              "type": "number",
+              "minimum": 0
+            },
+            "ane": {
+              "type": "number",
+              "minimum": 0
+            },
+            "ram": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "tempC": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Average die temperature, Celsius.",
+          "required": [
+            "cpu",
+            "gpu"
+          ],
+          "properties": {
+            "cpu": {
+              "type": "number"
+            },
+            "gpu": {
+              "type": "number"
+            }
+          }
+        },
+        "fans": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "rpm",
+              "maxRpm"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "rpm": {
+                "type": "number",
+                "minimum": 0
+              },
+              "maxRpm": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "socResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/socData"
         }
       }
     }

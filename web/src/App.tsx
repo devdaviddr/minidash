@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useSnapshot } from './lib/useSnapshot'
 import type { StreamStatus } from './lib/stream'
 import { CpuCard } from './components/CpuCard'
+import { GpuCard } from './components/GpuCard'
+import { MemoryCard } from './components/MemoryCard'
 
 const TOKEN_KEY = 'minidash.token'
 const AGENT_URL = import.meta.env.VITE_AGENT_URL ?? `ws://${location.hostname}:8787/ws`
@@ -75,6 +77,8 @@ export default function App() {
       ) : (
         <main className="mx-auto grid max-w-7xl grid-cols-1 gap-4 lg:grid-cols-4">
           <CpuCard history={history} />
+          <GpuCard history={history} />
+          <MemoryCard history={history} />
         </main>
       )}
     </div>

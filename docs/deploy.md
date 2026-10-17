@@ -40,7 +40,9 @@ Deployed to the Mac mini (M4, macOS 26.4, 693 processes, 14 Podman containers) a
 - Killing the agent: launchd restarts it in about a second and the stream resumes.
 - CPU on the mini: agent about 1.3% plus `macmon` about 0.35%, total about 1.65% of one core (budget: 2%).
 
-Still needs a human: the GPU-load check (AC-2) and the visual review of the UI in a browser.
+UI 0.2.0 (themes, restyle, customisable layout) was also deployed to the mini and checked over the LAN: the page and `theme-init.js` are served (as JavaScript, with the CSP and related headers), the bundle contains the new features, the container is still read-only and unprivileged, and the stream is accepted for the UI's origin. The gzipped bundle grew 19.9 kB against the 0.1.0 build (budget 40 kB).
+
+Still needs a human: the GPU-load check (AC-2) and a visual review of the UI in a browser, including real pointer and touch dragging, which automated tests cannot exercise.
 
 ## Manual acceptance checks (need the real mini)
 1. Open the UI from another device on the LAN: values update every second (AC-1, AC-4).

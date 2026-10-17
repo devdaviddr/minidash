@@ -30,6 +30,7 @@ export interface Snapshot {
     network?: NetworkResult;
     processes?: ProcessesResult;
     containers?: ContainersResult;
+    shares?: SharesResult;
   };
 }
 export interface CpuResult {
@@ -212,5 +213,48 @@ export interface ContainersData {
       rxBps: number;
       txBps: number;
     }[];
+  }[];
+}
+export interface SharesResult {
+  ok: boolean;
+  error?: string;
+  data?: SharesData;
+}
+export interface SharesData {
+  /**
+   * Remote SMB/NFS shares mounted on this Mac.
+   */
+  mounts: {
+    protocol: "smb" | "nfs";
+    server: string;
+    share: string;
+    mount: string;
+    /**
+     * Remote account; Apple ID identifiers are shown as "Apple ID". Never a password.
+     */
+    account: string;
+    mountedBy: string;
+    reachable: boolean;
+    total: number;
+    used: number;
+    free: number;
+  }[];
+  /**
+   * Folders this Mac shares over SMB.
+   */
+  sharing: {
+    name: string;
+    protocols: "smb"[];
+  }[];
+  /**
+   * Clients connected to this Mac file sharing.
+   */
+  sessions: {
+    protocol: "smb" | "nfs";
+    remote: string;
+    /**
+     * Empty when the owner is not visible without privileges.
+     */
+    account: string;
   }[];
 }

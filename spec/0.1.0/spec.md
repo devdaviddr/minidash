@@ -50,15 +50,15 @@ minidash is a single dashboard that shows the machine's health in realtime.
 - **FR-4.** The system MUST show per-interface network throughput and the active interfaces.
 - **FR-5.** The system MUST list processes with CPU, memory and (where the OS exposes it) GPU use, sortable.
 - **FR-6.** The system MUST show running containers and their CPU/memory/network use for each detected runtime (Docker, Podman, Colima), and degrade cleanly when a runtime is absent or stopped.
-- **FR-7.** The system MUST list mounted network shares and network accounts [NEEDS INPUT: which share types (SMB, NFS, AFP) and what "network accounts" means: file-sharing users, logged-in sessions, or both].
+- **FR-7.** The system MUST list mounted network shares (SMB and NFS) and network accounts, meaning both the users connected to this Mac's file sharing and the accounts used by shares this Mac has mounted. [CONFIRM: SMB and NFS are the share types to cover; AFP is out].
 - **FR-8.** The system MUST push updates to the browser without page reloads and show a clear "disconnected" state if the feed stops.
 - **FR-9.** The system SHOULD show temperatures, fan speed and power draw where available without root.
 
 ## 6. Non-functional requirements
 <!-- Performance, security, privacy, accessibility, compliance, observability. Specific and measurable. -->
-- Sampling overhead: the monitor itself stays under 2% of one core on average [NEEDS INPUT: confirm target].
+- Sampling overhead: the monitor itself stays under 2% of one core on average [CONFIRM: target].
 - Read-only: no endpoint changes system or container state.
-- Network exposure: [NEEDS INPUT: localhost only, LAN, or LAN with auth?]. Default to localhost until decided.
+- Network exposure: reachable on the LAN. Every request and the WebSocket MUST present a shared access token set in configuration; the default config without a token refuses to start. The service never listens on a public interface.
 - UI: usable at phone, desktop and wall-display sizes; light and dark themes.
 
 ## 7. Data model & contracts
@@ -80,11 +80,11 @@ Defined in the plan once the stack is approved (typed metric snapshot schema, on
 
 ## 9. Open questions
 <!-- Unresolved decisions blocking approval. An approved spec has none (or each is deferred with an owner). -->
-- [NEEDS INPUT] Network exposure: localhost, LAN, or LAN with auth?
-- [NEEDS INPUT] What are "network accounts" (FR-7)? SMB users connected to this Mac, or accounts for mounted remote shares?
-- [NEEDS INPUT] Is it acceptable to install a small helper (e.g. `macmon`) or run one privileged `powermetrics` service for GPU data?
-- [NEEDS INPUT] Stack: approve the recommendation in plan.md §2, or choose another.
-- [NEEDS INPUT] Run as a launchd service on the Mac mini, or in a container?
+Resolved 2026-10-18 by owner: LAN exposure with shared token; network accounts = both; `macmon` helper acceptable; stack in plan.md §2 approved; deployment is containerised (see plan DD-4).
+
+Remaining before approval:
+- [CONFIRM] Share types SMB and NFS only (FR-7). Owner: devdaviddr.
+- [CONFIRM] 2% CPU overhead target (NFR). Owner: devdaviddr.
 
 ## Changelog
 

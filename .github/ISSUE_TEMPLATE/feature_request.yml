@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest an improvement
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        minidash is spec-driven. A good request states the problem and how you would know it is solved, so it can become a requirement and an acceptance criterion.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+    validations: { required: true }
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What would success look like? (how could we test it)
+    validations: { required: true }
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered

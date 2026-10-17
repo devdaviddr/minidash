@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Enforce Conventional Commits: type(scope)?: summary, max 72 chars on the first line.
+first=$(head -1 "$1")
+re='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._-]+\))?!?: .+'
+case "$first" in Merge\ *|Revert\ \"*) exit 0 ;; esac
+if ! [[ "$first" =~ $re ]]; then
+  echo "commit-msg: use 'type(scope): summary' (feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)" >&2; exit 1
+fi
+if (( ${#first} > 72 )); then
+  echo "commit-msg: first line is ${#first} chars; max 72" >&2; exit 1
+fi

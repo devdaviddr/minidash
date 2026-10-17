@@ -31,3 +31,12 @@ Each collector is one entry in the snapshot's `collectors` map. A failure shows 
 - **Privacy:** executable name only. Command-line arguments are never collected, since they can contain secrets.
 - **Refresh:** every 2 s (wrapped in `snapshot.Throttle`) to stay inside the CPU budget; the stream still ticks at 1 Hz and repeats the last result in between.
 - Unreadable processes (other users', without root) are skipped.
+
+## containers
+- **Source:** the Docker Engine API over each runtime's unix socket. Docker, Podman and Colima all speak it.
+- **Sockets tried** (first that exists wins, per runtime): Colima `~/.colima/*/docker.sock`; Podman `~/.local/share/containers/podman/machine/podman.sock`, `$TMPDIR/podman/*-api.sock`, `/var/run/podman/podman.sock`; Docker `/var/run/docker.sock`, `~/.docker/run/docker.sock`.
+- **Colima and Podman are checked before Docker.** `/var/run/docker.sock` is often a symlink into Colima, so a socket already claimed (by resolved path) is skipped for later runtimes. Containers are never counted twice.
+- **Status:** `running`; `not-running` (no socket, or connection refused: a normal state, no error text); `error` (the API answered badly).
+- **Read-only:** only `GET` requests are made, and a test asserts it. Stats use `one-shot=true`; CPU and network rates come from deltas between ticks. Memory is usage minus reclaimable cache, like `docker stats`.
+- **Refresh:** every 2 s, at most 100 containers per runtime.
+- The agent must run as the user who owns the runtimes (a launchd LaunchAgent), so the per-user sockets are reachable.

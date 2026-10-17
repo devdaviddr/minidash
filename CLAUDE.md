@@ -20,7 +20,7 @@ Implementation phase. The spec lives in `spec/` and is approved (0.1.0). Deploym
 5. **Security.** No secrets in the repo (it is public). Agent is LAN-reachable only with a shared access token.
 
 ## Commands
-Filled in as the toolchain lands (T-1). Until then: `git config core.hooksPath .githooks` once after cloning.
+`make setup` once after cloning (git hooks + web deps). `make check` runs gofmt, vet, tests, golangci-lint, oxlint and tsc. `make build` produces `bin/minidash-agent` and `web/dist/`. Run the agent: `MINIDASH_TOKEN=dev go run ./agent/cmd/minidash-agent`.
 
 ## Working style
 Ask before assuming. Unknowns go in the spec as `[NEEDS INPUT: ...]`, not guesses. Do not drive Chrome to test the UI; verify headlessly and let the owner review visuals.

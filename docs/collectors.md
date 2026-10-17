@@ -18,3 +18,8 @@ Each collector is one entry in the snapshot's `collectors` map. A failure shows 
 - **Listed:** the internal Data volume plus local filesystems under `/Volumes`. System volumes (VM, Preboot...) and network shares are excluded.
 - **Throughput** is per physical disk, bytes/s, from counter deltas. The first tick, and any tick where a counter went backwards, reads 0. APFS volumes are joined to the physical disk behind their container, so two volumes on one SSD show the same figure.
 - **Unknown devices** (diskutil failed) are shown as external and retried next tick.
+
+## network
+- **Source:** gopsutil interface list and per-interface byte counters.
+- **Active interface** = up, not loopback, with an IPv4 address. This hides `awdl0`, `llw0` and IPv6-only tunnels.
+- **Rates** are bytes/s from counter deltas. First tick and counter resets read 0. `rxBytes`/`txBytes` are cumulative since boot.

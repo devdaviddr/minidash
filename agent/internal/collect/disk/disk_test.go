@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"os"
+	"runtime"
 	"testing"
 	"time"
 
@@ -138,6 +139,9 @@ func TestMatchesContract(t *testing.T) {
 }
 
 func TestRealHostSane(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("needs macOS volume layout")
+	}
 	r := testutil.AssertMatchesContract(t, New())
 	d := r.Data.(Data)
 	if !r.OK || len(d.Volumes) == 0 {

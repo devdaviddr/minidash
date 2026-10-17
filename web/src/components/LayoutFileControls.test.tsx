@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useEffect, useReducer } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -49,6 +49,8 @@ function Harness({ start = defaultLayout() }: { start?: Layout }) {
   )
 }
 const file = (text: string, name = 'layout.json') => new File([text], name, { type: 'application/json' })
+// dnd-kit has its own role="status" live region, so scope our message lookups to this section.
+const controls = () => within(screen.getByRole('region', { name: 'Save and share' }))
 const upload = (f: File) => userEvent.upload(screen.getByLabelText('Import layout file'), f)
 
 // AC-15
@@ -70,7 +72,7 @@ describe('import', () => {
     await waitFor(() => expect(current).toEqual(customised()))
     expect(order(container.querySelector('main') as HTMLElement).slice(0, 2)).toEqual(['gpu', 'cpu'])
     expect(order(container)).not.toContain('network')
-    expect(screen.getByRole('status').textContent).toContain('Layout imported')
+    expect(controls().getByRole('status').textContent).toContain('Layout imported')
   })
 
   it('an exported file imports to an identical layout (round trip)', async () => {
@@ -98,7 +100,7 @@ describe('import', () => {
     const l = defaultLayout()
     render(<Harness start={customised()} />)
     await upload(file(JSON.stringify({ ...l, cards: l.cards.filter((c) => c.id !== 'containers') })))
-    await waitFor(() => expect(screen.getByRole('status').textContent).toContain('added the new card containers'))
+    await waitFor(() => expect(controls().getByRole('status').textContent).toContain('added the new card containers'))
     expect(current.cards.at(-1)).toEqual({ id: 'containers', visible: true, span: 4, hidden: [] })
   })
 

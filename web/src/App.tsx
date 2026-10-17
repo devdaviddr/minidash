@@ -60,7 +60,7 @@ export default function App() {
           <TokenForm onSave={save} />
         </div>
       ) : (
-        <Dashboard history={history} layout={layout} wall={wall} dispatch={dispatch} />
+        <Dashboard history={history} layout={layout} wall={wall} editing={customising} dispatch={dispatch} />
       )}
       {customising && effective !== 'unauthorized' && <CustomisePanel layout={layout} dispatch={dispatch} saved={saved} onClose={closeCustomise} />}
     </div>

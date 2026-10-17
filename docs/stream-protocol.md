@@ -23,3 +23,9 @@ The token is compared in constant time. It travels in a WebSocket message, not t
 | `MINIDASH_ORIGINS` | none | Comma-separated allowed `Origin` host patterns. Set this to the host serving the web UI, since it is a different origin than the agent. |
 | `MINIDASH_MACMON` | `macmon` | macmon binary path. |
 | `MINIDASH_SOC_INTERVAL_MS` | `2000` | macmon sampling period, minimum 250. Lower is fresher GPU data and more CPU. |
+
+## Web UI
+- `?wall` in the URL, or the "Wall display" button, switches to a wall-display layout: larger type, and the process table and shares card are hidden so the overview fits one screen.
+- The access token is entered once in the browser and kept in `localStorage`. If storage is blocked it lives for the session only.
+- Light and dark themes follow the OS setting. Animations are disabled under `prefers-reduced-motion`.
+- By default the UI connects to `ws://<page host>:8787/ws`. Override at build time with `VITE_AGENT_URL`.

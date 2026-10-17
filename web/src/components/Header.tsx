@@ -15,9 +15,10 @@ export function Header({ children }: { children: ReactNode }) {
 }
 
 /** Quiet pill-shaped header button. */
-export function HeaderButton({ pressed, onClick, children }: { pressed?: boolean; onClick: () => void; children: ReactNode }) {
+export function HeaderButton({ id, pressed, onClick, children }: { id?: string; pressed?: boolean; onClick: () => void; children: ReactNode }) {
   return (
     <button
+      id={id}
       type="button"
       onClick={onClick}
       aria-pressed={pressed}

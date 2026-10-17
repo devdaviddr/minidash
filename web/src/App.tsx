@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSnapshot } from './lib/useSnapshot'
+import { CustomisePanel } from './components/CustomisePanel'
 import { Header, HeaderButton } from './components/Header'
 import { StatusPill } from './components/StatusPill'
 import { ThemeSwitch } from './components/ThemeSwitch'
@@ -24,8 +25,14 @@ export default function App() {
   const { status, history } = useSnapshot(AGENT_URL, token)
   const snapshot = history.at(-1)
   const [wall, setWall] = useState(wallFromUrl)
-  const { layout, dispatch } = useLayout()
+  const { layout, dispatch, saved } = useLayout()
+  const [customising, setCustomising] = useState(false)
   const effective = token ? status : 'unauthorized'
+
+  const closeCustomise = () => {
+    setCustomising(false)
+    document.getElementById('customise-button')?.focus() // return focus to where the viewer came from
+  }
 
   const save = (t: string) => {
     try {
@@ -37,9 +44,12 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen p-4 sm:p-6">
+    <div className={`min-h-screen p-4 sm:p-6 ${customising ? 'lg:pr-[25rem]' : ''}`}>
       <Header>
         <ThemeSwitch />
+        <HeaderButton id="customise-button" pressed={customising} onClick={() => setCustomising((c) => !c)}>
+          Customise
+        </HeaderButton>
         <HeaderButton pressed={wall} onClick={() => setWall((w) => !w)}>
           Wall display
         </HeaderButton>
@@ -52,6 +62,7 @@ export default function App() {
       ) : (
         <Dashboard history={history} layout={layout} wall={wall} dispatch={dispatch} />
       )}
+      {customising && effective !== 'unauthorized' && <CustomisePanel layout={layout} dispatch={dispatch} saved={saved} onClose={closeCustomise} />}
     </div>
   )
 }

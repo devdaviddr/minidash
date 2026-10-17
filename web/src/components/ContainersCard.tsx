@@ -1,6 +1,6 @@
-import type { Snapshot } from '../contract/snapshot'
 import { bytes, rate } from '../lib/format'
 import { Card, Unavailable } from './Card'
+import { NONE, type CardProps } from '../layout/parts'
 
 const STATUS_DOT: Record<string, string> = {
   running: 'bg-ok',
@@ -9,18 +9,20 @@ const STATUS_DOT: Record<string, string> = {
 }
 const STATUS_LABEL: Record<string, string> = { running: 'running', 'not-running': 'not running', error: 'error' }
 
-export function ContainersCard({ history }: { history: Snapshot[] }) {
+export function ContainersCard({ history, hidden = NONE }: CardProps) {
   const r = history.at(-1)?.collectors.containers
   const d = r?.ok ? r.data : undefined
   const total = d?.runtimes.reduce((n, rt) => n + rt.containers.length, 0) ?? 0
+  // 'stopped' is a part the viewer can hide: runtimes that are not running (a normal state, not an error).
+  const runtimes = d?.runtimes.filter((rt) => !(hidden.has('stopped') && rt.status === 'not-running')) ?? []
   return (
-    <Card title="Containers" right={d && <span className="text-xs text-muted">{total} running</span>} className="col-span-full lg:col-span-4">
+    <Card title="Containers" right={d && <span className="text-xs text-muted">{total} running</span>} >
       {!d ? (
         <Unavailable error={r?.error} />
       ) : (
         <div className="grid gap-4 lg:grid-cols-3">
-          {d.runtimes.map((rt) => (
-            <div key={rt.name} className="rounded-xl bg-bg p-3">
+          {runtimes.map((rt) => (
+            <div key={rt.name} data-part={rt.status === 'not-running' ? 'stopped' : undefined} className="rounded-xl bg-bg p-3">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-sm font-semibold capitalize">{rt.name}</span>
                 <span className="flex items-center gap-1.5 text-xs text-muted">

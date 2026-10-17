@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
-import type { Snapshot } from '../contract/snapshot'
 import { bytes } from '../lib/format'
 import { Card, Unavailable } from './Card'
+import { NONE, Part, type CardProps } from '../layout/parts'
 
 type Key = 'cpu' | 'rss' | 'name' | 'pid'
 const SHOWN = 15
@@ -13,7 +13,7 @@ const COLUMNS: Array<{ key: Key; label: string; align: string }> = [
   { key: 'rss', label: 'Memory', align: 'text-right' },
 ]
 
-export function ProcessesCard({ history }: { history: Snapshot[] }) {
+export function ProcessesCard({ history, hidden = NONE }: CardProps) {
   const [sort, setSort] = useState<Key>('cpu')
   const r = history.at(-1)?.collectors.processes
   const d = r?.ok ? r.data : undefined
@@ -26,7 +26,7 @@ export function ProcessesCard({ history }: { history: Snapshot[] }) {
   }, [d, sort])
 
   return (
-    <Card title="Processes" right={d && <span className="text-xs text-muted">{d.total} running</span>} className="col-span-full">
+    <Card title="Processes" right={d && <span className="text-xs text-muted">{d.total} running</span>} >
       {!d ? (
         <Unavailable error={r?.error} />
       ) : (
@@ -42,7 +42,7 @@ export function ProcessesCard({ history }: { history: Snapshot[] }) {
                     </button>
                   </th>
                 ))}
-                <th className="pb-2 text-left font-medium">User</th>
+                {!hidden.has('user') && <th data-part="user" className="pb-2 text-left font-medium">User</th>}
               </tr>
             </thead>
             <tbody>
@@ -52,12 +52,14 @@ export function ProcessesCard({ history }: { history: Snapshot[] }) {
                   <td className="py-1.5 text-right text-muted">{p.pid}</td>
                   <td className="py-1.5 text-right">{p.cpu.toFixed(1)}%</td>
                   <td className="py-1.5 text-right">{bytes(p.rss)}</td>
-                  <td className="py-1.5 pl-3 text-muted">{p.user}</td>
+                  {!hidden.has('user') && <td data-part="user" className="py-1.5 pl-3 text-muted">{p.user}</td>}
                 </tr>
               ))}
             </tbody>
           </table>
-          <p className="mt-2 text-xs text-muted">GPU use per process is not exposed by macOS without root, so it is not shown.</p>
+          <Part id="note" hidden={hidden}>
+            <p className="mt-2 text-xs text-muted">GPU use per process is not exposed by macOS without root, so it is not shown.</p>
+          </Part>
         </div>
       )}
     </Card>

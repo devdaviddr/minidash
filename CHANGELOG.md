@@ -5,6 +5,7 @@ All notable changes are recorded here. The format follows [Keep a Changelog](htt
 ## [Unreleased]
 ### Added
 - Production-grade documentation: architecture with diagrams, configuration, operations, troubleshooting, security model, development guide, and decision records 0002 to 0008.
+- README with a banner, a dashboard layout illustration (clearly labelled, made-up values), badges, requirements, performance table and a quick start.
 - Community files: contributing guide, security policy, code of conduct, issue templates, CODEOWNERS and Dependabot configuration.
 
 ## [0.1.0] spec, implemented and deployed

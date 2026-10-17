@@ -1,0 +1,15 @@
+# Web UI only. The agent runs natively under launchd (see docs/deploy.md): a container on macOS
+# runs in a Linux VM and cannot see the Mac's CPU, GPU, disks or shares.
+services:
+  web:
+    build: ../web
+    image: minidash-web:local
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true

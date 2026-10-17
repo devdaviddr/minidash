@@ -1,0 +1,36 @@
+name: Bug report
+description: Something is wrong or broken
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Do not paste your access token, and remove real hostnames, IPs, share names and account names.** For security problems use the private reporting route in SECURITY.md instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations: { required: true }
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version and Mac model
+      placeholder: macOS 26.4, Mac mini M4
+    validations: { required: true }
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Agent, Web UI, GPU and power, Disks, Network, Processes, Containers, Shares, Install or deploy, Docs, Other]
+    validations: { required: true }
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log lines
+      description: From ~/Library/Logs/minidash/agent.log or `docker logs deploy-web-1`. Remove anything private.
+      render: text

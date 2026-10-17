@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSnapshot } from './lib/useSnapshot'
 import type { StreamStatus } from './lib/stream'
 import { CpuCard } from './components/CpuCard'
+import { ContainersCard } from './components/ContainersCard'
 import { DisksCard } from './components/DisksCard'
 import { GpuCard } from './components/GpuCard'
 import { MemoryCard } from './components/MemoryCard'
@@ -84,6 +85,7 @@ export default function App() {
           <MemoryCard history={history} />
           <DisksCard history={history} />
           <NetworkCard history={history} />
+          <ContainersCard history={history} />
           <ProcessesCard history={history} />
         </main>
       )}

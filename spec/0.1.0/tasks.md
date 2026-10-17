@@ -23,7 +23,7 @@ updated: 2026-10-18
 | T-1 | Scaffold Go agent, Vite/React app, Makefile, CI | FR-8 | — | CI green | [x] |
 | T-2 | Snapshot schema + WebSocket hub + reconnecting client | FR-8 | T-1 | AC-8 | [x] |
 | T-3 | CPU collector + live CPU view | FR-1 | T-2 | AC-1 | [x] |
-| T-4 | Memory + GPU collector (macmon) + views | FR-2, FR-9 | T-2 | AC-2 | [ ] |
+| T-4 | Memory + GPU collector (macmon) + views | FR-2, FR-9 | T-2 | AC-2 | [x] |
 | T-5 | Disk + external drive collector + view | FR-3 | T-2 | AC-3 | [ ] |
 | T-6 | Network collector + view | FR-4 | T-2 | AC-4 | [ ] |
 | T-7 | Process collector + sortable table | FR-5 | T-3 | AC-5 | [ ] |

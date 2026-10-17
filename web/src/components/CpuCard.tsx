@@ -1,10 +1,10 @@
 import type { Snapshot } from '../contract/snapshot'
+import { pct } from '../lib/format'
 import { toSeries } from '../lib/history'
 import { Card, Stat, Unavailable } from './Card'
 import { Chart } from './Chart'
 
 const SERIES = [{ label: 'CPU', color: '--accent' }]
-const pct = (v: number) => `${Math.round(v)}%`
 const cpu = (s: Snapshot) => s.collectors.cpu
 
 export function CpuCard({ history }: { history: Snapshot[] }) {

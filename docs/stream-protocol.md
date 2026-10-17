@@ -21,3 +21,5 @@ The token is compared in constant time. It travels in a WebSocket message, not t
 | `MINIDASH_TOKEN` | required | Shared access token. The agent refuses to start without it. |
 | `MINIDASH_ADDR` | `:8787` | Listen address. |
 | `MINIDASH_ORIGINS` | none | Comma-separated allowed `Origin` host patterns. Set this to the host serving the web UI, since it is a different origin than the agent. |
+| `MINIDASH_MACMON` | `macmon` | macmon binary path. |
+| `MINIDASH_SOC_INTERVAL_MS` | `2000` | macmon sampling period, minimum 250. Lower is fresher GPU data and more CPU. |

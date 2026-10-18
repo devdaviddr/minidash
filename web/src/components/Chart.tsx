@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import uPlot from 'uplot'
 import 'uplot/dist/uPlot.min.css'
+import { AXIS_FONT, CHART_PADDING } from '../lib/chartOptions'
 import { useResolvedTheme } from '../lib/theme'
 
 export interface ChartSeries {
@@ -50,7 +51,7 @@ export function Chart({ data, series, height = 120, yMax, format }: Props) {
           height,
           legend: { show: false },
           cursor: { show: false },
-          padding: [6, 0, 0, 0],
+          padding: CHART_PADDING,
           scales: { x: { time: true }, y: { range: (_u, _min, max) => [0, yMax ?? Math.max(max * 1.15, 1)] } },
           axes: [
             { show: false },
@@ -59,7 +60,7 @@ export function Chart({ data, series, height = 120, yMax, format }: Props) {
               stroke: muted,
               grid: { stroke: grid, width: 1 },
               ticks: { show: false },
-              font: '11px ui-sans-serif, system-ui',
+              font: AXIS_FONT,
               values: (_u, vals) => vals.map((v) => (format ? format(v) : String(v))),
             },
           ],

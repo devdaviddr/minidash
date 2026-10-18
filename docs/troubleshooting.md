@@ -33,7 +33,7 @@ Each card reports its own collector. One failing collector never affects the oth
 
 ## Data looks different from what you expect
 - **A connected SMB client shows "unknown account".** macOS can serve SMB sessions as root, and the real user is not visible without privileges.
-- **No GPU column in the process table.** macOS does not expose per-process GPU use without root.
+- **No GPU column in the process table.** It is not built yet. macOS does make per-process GPU time readable without root ([ADR 0014](adr/0014-per-process-gpu-time-without-root.md)).
 - **A mounted share shows an Apple ID instead of a user name.** Shares authenticated with an Apple ID are shown as "Apple ID" on purpose.
 - **A volume you expect is missing from Storage.** Only the internal Data volume and local filesystems mounted under `/Volumes` are listed. Network shares appear under Shares.
 - **Podman containers appear under Podman, not Docker, though `docker` works.** The Docker socket resolves to Podman's, and each socket is counted once (Colima and Podman are checked first).

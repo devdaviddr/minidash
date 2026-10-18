@@ -58,7 +58,7 @@ export function ProcessesCard({ history, hidden = NONE }: CardProps) {
             </tbody>
           </table>
           <Part id="note" hidden={hidden}>
-            <p className="mt-2 text-xs text-muted">GPU use per process is not exposed by macOS without root, so it is not shown.</p>
+            <p className="mt-2 text-xs text-muted">GPU use per process is not shown yet.</p>
           </Part>
         </div>
       )}

@@ -7,6 +7,7 @@ import { SPANS } from '../layout/catalogue'
 import { SPAN_CLASS } from '../layout/spans'
 import { fixture } from '../test/fixture'
 import { Card } from './Card'
+import { CpuCard } from './CpuCard'
 import { ProcessesCard } from './ProcessesCard'
 
 vi.mock('./Chart', () => ({ Chart: () => <div data-testid="chart" /> }))
@@ -36,6 +37,14 @@ describe('cards adapt to their own width (FR-20)', () => {
 
   it.each(cardFiles)('%s rearranges or simplifies with container variants', (f) => {
     expect(src(f)).toMatch(CONTAINER_VARIANT)
+  })
+
+  // AC-28: side by side from a 28 rem card, which every width-2 card on a desktop grid reaches (plan DD-25).
+  it('the CPU card puts the reactor beside the chart from the @md container width', () => {
+    const { container } = render(<CpuCard history={[fixture()]} />)
+    expect(container.querySelector('section')?.className).toContain('@container')
+    expect(container.querySelector('[data-cpu-layout]')?.className).toMatch(/flex-col.*@md:flex-row/)
+    expect(src('CpuCard.tsx')).not.toMatch(VIEWPORT_VARIANT)
   })
 
   it('the process table drops its PID and owner columns until the card is wide enough', () => {

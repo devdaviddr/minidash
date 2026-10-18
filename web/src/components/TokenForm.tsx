@@ -24,7 +24,7 @@ export function TokenForm({ onSave }: { onSave: (token: string) => void }) {
       />
       <button
         type="submit"
-        className="rounded-lg bg-accent px-4 py-2 font-medium text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/40 outline-none"
+        className="rounded-lg bg-accent px-4 py-2 font-medium text-on-accent hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/40 outline-none"
       >
         Connect
       </button>

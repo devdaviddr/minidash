@@ -110,6 +110,16 @@ Rules: one test per acceptance criterion; no test may depend on the host's real 
 
 Collectors must be read-only. Do not collect command-line arguments, credentials or file contents.
 
+### Adding a card to the UI
+A card that shows an existing collector's data needs no agent change:
+
+1. Add it to `web/src/layout/catalogue.ts`: `id`, `title`, `defaultSpan` and its hideable `parts`.
+2. Build the component in `web/src/components/`. Take `{ history, hidden }` (`CardProps`) and wrap each hideable piece in `<Part id="..." hidden={hidden}>`.
+3. Add it to the `COMPONENTS` record in `web/src/layout/registry.tsx`. The record is typed over the catalogue ids, so forgetting this fails to compile.
+4. Add data for it to `web/src/test/fixture.ts`.
+
+The test `Dashboard.test.tsx` then checks that every declared part renders and disappears when hidden. Existing users get the new card automatically (a missing card is appended with its defaults). Use theme tokens only: a test fails on fixed palette colours, and another on text pairs below 4.5:1 contrast. Lay out the inside of a card with **container variants** (`@xl:`, `@3xl:`, ...) and never viewport ones (`md:`, `lg:`): a test enforces both, and also that every card uses at least one container variant. Card content is about 17 rem wide at one column, 36 rem at two, 57 rem at three and 77 rem at four on a 1280 px screen, so `@2xs`, `@xl` and `@3xl` are the useful breakpoints.
+
 ## Changing the contract
 - Additive changes (a new optional field or a new collector) are a MINOR spec bump.
 - Removing, renaming or retyping a field breaks the UI and is a MAJOR bump.

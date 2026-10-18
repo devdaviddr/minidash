@@ -39,6 +39,21 @@ Each card reports its own collector. One failing collector never affects the oth
 - **Podman containers appear under Podman, not Docker, though `docker` works.** The Docker socket resolves to Podman's, and each socket is counted once (Colima and Podman are checked first).
 - **Process list lags the CPU graph.** Processes refresh every 3 s; the CPU graph every second.
 
+## Customising and themes
+| You see | Cause | Fix |
+| --- | --- | --- |
+| The panel says the browser would not let minidash save the layout | Storage is blocked (private window, or site data disabled) | Allow site data for this page. Until then the layout lasts for the session. |
+| My layout is gone | Site data was cleared, or you opened it in a different browser or on a different address (storage is per origin) | Re-import your exported `minidash-layout.json`, or set it up again. |
+| An import was refused | The file is not valid JSON, is not a minidash layout, or is from a newer minidash | Read the message under the buttons. Your layout was not changed. Export from the same or an older version. |
+| A card I never saw appeared after an import | The file predates that card, so it was added with its defaults | Hide it in the panel if you do not want it. |
+| Everything is hidden | All cards and the summary strip are switched off | Click **Show all cards**, or open Customise and tick them. |
+| The page briefly shows the wrong theme on load | `theme-init.js` is blocked or not served | Check `/theme-init.js` returns JavaScript (not the page) and your CSP allows same-origin scripts. |
+| Drag does nothing | The handle only appears while the Customise panel is open | Open Customise, or use the move buttons in the panel. |
+| There is no resize grip on the cards | Grips appear only while Customise is open and the grid has four columns (screen 1024 px or wider) | Open Customise on a wider screen or window, or set the width in the card view (select a card). |
+| Clicking a card does nothing | Cards are selectable only while Customise is open | Open Customise first. You can also pick a card from the overview list. |
+| A width of 3 became 2 after an import | The file has width 3 but this build is 1.1.0, which only knows 1, 2 and 4 | Update minidash; widths 1 to 4 are supported from 1.2.0. |
+| A card looks cramped or has overflowing content | The card is narrower than the layout inside it expects | Widen the card, and report it with the card, its width and your screen size. |
+
 ## The agent will not start
 | Log or exit | Cause |
 | --- | --- |

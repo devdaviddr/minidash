@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import type { Snapshot } from '../contract/snapshot'
 import { bytes } from '../lib/format'
 import { Card, Unavailable } from './Card'
+import { NONE, Part, type CardProps } from '../layout/parts'
 
 function Section({ title, empty, children }: { title: string; empty: string; children: ReactNode[] }) {
   return (
@@ -12,15 +12,16 @@ function Section({ title, empty, children }: { title: string; empty: string; chi
   )
 }
 
-export function SharesCard({ history }: { history: Snapshot[] }) {
+export function SharesCard({ history, hidden = NONE }: CardProps) {
   const r = history.at(-1)?.collectors.shares
   const d = r?.ok ? r.data : undefined
   return (
-    <Card title="Shares & accounts" className="col-span-full lg:col-span-2">
+    <Card title="Shares & accounts">
       {!d ? (
         <Unavailable error={r?.error} />
       ) : (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 @3xl:grid @3xl:grid-cols-3 @3xl:items-start @3xl:gap-6">
+          <Part id="mounts" hidden={hidden}>
           <Section title="Mounted on this Mac" empty="No network shares mounted">
             {d.mounts.map((m) => (
               <li key={m.mount} className="rounded-lg bg-bg px-3 py-2 text-sm">
@@ -42,6 +43,8 @@ export function SharesCard({ history }: { history: Snapshot[] }) {
               </li>
             ))}
           </Section>
+          </Part>
+          <Part id="offered" hidden={hidden}>
           <Section title="Shared by this Mac" empty="Nothing shared">
             {d.sharing.map((s) => (
               <li key={s.name} className="flex justify-between text-sm">
@@ -50,6 +53,8 @@ export function SharesCard({ history }: { history: Snapshot[] }) {
               </li>
             ))}
           </Section>
+          </Part>
+          <Part id="clients" hidden={hidden}>
           <Section title="Connected clients" empty="No clients connected">
             {d.sessions.map((s, i) => (
               <li key={`${s.remote}-${i}`} className="flex justify-between text-sm">
@@ -60,6 +65,7 @@ export function SharesCard({ history }: { history: Snapshot[] }) {
               </li>
             ))}
           </Section>
+          </Part>
         </div>
       )}
     </Card>

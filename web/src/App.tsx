@@ -1,16 +1,13 @@
 import { useState } from 'react'
 import { useSnapshot } from './lib/useSnapshot'
-import type { StreamStatus } from './lib/stream'
-import { CpuCard } from './components/CpuCard'
-import { ContainersCard } from './components/ContainersCard'
-import { DisksCard } from './components/DisksCard'
-import { GpuCard } from './components/GpuCard'
-import { MemoryCard } from './components/MemoryCard'
-import { NetworkCard } from './components/NetworkCard'
-import { ProcessesCard } from './components/ProcessesCard'
-import { Summary } from './components/Summary'
+import { CustomisePanel } from './components/CustomisePanel'
+import { Header, HeaderButton } from './components/Header'
+import { StatusPill } from './components/StatusPill'
+import { ThemeSwitch } from './components/ThemeSwitch'
+import { Dashboard } from './components/Dashboard'
+import { useLayout } from './layout/useLayout'
+import type { CardId } from './layout/catalogue'
 import { TokenForm } from './components/TokenForm'
-import { SharesCard } from './components/SharesCard'
 
 const TOKEN_KEY = 'minidash.token'
 const wallFromUrl = () => new URLSearchParams(location.search).has('wall')
@@ -24,19 +21,21 @@ function loadToken() {
   }
 }
 
-const STATUS_STYLE: Record<StreamStatus, string> = {
-  live: 'bg-emerald-500/15 text-emerald-300',
-  connecting: 'bg-amber-500/15 text-amber-300',
-  disconnected: 'bg-red-500/15 text-red-300',
-  unauthorized: 'bg-red-500/15 text-red-300',
-}
-
 export default function App() {
   const [token, setToken] = useState(loadToken)
   const { status, history } = useSnapshot(AGENT_URL, token)
   const snapshot = history.at(-1)
   const [wall, setWall] = useState(wallFromUrl)
+  const { layout, dispatch, saved } = useLayout()
+  const [customising, setCustomising] = useState(false)
+  const [selected, setSelected] = useState<CardId | null>(null) // transient: never saved, never changes the layout
   const effective = token ? status : 'unauthorized'
+
+  const closeCustomise = () => {
+    setCustomising(false)
+    setSelected(null)
+    document.getElementById('customise-button')?.focus() // return focus to where the viewer came from
+  }
 
   const save = (t: string) => {
     try {
@@ -48,42 +47,25 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen p-4 sm:p-6">
-      <header className="mx-auto mb-4 flex max-w-7xl flex-wrap items-center justify-between gap-2">
-        <h1 className="text-lg font-semibold tracking-tight">minidash</h1>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setWall((w) => !w)}
-            aria-pressed={wall}
-            className="rounded-full border border-line px-3 py-1 text-xs font-medium text-muted hover:text-fg"
-          >
-            Wall display
-          </button>
-          <span role="status" className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLE[effective]}`}>
-            {token ? status : 'token required'}
-            {snapshot && status === 'live' ? ` · tick ${snapshot.seq}` : ''}
-          </span>
-        </div>
-      </header>
+    <div className={`min-h-screen p-4 sm:p-6 ${customising ? 'lg:pr-[25rem]' : ''}`}>
+      <Header>
+        <ThemeSwitch />
+        <HeaderButton id="customise-button" pressed={customising} onClick={() => (customising ? closeCustomise() : setCustomising(true))}>
+          Customise
+        </HeaderButton>
+        <HeaderButton pressed={wall} onClick={() => setWall((w) => !w)}>
+          Wall display
+        </HeaderButton>
+        <StatusPill status={status} hasToken={!!token} tick={snapshot?.seq} />
+      </Header>
       {effective === 'unauthorized' ? (
         <div className="mx-auto grid max-w-7xl place-items-center py-24">
           <TokenForm onSave={save} />
         </div>
       ) : (
-        <main className={`mx-auto flex max-w-7xl flex-col gap-4 ${wall ? 'text-[1.15em]' : ''}`}>
-          <Summary snapshot={snapshot} />
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
-            <CpuCard history={history} />
-            <GpuCard history={history} />
-            <MemoryCard history={history} />
-            <NetworkCard history={history} />
-            <DisksCard history={history} />
-            {!wall && <SharesCard history={history} />}
-            <ContainersCard history={history} />
-            {!wall && <ProcessesCard history={history} />}
-          </div>
-        </main>
+        <Dashboard history={history} layout={layout} wall={wall} editing={customising} selectedId={selected} onSelect={setSelected} dispatch={dispatch} />
       )}
+      {customising && effective !== 'unauthorized' && <CustomisePanel layout={layout} dispatch={dispatch} saved={saved} selectedId={selected} onSelect={setSelected} onClose={closeCustomise} />}
     </div>
   )
 }

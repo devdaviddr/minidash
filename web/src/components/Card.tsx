@@ -9,7 +9,7 @@ interface Props {
 
 export function Card({ title, right, children, className = '' }: Props) {
   return (
-    <section className={`rounded-2xl border border-line bg-surface p-4 shadow-sm ${className}`}>
+    <section className={`@container h-full min-w-0 rounded-2xl border border-line bg-surface p-4 shadow-sm ${className}`}>
       <header className="mb-3 flex items-center justify-between gap-2">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">{title}</h2>
         {right}

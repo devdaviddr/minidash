@@ -3,7 +3,7 @@
 Thanks for helping. minidash is small and opinionated: it is **spec-driven** and **trunk-based**. This page is the short version; [docs/development.md](docs/development.md) has the detail.
 
 ## Before you start
-- Check [open issues](https://github.com/devdaviddr/minidash/issues) and the [spec](spec/1.0.0/spec.md). For anything bigger than a bug fix, open an issue first so the requirement and acceptance criteria can be agreed before code.
+- Check [open issues](https://github.com/devdaviddr/minidash/issues) and the [spec](spec/1.2.0/spec.md). For anything bigger than a bug fix, open an issue first so the requirement and acceptance criteria can be agreed before code.
 - Read the [code of conduct](CODE_OF_CONDUCT.md). Report security problems privately: [SECURITY.md](SECURITY.md).
 
 ## Set up

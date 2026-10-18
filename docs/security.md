@@ -51,7 +51,7 @@ Read these before deciding how to expose it.
 2. **One shared token.** There are no per-user accounts and no audit trail. Rotate it if it leaks ([configuration.md](configuration.md#rotating-the-token)).
 3. **No rate limiting on authentication.** A client has 5 seconds per connection and the token has 192 bits, so guessing is not practical, but repeated attempts are not throttled.
 4. **`/healthz` is unauthenticated** and returns `ok`. It reveals only that the service is up.
-5. **The token is stored in browser `localStorage`.** Any script running on the UI's origin could read it. The Content-Security-Policy restricts scripts to the page's own files.
+5. **The token, layout and theme are stored in browser `localStorage`.** Layout and theme are not sensitive and are never sent anywhere. The token is. Any script running on the UI's origin could read the token. The Content-Security-Policy restricts scripts to the page's own files (including the small `theme-init.js`); inline scripts are not allowed.
 6. **The agent listens on all interfaces by default.** Set `MINIDASH_ADDR=127.0.0.1:8787` if you only browse from the Mac itself.
 7. **Third-party binary.** `macmon` runs as your user and is trusted to report sensor data. It is installed from Homebrew.
 

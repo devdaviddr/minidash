@@ -55,3 +55,15 @@ Measured on an M4-class Mac over 60 s with a client connected: agent about 0.8%,
 - Network counters come from the kernel's 64-bit `ifmib` sysctl, not a forked `netstat`. (`NET_RT_IFLIST2` was rejected: its byte counters are 32-bit and wrap at 4 GB. A test cross-checks against `netstat -ib`.)
 - Process handles are built from PIDs directly, skipping one start-time sysctl per process. Processes refresh every 3 s, containers every 2 s, shares every 10 s.
 - `macmon` samples every 2 s by default. Set `MINIDASH_SOC_INTERVAL_MS=1000` for 1 s GPU/power updates; that costs about 0.7% more.
+
+### Per-process GPU (spec 0.6.0, T-37, AC-35)
+Measured on the Mac mini (M4, macOS 26.4, about 690 processes) on 2026-10-18: a test build of the agent on a spare loopback port with one WebSocket client, agent CPU including its exited `ioreg` children (`ps -S`) plus its `macmon` child, over 60 s after a 15 s warm-up. The installed service kept running alongside.
+
+| `MINIDASH_PROC_GPU_INTERVAL_MS` | Agent | `macmon` | Total |
+| --- | --- | --- | --- |
+| `0` (off, the "before" figure) | 1.08% | 0.38% | 1.47% |
+| `3000` | 1.26%, 1.32% | 0.38% | 1.64%, 1.70% |
+| `6000` | 1.25%, 1.22% | 0.38% | 1.63%, 1.58% |
+| `9000` | 1.18%, 1.18% | 0.38% | 1.57%, 1.55% |
+
+Second figures are a repeat run in reverse order; the repeat at `0` was cut short. One `ioreg` read costs about 7.8 ms of CPU on the mini, about 0.26% of a core at 3 s, which matches the difference. 3 s fits under the 1.9% threshold of plan DD-24, so the default is `3000`.

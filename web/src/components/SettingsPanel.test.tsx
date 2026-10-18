@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CARDS, type CardId } from '../layout/catalogue'
 import { defaultLayout, layoutReducer } from '../layout/model'
 import { fixture } from '../test/fixture'
-import { CustomisePanel } from './CustomisePanel'
+import { SettingsPanel } from './SettingsPanel'
 import { Dashboard } from './Dashboard'
 
 vi.mock('./Chart', () => ({ Chart: () => <div data-testid="chart" /> }))
@@ -24,12 +24,12 @@ function Harness({ onClose = () => {}, saved = true, editing = true }: { onClose
   return (
     <>
       <Dashboard history={history} layout={layout} wall={false} editing={editing} selectedId={selected} onSelect={setSelected} dispatch={dispatch} />
-      <CustomisePanel layout={layout} dispatch={dispatch} onClose={onClose} selectedId={selected} onSelect={setSelected} saved={saved} />
+      <SettingsPanel layout={layout} dispatch={dispatch} onClose={onClose} selectedId={selected} onSelect={setSelected} saved={saved} range={300} agentWindow={2419200} onRangeChange={() => {}} token="t" agentHttp="http://x" />
       <output data-testid="layout-json">{JSON.stringify(layout)}</output>
     </>
   )
 }
-const panel = () => within(screen.getByRole('dialog', { name: 'Customise' }))
+const panel = () => within(screen.getByRole('dialog', { name: 'Settings' }))
 const select = (title: string) => userEvent.click(screen.getByRole('button', { name: `Select ${title}` }))
 
 describe('overview', () => {
@@ -56,9 +56,9 @@ describe('overview', () => {
         expect(name, el.outerHTML.slice(0, 80)).toBeTruthy()
       }
     }
-    named(screen.getByRole('dialog', { name: 'Customise' }), 30) // overview: rows, checkboxes, file controls
+    named(screen.getByRole('dialog', { name: 'Settings' }), 30) // overview: rows, checkboxes, file controls
     await select('CPU')
-    named(screen.getByRole('dialog', { name: 'Customise' }), 8) // card view: width, details, show, move
+    named(screen.getByRole('dialog', { name: 'Settings' }), 8) // card view: width, details, show, move
   })
 
   // AC-11
@@ -105,7 +105,7 @@ describe('selecting a card', () => {
     await userEvent.click(container.querySelector('[data-card="network"]') as HTMLElement)
     expect(container.querySelector('[data-card="network"]')?.getAttribute('data-selected')).toBe('true')
     expect(container.querySelectorAll('[data-selected]').length).toBe(1)
-    const panel = within(screen.getByRole('dialog', { name: 'Customise' }))
+    const panel = within(screen.getByRole('dialog', { name: 'Settings' }))
     expect(panel.getByRole('heading', { name: 'Network' })).toBeTruthy()
     expect(panel.getByRole('radiogroup', { name: 'Network width' })).toBeTruthy()
     expect(panel.queryByRole('button', { name: 'Select CPU' })).toBeNull() // the overview list is gone
@@ -159,7 +159,7 @@ describe('selecting a card', () => {
     expect(layoutJson()).toBe(before)
   })
 
-  it('does nothing when Customise is closed', async () => {
+  it('does nothing when Settings is closed', async () => {
     const { container } = render(<Harness editing={false} />)
     await userEvent.click(container.querySelector('[data-card="cpu"]') as HTMLElement)
     expect(container.querySelector('[data-selected]')).toBeNull()
@@ -216,13 +216,84 @@ describe('the panel itself', () => {
   it('closes on Escape and with the close button, and takes focus when it opens', async () => {
     const onClose = vi.fn()
     render(<Harness onClose={onClose} />)
-    expect(document.activeElement).toBe(screen.getByRole('dialog', { name: 'Customise' }))
+    expect(document.activeElement).toBe(screen.getByRole('dialog', { name: 'Settings' }))
     await userEvent.keyboard('{Escape}')
-    await userEvent.click(screen.getByRole('button', { name: 'Close customise panel' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Close settings panel' }))
     expect(onClose).toHaveBeenCalledTimes(2)
   })
   it('warns when the layout cannot be saved', () => {
     render(<Harness saved={false} />)
     expect(screen.getByRole('alert').textContent).toMatch(/would not let minidash save/)
+  })
+})
+
+describe('retention', () => {
+  /** Panel alone, with a caller-supplied range and agent window. */
+  const bare = (range: number, agentWindow: number, onRangeChange: (s: number) => void = () => {}) =>
+    render(
+      <SettingsPanel
+        layout={defaultLayout()}
+        dispatch={() => {}}
+        onClose={() => {}}
+        selectedId={null}
+        onSelect={() => {}}
+        saved
+        range={range}
+        agentWindow={agentWindow}
+        onRangeChange={onRangeChange}
+        token="t"
+        agentHttp="http://x"
+      />
+    )
+
+  it('offers a range picker clamped to the agent window', () => {
+    bare(300, 2419200)
+    const range = screen.getByRole('combobox', { name: 'Chart time range' })
+    const opts = [...range.querySelectorAll('option')].map((o) => o.textContent)
+    expect(opts).toContain('5 min')
+    expect(opts).toContain('28 days')
+  })
+
+  it('hides ranges the agent does not keep', () => {
+    bare(300, 3600)
+    const range = screen.getByRole('combobox', { name: 'Chart time range' })
+    const opts = [...range.querySelectorAll('option')].map((o) => o.textContent)
+    expect(opts).toContain('1 h')
+    expect(opts).not.toContain('7 days')
+  })
+
+  it('changes the range when the picker is used', async () => {
+    let range = 300
+    bare(300, 2419200, (s) => {
+      range = s
+    })
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Chart time range' }), '3600')
+    expect(range).toBe(3600)
+  })
+
+  it('shows stored data when View stored data is clicked', async () => {
+    const fetch = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        points: [
+          { ts: '2026-10-18T05:00:00.000Z', collectors: { cpu: { ok: true, data: { total: 12.5, cores: [1, 2], load: { one: 1, five: 2, fifteen: 3 } } } } },
+        ],
+      }),
+    } as Response)
+    bare(3600, 2419200)
+    await userEvent.click(screen.getByRole('button', { name: 'View stored data' }))
+    await new Promise((r) => setTimeout(r, 200))
+    expect(screen.getByRole('table')).toBeTruthy()
+    expect(screen.getByText(/stored points for this range/)).toBeTruthy()
+    fetch.mockRestore()
+  })
+
+  it('reports a failure to load stored data', async () => {
+    const fetch = vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: false } as Response)
+    bare(3600, 2419200)
+    await userEvent.click(screen.getByRole('button', { name: 'View stored data' }))
+    await new Promise((r) => setTimeout(r, 200))
+    expect(screen.getByRole('alert').textContent).toMatch(/Could not load stored history/)
+    fetch.mockRestore()
   })
 })

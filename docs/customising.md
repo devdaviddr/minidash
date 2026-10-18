@@ -7,8 +7,8 @@ The **System / Light / Dark** switch is in the header. System (the default) foll
 
 Both themes meet WCAG AA contrast (4.5:1) for text. A test reads the real colour tokens and fails the build if a pair drops below that.
 
-## The customise panel
-Click **Customise** in the header. A panel opens on the right and the dashboard shifts over so you can watch it change as you work. Press **Escape** or the close button to finish; focus returns to the Customise button.
+## The settings panel
+Click **Settings** in the header. A panel opens on the right and the dashboard shifts over so you can watch it change as you work. Press **Escape** or the close button to finish; focus returns to the Settings button.
 
 <p align="center">
   <img src="images/customise.svg" alt="Illustration of customising: the CPU card is selected with a resize grip on its right edge, and the sidebar shows that card's visibility, order, width and details" width="100%">
@@ -16,15 +16,15 @@ Click **Customise** in the header. A panel opens on the right and the dashboard 
 
 The panel has two views.
 
-**Overview** (nothing selected): the summary strip, then every card in display order with a checkbox to show or hide it, a button to select it, and move earlier/later buttons. The save, export, import and reset controls are at the bottom.
+**Overview** (nothing selected): the summary strip, then every card in display order with a checkbox to show or hide it, a button to select it, and move earlier/later buttons. The retention controls, the save, export, import and reset controls are at the bottom.
 
 **Card view** (a card selected): just that card. You get its show/hide checkbox, move buttons, **Width**, and **Details shown**. Use **← All cards** to go back.
 
 ### Selecting a card
-While Customise is open, **click a card** to select it. It is outlined and the sidebar switches to its card view. Click another card to switch. You can also choose a card from the overview list, which works without a mouse. Press **Escape** to deselect (a second Escape closes the panel), or use **← All cards**. Selecting never changes your layout, and nothing is selected when Customise is closed.
+While Settings is open, **click a card** to select it. It is outlined and the sidebar switches to its card view. Click another card to switch. You can also choose a card from the overview list, which works without a mouse. Press **Escape** to deselect (a second Escape closes the panel), or use **← All cards**. Selecting never changes your layout, and nothing is selected when Settings is closed.
 
 ### Resizing
-Each card shows a grip on its right edge while Customise is open on a large screen (the grid has four columns from 1024 px). Drag the grip left or right and the card snaps to **1, 2, 3 or 4 columns** with a live "2 / 4" badge. **Escape** cancels and puts the width back. The grip is also a keyboard slider: Tab to it, then **Left/Right** change the width by one column, **Home** and **End** jump to 1 and 4. Screen readers hear it as a slider with its value ("2 of 4 columns"). You can also pick a width in the card view.
+Each card shows a grip on its right edge while Settings is open on a large screen (the grid has four columns from 1024 px). Drag the grip left or right and the card snaps to **1, 2, 3 or 4 columns** with a live "2 / 4" badge. **Escape** cancels and puts the width back. The grip is also a keyboard slider: Tab to it, then **Left/Right** change the width by one column, **Home** and **End** jump to 1 and 4. Screen readers hear it as a slider with its value ("2 of 4 columns"). You can also pick a width in the card view.
 
 Only the width changes. A card's height always follows its content, so nothing is clipped.
 
@@ -49,6 +49,11 @@ While the panel is open, every card shows a **Drag** handle at its top edge.
 | Processes | Owner column, GPU column, GPU attribution note |
 
 Hiding a detail removes only that detail. The rest of the card, and every other card, is untouched.
+
+## Retention and viewing stored data
+The **Retention** section at the bottom of the panel overview (the range selector used to live in the header) controls how far back the charts reach: **5 min** to **28 days**, clamped to what the agent actually keeps (`MINIDASH_RETENTION` on the agent). The charts use the live stream for short ranges and stored history for longer ones.
+
+**View stored data** fetches the history the agent is keeping for the selected range and shows the newest 50 points as a table — time, CPU %, memory used, GPU % and network in/out — so you can check exactly what the agent stored. If the agent cannot be reached, the panel says so and nothing changes.
 
 ## Responsive layout
 The page adapts at two levels.

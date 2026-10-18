@@ -3,11 +3,10 @@ import { agentUrl, agentHttpBase } from './lib/agentUrl'
 import { useSnapshot } from './lib/useSnapshot'
 import { clampRange, fetchHistory } from './lib/history'
 import type { Snapshot } from './contract/snapshot'
-import { CustomisePanel } from './components/CustomisePanel'
+import { SettingsPanel } from './components/SettingsPanel'
 import { Header, HeaderButton } from './components/Header'
 import { StatusPill } from './components/StatusPill'
 import { ThemeSwitch } from './components/ThemeSwitch'
-import { RangePicker } from './components/RangePicker'
 import { Dashboard } from './components/Dashboard'
 import { useLayout } from './layout/useLayout'
 import type { CardId } from './layout/catalogue'
@@ -34,7 +33,7 @@ export default function App() {
   const snapshot = history.at(-1)
   const [wall, setWall] = useState(wallFromUrl)
   const { layout, dispatch, saved } = useLayout()
-  const [customising, setCustomising] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const [selected, setSelected] = useState<CardId | null>(null) // transient: never saved, never changes the layout
   const [range, setRange] = useState(300) // selected chart range in seconds (FR-38)
   const [historyData, setHistoryData] = useState<Snapshot[]>([])
@@ -53,10 +52,10 @@ export default function App() {
   // Charts use stored history for long ranges, otherwise the live stream.
   const chartHistory = range > 300 && historyData.length > 0 ? historyData : history
 
-  const closeCustomise = () => {
-    setCustomising(false)
+  const closeSettings = () => {
+    setSettingsOpen(false)
     setSelected(null)
-    document.getElementById('customise-button')?.focus() // return focus to where the viewer came from
+    document.getElementById('settings-button')?.focus() // return focus to where the viewer came from
   }
 
   const save = (t: string) => {
@@ -69,16 +68,15 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen p-4 sm:p-6 ${customising ? 'lg:pr-[25rem]' : ''}`}>
+    <div className={`min-h-screen p-4 sm:p-6 ${settingsOpen ? 'lg:pr-[25rem]' : ''}`}>
       <Header>
         <ThemeSwitch />
-        <HeaderButton id="customise-button" pressed={customising} onClick={() => (customising ? closeCustomise() : setCustomising(true))}>
-          Customise
+        <HeaderButton id="settings-button" pressed={settingsOpen} onClick={() => (settingsOpen ? closeSettings() : setSettingsOpen(true))}>
+          Settings
         </HeaderButton>
         <HeaderButton pressed={wall} onClick={() => setWall((w) => !w)}>
           Wall display
         </HeaderButton>
-        <RangePicker value={range} agentWindow={DEFAULT_AGENT_WINDOW} onChange={setRange} />
         <StatusPill status={status} hasToken={!!token} tick={snapshot?.seq} />
       </Header>
       {effective === 'unauthorized' ? (
@@ -86,9 +84,23 @@ export default function App() {
           <TokenForm onSave={save} />
         </div>
       ) : (
-        <Dashboard history={chartHistory} layout={layout} wall={wall} editing={customising} selectedId={selected} onSelect={setSelected} dispatch={dispatch} />
+        <Dashboard history={chartHistory} layout={layout} wall={wall} editing={settingsOpen} selectedId={selected} onSelect={setSelected} dispatch={dispatch} />
       )}
-      {customising && effective !== 'unauthorized' && <CustomisePanel layout={layout} dispatch={dispatch} saved={saved} selectedId={selected} onSelect={setSelected} onClose={closeCustomise} />}
+      {settingsOpen && effective !== 'unauthorized' && (
+        <SettingsPanel
+          layout={layout}
+          dispatch={dispatch}
+          saved={saved}
+          selectedId={selected}
+          onSelect={setSelected}
+          onClose={closeSettings}
+          range={range}
+          agentWindow={DEFAULT_AGENT_WINDOW}
+          onRangeChange={setRange}
+          token={token}
+          agentHttp={AGENT_HTTP}
+        />
+      )}
     </div>
   )
 }

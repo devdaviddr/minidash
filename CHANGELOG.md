@@ -3,6 +3,13 @@
 All notable changes are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow the spec version in `spec/`, and each is published as a [GitHub Release](https://github.com/devdaviddr/minidash/releases) when tagged (see [docs/releasing.md](docs/releasing.md)). Every release so far is below 1.0.
 
 ## [Unreleased]
+### Changed
+- **Settings panel:** the header **Customise** button and panel are renamed **Settings**, and the
+  chart **Range** selector has moved out of the header into a **Retention** section inside the panel.
+  A **View stored data** button there fetches the agent's stored history for the selected range and
+  shows the newest 50 points as a table (time, CPU, memory, GPU, network), so you can see what the
+  agent keeps. A failed history request is reported in the panel instead of silently showing an
+  empty table.
 
 ## [0.7.1] - 2026-10-18
 Hotfix.

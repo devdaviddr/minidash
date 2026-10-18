@@ -2,7 +2,7 @@
 feature: minidash-realtime-mac-mini-monitor
 title: minidash realtime Mac mini monitor
 version: 0.6.0
-status: draft
+status: approved
 updated: 2026-10-18
 ---
 # minidash realtime Mac mini monitor — Task Backlog

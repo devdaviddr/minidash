@@ -2,7 +2,7 @@
 feature: minidash-realtime-mac-mini-monitor
 title: minidash realtime Mac mini monitor
 version: 0.6.0
-status: draft
+status: approved
 owner: devdaviddr
 created: 2026-10-18
 updated: 2026-10-18
@@ -166,7 +166,7 @@ Version 0.6.0 does two things. First, the CPU card is laid out like the README i
 - The honeycomb must add no timers or animation loops, and must render from the per-core values alone (no new agent data).
 - Text on a filled cell keeps WCAG AA contrast against its background in both themes.
 - The CPU budget still holds with per-process GPU on: agent plus `macmon` under 2% of one core on average, measured on the Mac mini (ADR 0006).
-- The GPU column refreshes at most as often as the process list (every 3 s) and may refresh less often to stay inside the budget. The interval is set from the measurement on the Mac mini (plan DD-24). [NEEDS INPUT: the acceptable GPU refresh interval; see §9 Open questions.]
+- The GPU column refreshes at most as often as the process list (every 3 s) and may refresh less often to stay inside the budget. The interval is set from the measurement on the Mac mini (plan DD-24). The default is 3 s when the measured total fits the budget, else 6 s (resolved in §9).
 - No root, no new privileges, no new runtime dependencies, and no cgo. The release build stays `CGO_ENABLED=0`.
 - Read-only: reading GPU time changes nothing on the system.
 - Everything parsed from the IORegistry is bounded: output size, number of clients, a timeout on the read, and validated pids. A bad or slow read fails only the GPU values (FR-31).
@@ -310,7 +310,7 @@ Decisions made while drafting 0.6.0 that the owner did not cover. They are recor
 
 Open questions:
 
-- [NEEDS INPUT: GPU refresh interval. On a dev Mac (M4 Pro), one `ioreg` read costs about 18 ms of CPU, so every 3 s adds about 0.6% of a core. The measured total today is 1.4% to 1.65%, so 3 s may break the 2% budget. Is a GPU column that refreshes every 6 or 9 s acceptable (plan DD-24 picks the shortest that fits, from the measurement on the mini), or should the in-process IOKit reader be built to keep 3 s?]
+- Resolved 2026-10-18 by measurement on the Mac mini (the owner asked for the recommended path): one `ioreg -a` read costs about 7.8 ms of CPU there (40 reads timed; the 18 ms figure was the dev Mac), so a 3 s GPU interval adds about 0.26% of a core. Plan DD-24 stands: T-37 measures the whole agent plus `macmon` with the reader on, and the default is 3 s if the total is at most 1.9% of one core, else 6 s. The in-process IOKit reader is not built in 0.6.0.
 
 **Accepted gaps.** The owner asked on 2026-10-18 for the specs to be marked implemented. These checks need real hardware, a browser or an account setting, and no result has been recorded for them:
 

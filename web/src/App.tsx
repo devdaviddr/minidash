@@ -15,7 +15,9 @@ import { TokenForm } from './components/TokenForm'
 const TOKEN_KEY = 'minidash.token'
 const wallFromUrl = () => new URLSearchParams(location.search).has('wall')
 const AGENT_URL = agentUrl(location, import.meta.env.VITE_AGENT_URL)
-const AGENT_HTTP = agentHttpBase(location, import.meta.env.VITE_AGENT_URL)
+// History goes to the UI's own origin: nginx proxies /history to the agent (the CSP allows same-origin
+// plus WebSockets only, and the HTTPS path has no agent port). A build-time override keeps dev working.
+const AGENT_HTTP = import.meta.env.VITE_AGENT_URL ? agentHttpBase(location, import.meta.env.VITE_AGENT_URL) : ''
 // The agent's retention window is not yet known to the UI; assume the max until /history reports it.
 const DEFAULT_AGENT_WINDOW = 2419200
 

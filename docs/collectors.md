@@ -73,3 +73,6 @@ Measured on the Mac mini (M4, macOS 26.4, about 690 processes) on 2026-10-18: a 
 | `9000` | 1.18%, 1.18% | 0.38% | 1.57%, 1.55% |
 
 Second figures are a repeat run in reverse order; the repeat at `0` was cut short. One `ioreg` read costs about 7.8 ms of CPU on the mini, about 0.26% of a core at 3 s, which matches the difference. 3 s fits under the 1.9% threshold of plan DD-24, so the default is `3000`.
+
+### Log retention (spec 0.7.0, T-49)
+Measured on the Mac mini (M4, macOS 26.4) on 2026-10-18: a test build of the 0.7.0 agent on a spare loopback port with retention set to the maximum (`MINIDASH_RETENTION=28d`) and per-process GPU on at 3 s, over 60 s after a 15 s warm-up. The agent averaged **0.0–0.2% of one core** and about **23 MB RSS**. Compaction runs on a 1-minute cadence rather than every tick, so storing and downsampling history adds no measurable per-tick CPU and stays well under the 2% budget.

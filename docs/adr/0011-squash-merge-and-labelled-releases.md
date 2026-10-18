@@ -1,6 +1,6 @@
 # 11. Squash-merge every PR, label PRs automatically, release by tag
 
-Status: accepted. Supersedes the merge-strategy decision in [ADR 0008](0008-git-flow-and-merge-strategy.md).
+Status: Superseded by [0013](0013-git-flow-and-merge-commits.md) (squash merging only; the labels, release notes and release-by-tag parts still stand). Supersedes the merge-strategy decision in [ADR 0008](0008-git-flow-and-merge-strategy.md).
 
 ## Context
 ADR 0008 allowed squash or rebase-merge, with rebase for large PRs whose commits were each atomic. In practice the first large PR went in as 47 commits and the next as one squash commit, and the squashed history was easier to read: one entry per change, each with a real title and description. The owner wants a tidy branch list, scannable pull requests and proper releases.

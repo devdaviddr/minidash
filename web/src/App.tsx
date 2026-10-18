@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { agentUrl } from './lib/agentUrl'
 import { useSnapshot } from './lib/useSnapshot'
 import { CustomisePanel } from './components/CustomisePanel'
 import { Header, HeaderButton } from './components/Header'
@@ -11,7 +12,7 @@ import { TokenForm } from './components/TokenForm'
 
 const TOKEN_KEY = 'minidash.token'
 const wallFromUrl = () => new URLSearchParams(location.search).has('wall')
-const AGENT_URL = import.meta.env.VITE_AGENT_URL ?? `ws://${location.hostname}:8787/ws`
+const AGENT_URL = agentUrl(location, import.meta.env.VITE_AGENT_URL)
 
 function loadToken() {
   try {

@@ -3,7 +3,7 @@
 Realtime monitoring dashboard for an M4 Mac mini: CPU, GPU, unified memory, disks (internal and external), network, processes, containers (Docker, Podman, Colima), shares and network accounts. Public repo: github.com/devdaviddr/minidash.
 
 ## Status
-Spec 0.5.0 (the CPU reactor) is current and approved. Releases v0.1.0 to v0.4.1 are published; v0.5.0 is in release. The project stays below 1.0.0: each release is a MINOR with its own spec directory, hotfixes are a PATCH, and the spec version equals the release version (ADR 0013). Deployment: native agent under launchd plus containerised web UI. Work tasks in the current `spec/<version>/tasks.md` order; scope changes go through the spec first (see `.claude/rules/sdd.md`).
+Spec 0.5.0 (the CPU reactor) is current and implemented. Releases v0.1.0 to v0.5.0 are published; the next release starts with `spec_tool.py bump minor` on `develop`. The project stays below 1.0.0: each release is a MINOR with its own spec directory, hotfixes are a PATCH, and the spec version equals the release version (ADR 0013). Deployment: native agent under launchd plus containerised web UI. Work tasks in the current `spec/<version>/tasks.md` order; scope changes go through the spec first (see `.claude/rules/sdd.md`).
 
 ## Where things are
 - `spec/<version>/{spec,plan,tasks}.md`: the contract. Highest version is current. Older versions are frozen.

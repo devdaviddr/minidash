@@ -8,6 +8,11 @@ updates:
     directory: /web
     schedule: { interval: weekly }
     commit-message: { prefix: "chore(deps)" }
+    ignore:
+      # The Node type definitions must match the Node the project runs (22, see the CI and Dockerfile).
+      # A newer major would let code use APIs that do not exist at runtime. Bump this deliberately when Node moves.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: weekly }

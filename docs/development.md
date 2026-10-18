@@ -70,7 +70,7 @@ gitGraph
 - Conventional Commits, 72 characters max for the first line: `feat(agent): add thing`. The body says why and cites `T-N`, `FR-N`, `AC-N`.
 - One logical change per commit. Never `--no-verify`, never force-push shared branches.
 - The `commit-msg`, `pre-commit` and `pre-push` hooks in `.githooks/` block bad messages, commits on `main`, edits to frozen spec versions, obvious secrets and pushes to `main`.
-- Open a PR into `main`. CI must pass (`governance`, `agent`, `web`). Squash single-task PRs; rebase-merge a PR whose commits are each atomic. See [ADR 0008](adr/0008-git-flow-and-merge-strategy.md).
+- Open a PR into `main`. CI must pass (`governance`, `agent`, `web`). Every PR is **squash-merged**: its title and description become the commit and the release note, and type and size labels are added automatically. See [ADR 0011](adr/0011-squash-merge-and-labelled-releases.md) and [releasing.md](releasing.md).
 
 ## Testing strategy
 | Layer | What | Where |
@@ -137,8 +137,8 @@ The test `Dashboard.test.tsx` then checks that every declared part renders and d
 
 | Job | Checks |
 | --- | --- |
-| `governance` | the spec tool runs; an approved spec has no unresolved `[NEEDS INPUT]` markers; PR titles are Conventional Commits |
+| `governance` | the spec tool runs; an approved spec has no unresolved `[NEEDS INPUT]` markers; PR titles are Conventional Commits; the PR labelling logic passes its tests |
 | `agent` | `go vet`, `go test` |
 | `web` | `npm ci`, oxlint, vitest, production build |
 
-Dependabot proposes weekly updates for Go modules, npm packages and GitHub Actions.
+Two more workflows run outside CI: `pr-labels` labels each PR from its title and size, and `release` publishes a GitHub Release when a `vX.Y.Z` tag is pushed ([releasing.md](releasing.md)). Dependabot proposes weekly updates for Go modules, npm packages and GitHub Actions.

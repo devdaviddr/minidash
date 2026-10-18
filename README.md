@@ -11,6 +11,7 @@ CPU, GPU, memory, power, disks, network, processes, containers and shares. Read-
 
 [![ci](https://img.shields.io/github/actions/workflow/status/devdaviddr/minidash/ci.yml?branch=main&style=flat-square&label=ci)](https://github.com/devdaviddr/minidash/actions/workflows/ci.yml)
 [![license](https://img.shields.io/github/license/devdaviddr/minidash?style=flat-square)](LICENSE)
+[![release](https://img.shields.io/github/v/release/devdaviddr/minidash?include_prereleases&style=flat-square)](https://github.com/devdaviddr/minidash/releases)
 ![macOS](https://img.shields.io/badge/macOS-Apple%20Silicon-000000?style=flat-square&logo=apple&logoColor=white)
 ![Go](https://img.shields.io/badge/agent-Go-00ADD8?style=flat-square&logo=go&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/web-React%20%2B%20TypeScript-3178C6?style=flat-square&logo=react&logoColor=white)
@@ -141,7 +142,7 @@ How it stays this light: [ADR 0006](docs/adr/0006-cpu-budget-and-throttling.md).
 | [Operations](docs/operations.md) | [Security](docs/security.md) |
 | [Troubleshooting](docs/troubleshooting.md) | [Development](docs/development.md) |
 | [Contributing](CONTRIBUTING.md) | [Decision records](docs/adr/README.md) |
-| [Changelog](CHANGELOG.md) | The [spec](spec/0.3.0/spec.md) |
+| [Changelog](CHANGELOG.md) | The [spec](spec/0.3.0/spec.md) and [releasing](docs/releasing.md) |
 
 The full index is [docs/README.md](docs/README.md).
 

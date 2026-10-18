@@ -42,7 +42,9 @@ Deployed to the Mac mini (M4, macOS 26.4, 693 processes, 14 Podman containers) a
 
 UI 1.1.0 (themes, restyle, customisable layout) was also deployed to the mini and checked over the LAN: the page and `theme-init.js` are served (as JavaScript, with the CSP and related headers), the bundle contains the new features, the container is still read-only and unprivileged, and the stream is accepted for the UI's origin. The gzipped bundle grew 19.9 kB against the 1.0.0 build (budget 40 kB).
 
-Still needs a human: the GPU-load check (AC-2) and a visual review of the UI in a browser, including real pointer and touch dragging, which automated tests cannot exercise.
+UI 1.2.0 (click to select, drag to resize, responsive cards) was deployed and checked the same way: the served CSS contains the container-query rules, the served bundle contains the resize slider and selection code, the container is unchanged (read-only, unprivileged, security headers), and the stream is accepted. The gzipped bundle is 21.7 kB above the 1.0.0 build (1.2.0 itself added 1.8 kB and no dependencies).
+
+Still needs a human: the GPU-load check (AC-2) and a visual review of the UI in a browser. That includes real pointer and touch dragging and resizing, and how each card looks at one-column and full width, which automated tests cannot judge.
 
 ## Manual acceptance checks (need the real mini)
 1. Open the UI from another device on the LAN: values update every second (AC-1, AC-4).

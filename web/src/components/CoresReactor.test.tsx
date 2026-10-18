@@ -87,10 +87,14 @@ describe('layout', () => {
     a.unmount()
     b.unmount()
   })
-  it('points every level rect at its own cell clip', () => {
+  it('clips every level to its own cell from an untransformed parent, so the fill stays inside the hexagon', () => {
     const { container } = render(<CoresReactor cores={[1, 2]} />)
     const clips = [...container.querySelectorAll('clipPath')].map((c) => c.id)
-    const used = [...container.querySelectorAll('[data-level]')].map((r) => r.getAttribute('clip-path'))
-    expect(used).toEqual(clips.map((id) => `url(#${id})`))
+    const levels = [...container.querySelectorAll('[data-level]')] as SVGElement[]
+    // a clip on the scaled rect would be scaled with it and let the fill leak outside the cell
+    expect(levels.map((r) => r.getAttribute('clip-path'))).toEqual([null, null])
+    const groups = levels.map((r) => r.parentElement as unknown as SVGElement)
+    expect(groups.map((g) => g.getAttribute('clip-path'))).toEqual(clips.map((id) => `url(#${id})`))
+    expect(groups.map((g) => g.getAttribute('transform') ?? g.style.transform)).toEqual(['', ''])
   })
 })

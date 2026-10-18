@@ -42,7 +42,7 @@ deploy/tailscale-https.sh on --dry-run   # show what it will do
 deploy/tailscale-https.sh on             # run on the Mac mini
 deploy/tailscale-https.sh status
 ```
-Then open `https://<mini>.<tailnet>.ts.net/` from any device on the tailnet. The page connects with `wss://<mini>.<tailnet>.ts.net:8787/ws`. The script serves the UI on HTTPS 443 and the agent on HTTPS 8787 with `tailscale serve`, adds the name to the agent's allowed origins, and restarts the agent. It is safe to run twice, and `deploy/tailscale-https.sh off` undoes it. The LAN HTTP addresses keep working.
+Then open `https://<mini>.<tailnet>.ts.net/` from any device on the tailnet. The page connects with `wss://<mini>.<tailnet>.ts.net/ws`, on the page's own address. The script serves the UI and the agent's stream path `/ws` on HTTPS 443 with `tailscale serve` (never the agent's port 8787, which the agent itself listens on; ADR 0016), adds the name to the agent's allowed origins, and restarts the agent. It is safe to run twice, and `deploy/tailscale-https.sh off` undoes it. The LAN HTTP addresses keep working.
 
 It never uses Funnel, so nothing is exposed to the public internet; the script refuses it. See [ADR 0012](adr/0012-https-through-tailscale-serve.md) and, if something fails, [troubleshooting.md](troubleshooting.md#https-over-tailscale).
 

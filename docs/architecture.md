@@ -144,7 +144,7 @@ flowchart TB
     gv["gvproxy<br/>publishes :8080 to the host"]
   end
 
-  tsh["tailscale serve<br/>HTTPS 443 and 8787<br/>(tailnet only)"]
+  tsh["tailscale serve<br/>HTTPS 443: / and /ws<br/>(tailnet only)"]
 
   lan --> gv
   gv --> ct
@@ -152,7 +152,7 @@ flowchart TB
   ts -- "HTTPS" --> tsh
   tsh --> ct
   ts -. "wss" .-> tsh
-  tsh -. "to 127.0.0.1:8787" .-> ag
+  tsh -. "/ws to 127.0.0.1:8787" .-> ag
 ```
 
 - The agent runs as **you**, not root, so it can reach your per-user container sockets. `KeepAlive` restarts it if it dies (observed: about one second).

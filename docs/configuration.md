@@ -37,7 +37,7 @@ launchctl kickstart -k gui/$(id -u)/com.minidash.agent
 ## Web UI
 | Setting | How | Meaning |
 | --- | --- | --- |
-| Agent URL | build-time `VITE_AGENT_URL` | Defaults to `ws://<page host>:8787/ws` for an HTTP page and `wss://<page host>:8787/ws` for an HTTPS page (browsers block `ws://` from HTTPS), which is right when the UI and agent are on the same machine. Set it, for example `ws://mini.example.lan:8787/ws`, when they differ. Rebuild the image after changing it. |
+| Agent URL | build-time `VITE_AGENT_URL` | Defaults to `ws://<page host>:8787/ws` for an HTTP page and `wss://<page host>/ws` for an HTTPS page (same origin through Tailscale Serve; browsers block `ws://` from HTTPS; ADR 0016), which is right when the UI and agent are on the same machine. Set it, for example `ws://mini.example.lan:8787/ws`, when they differ. Rebuild the image after changing it. |
 | Wall display | `?wall` in the URL, or the "Wall display" button | Larger type; hides the process table and shares card. Applied on top of your layout, never saved. |
 | Layout | the **Customise** panel | Which cards and details show, their order and width. Saved in `localStorage` (`minidash.layout`). See [customising.md](customising.md). |
 | Access token | entered once in the page | Stored in the browser's `localStorage`. If storage is blocked it lasts for the session only. |

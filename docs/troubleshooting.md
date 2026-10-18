@@ -60,7 +60,8 @@ Each card reports its own collector. One failing collector never affects the oth
 | --- | --- | --- |
 | `deploy/tailscale-https.sh on` says Serve is not enabled (exit 3) | Tailscale Serve is off for your tailnet, an account setting | Open the link the script prints, enable it, and run the script again. Nothing was changed. |
 | It says HTTPS certificates are not enabled | The tailnet's "HTTPS Certificates" setting is off | Enable it in the Tailscale admin console (DNS page), then run again. |
-| The HTTPS page loads but stays "disconnected" | The agent does not allow the page's origin, or the agent's HTTPS port is not served | `deploy/tailscale-https.sh status` should say the agent allows the origin and show 443 and 8787. Run `on` again to repair both. |
+| The HTTPS page loads but stays "disconnected" | The agent does not allow the page's origin, or `/ws` is not served | `deploy/tailscale-https.sh status` should say the agent allows the origin and show `/` and `/ws` under 443. Run `on` again to repair both. |
+| The agent keeps restarting with `bind: address already in use` after turning on HTTPS | An older version of the script served HTTPS on port 8787, which takes that port from the agent | Run `deploy/tailscale-https.sh on` from 0.6.2 or later: it removes the serve on 8787 and serves the stream at `/ws` on 443 (ADR 0016). |
 | The browser blocks the connection as mixed content | An old UI build that always used `ws://` | Upgrade (`deploy/upgrade.sh`) and hard-refresh. From 0.4.0 the UI uses `wss://` on HTTPS pages. |
 | The script stops with exit 4 | Funnel (public internet) is on for this machine | Turn it off with `tailscale funnel reset`. This dashboard is tailnet-only. |
 | The HTTPS address does not resolve | The device is not on the tailnet, or MagicDNS is off | Connect Tailscale on that device and check the machine name in `deploy/tailscale-https.sh status`. |

@@ -4,6 +4,13 @@ All notable changes are recorded here. The format follows [Keep a Changelog](htt
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-18
+Hotfix.
+
+### Fixed
+- The process card, README and docs said macOS does not expose per-process GPU use without root. It does, through the IORegistry; the text now says the column is not built yet ([ADR 0014](docs/adr/0014-per-process-gpu-time-without-root.md)).
+- The README status described 0.3.0; it now reflects the published releases.
+
 ## [0.5.0] - 2026-10-18
 Spec 0.5.0.
 
@@ -101,7 +108,8 @@ First complete implementation of spec 0.1.0. A GPU-load check (AC-2) and a visua
 - Architecture with diagrams, configuration, operations, troubleshooting, security model and development guide; decision records 0002 to 0008.
 - README with a banner, a dashboard layout illustration (clearly labelled, made-up values), badges, requirements, a performance table and a quick start.
 
-[Unreleased]: https://github.com/devdaviddr/minidash/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/devdaviddr/minidash/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/devdaviddr/minidash/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/devdaviddr/minidash/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/devdaviddr/minidash/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/devdaviddr/minidash/compare/v0.3.0...v0.4.0

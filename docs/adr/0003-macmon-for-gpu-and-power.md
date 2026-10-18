@@ -1,6 +1,6 @@
 # 3. Use macmon for GPU, power and thermals
 
-Status: accepted
+Status: accepted. The per-process GPU consequence is corrected by [ADR 0014](0014-per-process-gpu-time-without-root.md).
 
 ## Context
 macOS exposes Apple Silicon GPU utilisation, power draw, die temperatures and fan speeds through private IOReport and SMC interfaces. The documented command, `powermetrics`, needs root.

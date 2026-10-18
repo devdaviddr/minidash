@@ -194,11 +194,11 @@ describe('a selected card\'s settings', () => {
     const { container } = render(<Harness />)
     await select('CPU')
     expect(screen.getByLabelText('Per-core utilisation')).toBeTruthy()
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Show Per-core bars in CPU' }))
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Show Per-core reactor in CPU' }))
     expect(screen.queryByLabelText('Per-core utilisation')).toBeNull()
     expect(container.querySelector('[data-card="cpu"] [data-part="chart"]')).toBeTruthy()
     expect(container.querySelector('[data-card="memory"] [data-part="breakdown"]')).toBeTruthy()
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Show Per-core bars in CPU' }))
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Show Per-core reactor in CPU' }))
     expect(screen.getByLabelText('Per-core utilisation')).toBeTruthy()
   })
 

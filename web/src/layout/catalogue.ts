@@ -20,7 +20,7 @@ export interface CardDef {
 export const CARDS = [
   { id: 'cpu', title: 'CPU', defaultSpan: 2, parts: [
     { id: 'chart', label: 'History chart' },
-    { id: 'cores', label: 'Per-core bars' },
+    { id: 'cores', label: 'Per-core reactor' },
     { id: 'load', label: 'Load average' },
   ] },
   { id: 'gpu', title: 'GPU & power', defaultSpan: 2, parts: [

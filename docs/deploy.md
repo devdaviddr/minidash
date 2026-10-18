@@ -90,7 +90,7 @@ Still needs a human: the GPU-load check (AC-2) and a visual review of the UI in 
 
 ### Checks only the owner can do (open in a browser)
 These are the accepted gaps in the current spec (section 9). Tick them off here when done.
-8. **Card dragging and resizing (AC-12, AC-18):** open Customise.
+8. **Card dragging and resizing (AC-12, AC-18):** open Settings.
    - With a mouse, drag a card to a new place and drag its right edge across column boundaries. It snaps to 1-4 columns and Escape cancels.
    - Do the same on a phone or tablet with touch.
 9. **Card widths (AC-20):** set each card to width 1 and then to width 4. Nothing is clipped, overflows or looks cramped.

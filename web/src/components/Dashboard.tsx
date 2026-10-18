@@ -12,7 +12,7 @@ function EmptyState({ onShowAll, wall }: { onShowAll: () => void; wall: boolean 
         <h2 className="text-base font-semibold">Nothing to show</h2>
         <p className="mt-2 text-sm text-muted">
           {wall ? 'Wall display hides some cards, and the rest are hidden in your layout. ' : 'Every card is hidden in your layout. '}
-          Show them again, or open Customise to choose what appears.
+          Show them again, or open Settings to choose what appears.
         </p>
         <button
           type="button"
@@ -30,7 +30,7 @@ interface Props {
   history: Snapshot[]
   layout: Layout
   wall: boolean
-  /** True while the customise panel is open: cards show drag handles. */
+  /** True while the settings panel is open: cards show drag handles. */
   editing?: boolean
   /** The selected card (only meaningful while editing). */
   selectedId?: CardId | null

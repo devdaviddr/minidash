@@ -7,7 +7,7 @@ import type { CardId } from '../layout/catalogue'
 import { defaultLayout, layoutReducer, loadLayout } from '../layout/model'
 import { useLayout } from '../layout/useLayout'
 import { fixture } from '../test/fixture'
-import { CustomisePanel } from './CustomisePanel'
+import { SettingsPanel } from './SettingsPanel'
 import { Dashboard } from './Dashboard'
 import { SortableGrid } from './SortableGrid'
 
@@ -209,7 +209,7 @@ describe('Escape with the customise panel open', () => {
     return (
       <>
         <Dashboard history={history} layout={layout} wall={false} editing selectedId={selected} onSelect={setSelected} dispatch={dispatch} />
-        <CustomisePanel layout={layout} dispatch={dispatch} onClose={onClose} selectedId={selected} onSelect={setSelected} saved />
+        <SettingsPanel layout={layout} dispatch={dispatch} onClose={onClose} selectedId={selected} onSelect={setSelected} saved range={300} agentWindow={2419200} onRangeChange={() => {}} token="t" agentHttp="http://x" />
       </>
     )
   }

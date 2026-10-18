@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { CARDS, type CardId } from '../layout/catalogue'
 import { defaultLayout, layoutReducer } from '../layout/model'
 import { fixture } from '../test/fixture'
-import { CustomisePanel } from './CustomisePanel'
+import { SettingsPanel } from './SettingsPanel'
 import { Dashboard } from './Dashboard'
 
 vi.mock('./Chart', () => ({ Chart: () => <div data-testid="chart" /> }))
@@ -94,7 +94,7 @@ describe('Escape while dragging with the customise panel open', () => {
     return (
       <>
         <Dashboard history={history} layout={layout} wall={false} editing selectedId={selected} onSelect={setSelected} dispatch={dispatch} />
-        <CustomisePanel layout={layout} dispatch={dispatch} onClose={onClose} selectedId={selected} onSelect={setSelected} saved />
+        <SettingsPanel layout={layout} dispatch={dispatch} onClose={onClose} selectedId={selected} onSelect={setSelected} saved range={300} agentWindow={2419200} onRangeChange={() => {}} token="t" agentHttp="http://x" />
       </>
     )
   }

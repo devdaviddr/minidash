@@ -1,7 +1,10 @@
-import { useEffect, useRef, type Dispatch } from 'react'
+import { useEffect, useRef, useState, type Dispatch } from 'react'
 import { CARDS, SPANS, SUMMARY_PARTS, cardDef, type CardId, type PartDef, type Span } from '../layout/catalogue'
 import type { CardLayout, Layout, LayoutAction } from '../layout/model'
 import { LayoutFileControls } from './LayoutFileControls'
+import { RangePicker } from './RangePicker'
+import { fetchHistory, clampRange } from '../lib/history'
+import type { Snapshot } from '../contract/snapshot'
 
 const SPAN_LABEL: Record<Span, string> = { 1: '1 column', 2: '2 columns', 3: '3 columns', 4: 'Full width' }
 const SPAN_SHORT: Record<Span, string> = { 1: '1', 2: '2', 3: '3', 4: 'Full' }
@@ -19,6 +22,14 @@ interface Props {
   onSelect: (id: CardId | null) => void
   /** False when the browser would not let us store the layout: it then lasts for this session only. */
   saved: boolean
+  /** Selected chart range in seconds (FR-38). */
+  range: number
+  /** The agent's retention window (max selectable). */
+  agentWindow: number
+  onRangeChange: (seconds: number) => void
+  /** Access token and agent HTTP base, used to view stored history. */
+  token: string
+  agentHttp: string
 }
 
 type D = Dispatch<LayoutAction>
@@ -138,13 +149,58 @@ function CardDetail({ card, firstVisible, lastVisible, dispatch, onBack }: { car
   )
 }
 
+/** Compact table of the stored history points for the selected range (FR-38, view the data). */
+function HistoryTable({ points }: { points: Snapshot[] }) {
+  if (points.length === 0) {
+    return <p className="text-xs text-muted">No stored history for this range yet.</p>
+  }
+  const rows = points.slice(-50).reverse() // newest first
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse text-xs">
+        <thead>
+          <tr className="text-left text-muted">
+            <th className="py-1 pr-2">Time</th>
+            <th className="py-1 pr-2">CPU %</th>
+            <th className="py-1 pr-2">Mem used</th>
+            <th className="py-1 pr-2">GPU %</th>
+            <th className="py-1">Net in/out</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((s, i) => {
+            const cpu = s.collectors.cpu?.data?.total
+            const mem = s.collectors.memory?.data?.used
+            const gpu = s.collectors.soc?.data?.gpu?.usage
+            const net = s.collectors.network?.data?.total
+            const fmt = (n: unknown) => (typeof n === 'number' ? n.toFixed(1) : '–')
+            const bytes = (n: unknown) => (typeof n === 'number' ? `${(n / 1e6).toFixed(1)} MB` : '–')
+            return (
+              <tr key={i} className="border-t border-line">
+                <td className="py-1 pr-2">{new Date(s.ts).toLocaleString()}</td>
+                <td className="py-1 pr-2">{fmt(cpu)}</td>
+                <td className="py-1 pr-2">{bytes(mem)}</td>
+                <td className="py-1 pr-2">{fmt(gpu)}</td>
+                <td className="py-1">{bytes(net?.rxBps)} / {bytes(net?.txBps)}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+      <p className="mt-2 text-xs text-muted">{points.length} stored points for this range (showing the newest 50).</p>
+    </div>
+  )
+}
+
 /**
  * Non-modal side sheet: you keep seeing the dashboard change while you adjust it. With a card selected it
- * shows that card's settings; otherwise it shows the overview and the save, export and import controls.
- * Escape deselects first, then closes.
+ * shows that card's settings; otherwise it shows the overview, the retention controls and the save, export
+ * and import controls. Escape deselects first, then closes.
  */
-export function CustomisePanel({ layout, dispatch, onClose, selectedId, onSelect, saved }: Props) {
+export function SettingsPanel({ layout, dispatch, onClose, selectedId, onSelect, saved, range, agentWindow, onRangeChange, token, agentHttp }: Props) {
   const panel = useRef<HTMLElement>(null)
+  const [dataPoints, setDataPoints] = useState<Snapshot[] | null>(null)
+  const [dataError, setDataError] = useState<string | null>(null)
 
   useEffect(() => {
     panel.current?.focus()
@@ -158,6 +214,17 @@ export function CustomisePanel({ layout, dispatch, onClose, selectedId, onSelect
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose, onSelect, selectedId])
+
+  const viewData = () => {
+    const window = clampRange(range, agentWindow)
+    setDataError(null)
+    fetchHistory(agentHttp, token, window)
+      .then((pts) => setDataPoints(pts))
+      .catch(() => {
+        setDataPoints(null)
+        setDataError('Could not load stored history from the agent.')
+      })
+  }
 
   const visible = layout.cards.filter((c) => c.visible).map((c) => c.id)
   const selected = selectedId ? layout.cards.find((c) => c.id === selectedId) : undefined
@@ -174,14 +241,14 @@ export function CustomisePanel({ layout, dispatch, onClose, selectedId, onSelect
       tabIndex={-1}
       role="dialog"
       aria-modal="false"
-      aria-labelledby="customise-title"
+      aria-labelledby="settings-title"
       className="fixed inset-y-0 right-0 z-40 flex w-full max-w-sm flex-col gap-4 overflow-y-auto border-l border-line bg-surface p-4 shadow-xl outline-none"
     >
       <div className="flex items-center justify-between">
-        <h2 id="customise-title" className="text-base font-semibold">
-          Customise
+        <h2 id="settings-title" className="text-base font-semibold">
+          Settings
         </h2>
-        <button type="button" onClick={onClose} aria-label="Close customise panel" className={iconButton}>
+        <button type="button" onClick={onClose} aria-label="Close settings panel" className={iconButton}>
           ✕
         </button>
       </div>
@@ -191,6 +258,29 @@ export function CustomisePanel({ layout, dispatch, onClose, selectedId, onSelect
           This browser would not let minidash save your layout, so it lasts until you close the page.
         </p>
       )}
+
+      <section aria-labelledby="retention-heading">
+        <h3 id="retention-heading" className={heading}>
+          Retention
+        </h3>
+        <div className="rounded-xl border border-line bg-bg p-3">
+          <RangePicker value={range} agentWindow={agentWindow} onChange={onRangeChange} />
+          <p className="mt-2 text-xs text-muted">How far back the charts reach, up to the agent&apos;s retention window.</p>
+          <button type="button" onClick={viewData} className={`mt-3 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium hover:text-accent ${focusRing}`}>
+            View stored data
+          </button>
+          {dataError && (
+            <p role="alert" className="mt-2 rounded-lg border border-line bg-bg px-3 py-2 text-xs text-muted">
+              {dataError}
+            </p>
+          )}
+          {dataPoints !== null && (
+            <div className="mt-3">
+              <HistoryTable points={dataPoints} />
+            </div>
+          )}
+        </div>
+      </section>
 
       {selected ? (
         <CardDetail card={selected} firstVisible={visible[0] === selected.id} lastVisible={visible.at(-1) === selected.id} dispatch={dispatch} onBack={back} />

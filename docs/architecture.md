@@ -174,7 +174,7 @@ flowchart LR
     html["data-theme on html"]
     sw["Theme switch"]
     hook["useLayout<br/>reducer, saves on change"]
-    panel["Customise panel<br/>show/hide, width, parts,<br/>move, reset, export/import"]
+    panel["Settings panel<br/>show/hide, width, parts,<br/>move, reset, export/import"]
     grid["Dashboard + SortableGrid<br/>cards in layout order"]
     cat["Catalogue + registry<br/>cards, parts, components"]
   end
@@ -196,7 +196,7 @@ flowchart LR
 - The **catalogue** (`web/src/layout/catalogue.ts`) lists every card and every hideable detail. The **registry** maps each card to its component. Validation, the panel and the grid all read from them, and a test checks the catalogue against the real components.
 - The **layout model** is pure code: a validator that refuses wrong structure and repairs what a newer or older version could produce, and a reducer for the actions. It never touches the network.
 - **Cards respond to their own width.** `Card` is a size container, and everything inside uses container variants (`@xl:`, `@3xl:`) so a one-column and a full-width card each fit. The page grid is 1 column below 768 px, 2 from 768 px and 4 from 1024 px. See [ADR 0010](adr/0010-container-queries-and-width-resize.md).
-- **Selection and resizing.** The app holds a transient `selectedId` (never stored). Clicking a card while Customise is open selects it and the sidebar shows that card. A grip on each card's edge resizes in whole columns through a pure `spanFromPointer` function, and is also a keyboard slider.
+- **Selection and resizing.** The app holds a transient `selectedId` (never stored). Clicking a card while Settings is open selects it and the sidebar shows that card. A grip on each card's edge resizes in whole columns through a pure `spanFromPointer` function, and is also a keyboard slider.
 - **Themes** use a `data-theme` attribute and CSS variables. System means no attribute, so CSS follows the OS. `theme-init.js` is a separate same-origin file because the container's CSP forbids inline scripts. See [ADR 0009](adr/0009-browser-side-layout-and-theme.md) and [customising.md](customising.md).
 
 ## The contract
@@ -229,7 +229,7 @@ agent/                  Go module (the agent)
     testutil/           schema-contract assertion shared by collector tests
 web/                    React + Vite + Tailwind app (and its Dockerfile, nginx config)
   src/layout/           catalogue, registry, layout model, drag-and-drop and resize helpers
-  src/components/       cards, dashboard grid, customise panel, theme switch
+  src/components/       cards, dashboard grid, settings panel, theme switch
 contracts/              JSON Schema for the wire format
 deploy/                 launchd installer, run script, compose file
 docs/                   this documentation, ADRs

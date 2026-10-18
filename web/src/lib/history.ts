@@ -48,7 +48,7 @@ export function clampRange(requested: number, agentWindow: number): number {
 export async function fetchHistory(baseUrl: string, token: string, windowSeconds: number): Promise<Snapshot[]> {
   const url = `${baseUrl}/history?window=${windowSeconds}&token=${encodeURIComponent(token)}`
   const res = await fetch(url)
-  if (!res.ok) return []
+  if (!res.ok) throw new Error(`history request failed: ${res.status}`)
   const body = (await res.json()) as { points: Array<{ ts: string; collectors: Snapshot['collectors'] }> }
   return (body.points ?? []).map((p) => ({
     schema: 1,

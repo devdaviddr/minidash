@@ -24,6 +24,20 @@ The token is compared in constant time. It travels in a WebSocket message, not t
 | `MINIDASH_MACMON` | `macmon` | macmon binary path. |
 | `MINIDASH_SOC_INTERVAL_MS` | `2000` | macmon sampling period, minimum 250. Lower is fresher GPU data and more CPU. |
 | `MINIDASH_PROC_GPU_INTERVAL_MS` | `3000` | Per-process GPU read period: `0` (off) or a multiple of 3000. When off or failing, every `gpu` is `null` and `processesData.gpuError` says why. |
+| `MINIDASH_RETENTION` | `1h` | History retention window (spec 0.7.0): one of `5m`, `10m`, `20m`, `30m`, `1h`, `7h`, `1d`, `7d`, `28d`. |
+| `MINIDASH_HISTORY_DIR` | `~/.config/minidash/history` | Directory where stored history lives. |
+
+## History endpoint (spec 0.7.0)
+
+The agent stores collected snapshots for the configured retention window and serves them over
+`GET /history`. Recent ticks are kept raw; older data is downsampled into coarser buckets (10 s,
+1 min, 5 min, 1 h) so a 28-day window stays small. Only the lightweight time-series collectors (CPU,
+memory, SoC/GPU, disk, network) are stored long-term; the process, container and shares lists are not.
+
+- Request: `GET /history?window=<seconds>&token=<token>` (the token may also be sent as an
+  `Authorization: Bearer <token>` header). `window` is clamped to the retention window.
+- Response: `{"points": [{"ts": "...", "collectors": {...}}]}`.
+- A missing or wrong token returns `401`.
 
 ## Web UI
 - `?wall` in the URL, or the "Wall display" button, switches to a wall-display layout: larger type, and the process table and shares card are hidden so the overview fits one screen.

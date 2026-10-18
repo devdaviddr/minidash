@@ -11,6 +11,8 @@ The agent reads environment variables. Under launchd they come from `~/.config/m
 | `MINIDASH_MACMON` | `macmon` | Path or name of the macmon binary. |
 | `MINIDASH_SOC_INTERVAL_MS` | `2000` | How often macmon samples GPU, power, temperatures and fans. Minimum 250. Lower is fresher and costs more CPU (about 0.7% extra at 1000). Invalid values stop the agent at startup. |
 | `MINIDASH_PROC_GPU_INTERVAL_MS` | `3000` | How often the agent reads per-process GPU time for the process table's GPU column (one `ioreg` run per read). `0` turns it off: the column shows "–" and the card says why. Otherwise a multiple of 3000 (the process list refreshes every 3 s), up to 3600000. Longer is cheaper and less fresh. Invalid values stop the agent at startup. |
+| `MINIDASH_RETENTION` | `1h` | How long collected history is kept (log retention, spec 0.7.0). One of `5m`, `10m`, `20m`, `30m`, `1h`, `7h`, `1d`, `7d`, `28d`. Older data is downsampled into coarser buckets so a 28-day window stays small. Invalid values stop the agent at startup. |
+| `MINIDASH_HISTORY_DIR` | `~/.config/minidash/history` | Directory where history is stored. |
 
 An unset origin list means only same-origin pages can connect, which is not what you want when the UI runs in its own container.
 
@@ -37,6 +39,7 @@ launchctl kickstart -k gui/$(id -u)/com.minidash.agent
 ## Web UI
 | Setting | How | Meaning |
 | --- | --- | --- |
+| Chart range | the **Range** selector in the header | How far back the charts show, from the live 5-minute view up to the agent's retention window (spec 0.7.0). Ranges longer than 5 minutes load stored history from the agent's `/history` endpoint. |
 | Agent URL | build-time `VITE_AGENT_URL` | Defaults to `ws://<page host>:8787/ws` for an HTTP page and `wss://<page host>/ws` for an HTTPS page (same origin through Tailscale Serve; browsers block `ws://` from HTTPS; ADR 0016), which is right when the UI and agent are on the same machine. Set it, for example `ws://mini.example.lan:8787/ws`, when they differ. Rebuild the image after changing it. |
 | Wall display | `?wall` in the URL, or the "Wall display" button | Larger type; hides the process table and shares card. Applied on top of your layout, never saved. |
 | Layout | the **Customise** panel | Which cards and details show, their order and width. Saved in `localStorage` (`minidash.layout`). See [customising.md](customising.md). |

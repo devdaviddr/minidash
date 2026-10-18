@@ -48,7 +48,7 @@ CPU, GPU, memory, power, disks, network, processes, containers and shares. Read-
 | **Containers** | Docker, Podman and Colima side by side, with per-container CPU, memory and network |
 | **Shares and accounts** | Mounted SMB and NFS shares, folders this Mac shares, connected clients and their accounts |
 
-Make it yours: a **System / Light / Dark** theme switch, and a **Customise** panel where you click a card to edit it, drag its edge to resize it, drag it to reorder, and show or hide cards and details. Every card adapts to the width you give it. Your layout is saved in the browser and can be exported and imported ([guide](docs/customising.md)). A wall-display mode (add `?wall` to the URL) hides the heavy cards for a big screen.
+Make it yours: a **System / Light / Dark** theme switch, and a **Customise** panel where you click a card to edit it, drag its edge to resize it, drag it to reorder, and show or hide cards and details. Every card adapts to the width you give it. Your layout is saved in the browser and can be exported and imported ([guide](docs/customising.md)). A wall-display mode (add `?wall` to the URL) hides the heavy cards for a big screen. A **Range** selector shows history from the live 5-minute view back to a configurable retention window (`MINIDASH_RETENTION`, up to 28 days).
 
 ## How it works
 

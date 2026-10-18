@@ -10,7 +10,7 @@ Each collector is one entry in the snapshot's `collectors` map. A failure shows 
 
 ## Notes
 - **Used memory** follows Activity Monitor's idea of "memory pressure" (active + wired + compressed). Inactive pages are reclaimable and excluded.
-- **GPU** utilisation is system-wide. The process table has no GPU column yet. macOS does expose per-process GPU time to normal users: each GPU client in the IORegistry (`ioreg -r -c AGXDeviceUserClient -l`) names its process and reports an `accumulatedGPUTime` counter, though some clients are created on an app's behalf by `runningboardd` or `WindowServer`. See [ADR 0014](adr/0014-per-process-gpu-time-without-root.md).
+- **GPU** utilisation in the GPU card is system-wide, from `macmon`. The process table's GPU column is per process; see [processes](#processes).
 - **Manual check (AC-2)**: run a GPU-heavy app (a game, `ffmpeg` with VideoToolbox, a Metal benchmark) and watch GPU % and power rise on the dashboard. This cannot be automated headlessly.
 
 ## disks
@@ -26,7 +26,13 @@ Each collector is one entry in the snapshot's `collectors` map. A failure shows 
 
 ## processes
 - **Source:** gopsutil process table. Per process: resident memory, user+system CPU time, thread count. Name and owner are looked up only for the processes that make the list, because those two calls cost about 80% of a full scan.
-- **List:** union of the top 25 by CPU and the top 25 by resident memory, so the browser can sort either way. `total` is every process the agent can read.
+- **List:** union of the top 25 by CPU, the top 25 by resident memory and the top 25 by GPU % (above 0 only), so the browser can sort any way. `total` is every process the agent can read.
+- **GPU** (`gpu`, 0.6.0) is percent of the whole GPU, 0-100: the change in a process's GPU time over the wall time between two GPU reads. GPU time is the sum of `AppUsage[].accumulatedGPUTime` (nanoseconds) over every GPU client the process opened, read without root by running `ioreg -r -c AGXDeviceUserClient -l -a` and decoding its plist ([ADR 0015](adr/0015-read-gpu-time-by-forking-ioreg.md)).
+  - **Interval:** every 3 s by default, alongside the process refresh; `MINIDASH_PROC_GPU_INTERVAL_MS` sets a multiple of 3000, or `0` to turn it off. Between reads the last values are reused.
+  - **`null` ("–")** before the second read, for a process new to the GPU or new since the last read, and for one whose GPU time went down (a client closed or the pid was reused; the next read measures from the new baseline). A process with no GPU clients reads 0. Values above 100 (overlapping work on several clients) are clamped to 100.
+  - **Attribution:** time is credited to the process macOS names as the client's creator. `runningboardd` and `WindowServer` open clients on apps' behalf, so an app's GPU work can show on them. minidash does not re-attribute it.
+  - **Failure modes:** `ioreg` failing, taking over 1 s (killed), printing over 4 MiB, listing over 4096 clients, malformed output, or a creator format no client matches (the message names the macOS version). Each makes every `gpu` `null` and sets `gpuError`, shown as "GPU unavailable: <reason>"; the list, CPU and memory are unaffected. Off (`0`) reports the same way.
+  - **Fixtures:** `agent/internal/collect/gputime/testdata` holds two reads recorded on the Mac mini 3 s apart, sanitised (pids renumbered, app names replaced except system services, ids and unused keys dropped), plus synthetic edge cases.
 - **CPU** is percent of one core (can exceed 100), from CPU-time deltas over real elapsed time.
 - **Privacy:** executable name only. Command-line arguments are never collected, since they can contain secrets.
 - **Refresh:** every 3 s (wrapped in `snapshot.Throttle`) to stay inside the CPU budget; the stream still ticks at 1 Hz and repeats the last result in between.

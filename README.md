@@ -130,6 +130,8 @@ Measured on an M4 Mac mini over 60 seconds with a browser connected, 693 process
 | `macmon` (GPU and power sampler) | about 0.35% | small |
 | **Total** | **about 1.65%** (budget: under 2%) | |
 
+The per-process GPU column (0.6.0) adds about 0.2% at its default 3 s interval ([figures](docs/collectors.md#per-process-gpu-spec-060-t-37-ac-35)).
+
 How it stays this light: [ADR 0006](docs/adr/0006-cpu-budget-and-throttling.md).
 
 ## Documentation
@@ -155,7 +157,7 @@ Pre-1.0 and in daily use on a real Mac mini. Every release from 0.1.0 (the monit
 
 <br>
 
-- GPU use is shown system-wide only. macOS does expose per-process GPU time without root (in the IORegistry); minidash does not read it yet.
+- Per-process GPU time is credited to the process macOS names as the GPU client. System services such as `runningboardd` and `WindowServer` can carry GPU time on an app's behalf, so an app can look idle while one of them looks busy. See [collectors](docs/collectors.md#processes).
 - Connected-client account names can be blank, because macOS may serve SMB sessions as root.
 - Only SMB and NFS shares are covered (AFP is out of scope).
 - One shared access token, no per-user accounts, and no TLS built in.

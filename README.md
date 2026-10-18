@@ -39,7 +39,7 @@ CPU, GPU, memory, power, disks, network, processes, containers and shares. Read-
 
 | | |
 | --- | --- |
-| **CPU** | Total and per-core use, load average, 5 minute history |
+| **CPU** | Total use, a hexagon "reactor" showing every core's load, load average, 5 minute history |
 | **GPU and power** | GPU use and clock, CPU clusters, system power in watts, temperatures, fan speeds |
 | **Unified memory** | Used, wired, active, compressed and inactive memory, swap |
 | **Storage** | Internal and external volumes with capacity bars, per-disk read and write throughput |
@@ -165,7 +165,7 @@ Spec 0.1.0 (the monitor) is implemented, tested and deployed to a real Mac mini.
 
 ## Contributing
 
-minidash is spec-driven and trunk-based: write the requirement first, work on short-lived branches, use Conventional Commits, and merge through CI. Read [CONTRIBUTING.md](CONTRIBUTING.md) to get started. For security issues, follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
+minidash is spec-driven and uses Git Flow: write the requirement first, branch from `develop`, use Conventional Commits, and merge through CI. Read [CONTRIBUTING.md](CONTRIBUTING.md) to get started. For security issues, follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
 
 ## License
 

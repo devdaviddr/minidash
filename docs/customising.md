@@ -39,7 +39,7 @@ While the panel is open, every card shows a **Drag** handle at its top edge.
 | Card | Details |
 | --- | --- |
 | Summary strip | CPU, GPU, Memory, Network, Power |
-| CPU | History chart, Per-core bars, Load average |
+| CPU | History chart, Per-core reactor, Load average |
 | GPU & power | History chart, CPU clusters, Temperatures, Fans |
 | Unified memory | History chart, Breakdown bar, Swap |
 | Network | History chart, Interface list |
@@ -59,7 +59,7 @@ The page adapts at two levels.
 
 | Card | Narrow (1 column) | Wide |
 | --- | --- | --- |
-| CPU | shorter core bars, load average wraps under the total | taller core bars |
+| CPU | the hexagon cluster shrinks to fit and drops the core numbers, load average wraps under the total | bigger hexagons with core numbers, using the card's spare height |
 | GPU & power | tiles in one or two columns | four tiles across |
 | Memory | total and swap stacked | total and swap side by side |
 | Network | rates wrap, cumulative bytes hidden | cumulative bytes shown |
@@ -93,7 +93,7 @@ The order of `cards` is the display order. `span` is 1, 2, 3 or 4 (files from 0.
 `?wall` in the URL, or the **Wall display** button, hides the process table and the shares card and enlarges the type. It is applied on top of your layout and never changes it, so turning it off brings those cards back.
 
 ## Ideas
-- **Wall screen:** hide Processes and Shares, drag CPU and Network to full width, and hide the per-core bars.
+- **Wall screen:** hide Processes and Shares, drag CPU and Network to full width, and hide the per-core reactor.
 - **Phone:** hide the summary strip, history charts and Containers, and keep CPU, Memory and Storage.
 - **Quiet server:** hide Fans, Temperatures and the process note.
 

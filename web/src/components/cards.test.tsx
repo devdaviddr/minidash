@@ -20,10 +20,10 @@ afterEach(cleanup)
 const h = [fixture()]
 
 describe('cards render a healthy snapshot', () => {
-  it('cpu shows total and per-core bars', () => {
+  it('cpu shows the total and a hexagon for every core', () => {
     render(<CpuCard history={h} />)
     expect(screen.getByText('42')).toBeTruthy()
-    expect(screen.getByLabelText('Per-core utilisation').children.length).toBe(4)
+    expect(screen.getByLabelText('Per-core utilisation').querySelectorAll('[data-core]').length).toBe(4)
   })
   it('gpu shows usage, power and fans', () => {
     render(<GpuCard history={h} />)

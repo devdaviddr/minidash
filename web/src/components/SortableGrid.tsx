@@ -10,12 +10,13 @@ import {
 } from '@dnd-kit/core'
 import { SortableContext, rectSortingStrategy, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import type { Dispatch } from 'react'
+import { useRef, type Dispatch } from 'react'
 import type { Snapshot } from '../contract/snapshot'
-import { cardDef, type CardId } from '../layout/catalogue'
+import { cardDef, type CardId, type Span } from '../layout/catalogue'
 import { reorderFromDrop } from '../layout/dnd'
 import type { CardLayout, LayoutAction } from '../layout/model'
 import { COMPONENTS } from '../layout/registry'
+import { ResizeGrip } from './ResizeGrip'
 import { SPAN_CLASS } from '../layout/spans'
 
 interface ItemProps {
@@ -24,16 +25,21 @@ interface ItemProps {
   editing: boolean
   selected: boolean
   onSelect: (id: CardId) => void
+  onSpan: (id: CardId, span: Span) => void
 }
 
 /** One grid cell. While customising it gets a drag handle; otherwise it is a plain cell. */
-function Item({ card, history, editing, selected, onSelect }: ItemProps) {
+function Item({ card, history, editing, selected, onSelect, onSpan }: ItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id, disabled: !editing })
+  const el = useRef<HTMLDivElement | null>(null)
   const Card = COMPONENTS[card.id]
   const title = cardDef(card.id)?.title ?? card.id
   return (
     <div
-      ref={setNodeRef}
+      ref={(node) => {
+        setNodeRef(node)
+        el.current = node
+      }}
       data-card={card.id}
       data-span={card.span}
       data-selected={selected ? 'true' : undefined}
@@ -54,6 +60,7 @@ function Item({ card, history, editing, selected, onSelect }: ItemProps) {
         </button>
       )}
       <Card history={history} hidden={new Set(card.hidden)} />
+      {editing && <ResizeGrip title={title} span={card.span} itemRef={el} onSpan={(s) => onSpan(card.id, s)} />}
     </div>
   )
 }
@@ -85,7 +92,7 @@ export function SortableGrid({ cards, history, editing, selectedId = null, onSel
       <SortableContext items={cards.map((c) => c.id)} strategy={rectSortingStrategy}>
         <div className={`grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 ${editing ? "pt-3" : ""}`}>
           {cards.map((c) => (
-            <Item key={c.id} card={c} history={history} editing={editing} selected={editing && c.id === selectedId} onSelect={onSelect} />
+            <Item key={c.id} card={c} history={history} editing={editing} selected={editing && c.id === selectedId} onSelect={onSelect} onSpan={(id, span) => dispatch({ type: 'setSpan', id, span })} />
           ))}
         </div>
       </SortableContext>

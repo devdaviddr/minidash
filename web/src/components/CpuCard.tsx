@@ -12,7 +12,8 @@ const cpu = (s: Snapshot) => s.collectors.cpu
 /*
  * FR-28: on a wide card (from the @md container width, 28 rem) the total and the chart sit on the left and
  * the reactor on the right, as tall as the row. On a narrow card they stack and the reactor takes the spare
- * height. Without the chart there is nothing to sit beside, so the reactor stays under the total at full width.
+ * height. Beside the reactor the chart grows to the row's height, so a tall card has no empty band under it.
+ * Without the chart there is nothing to sit beside, so the reactor stays under the total at full width.
  */
 const ROW = 'flex flex-1 flex-col gap-4 @md:flex-row'
 const STACK = 'flex flex-1 flex-col gap-4'
@@ -40,7 +41,7 @@ export function CpuCard({ history, hidden = NONE }: CardProps) {
               </Part>
             </div>
             <Part id="chart" hidden={hidden}>
-              <Chart data={toSeries(history, (s) => cpu(s)?.data?.total ?? null)} series={SERIES} yMax={100} format={pct} />
+              <Chart data={toSeries(history, (s) => cpu(s)?.data?.total ?? null)} series={SERIES} yMax={100} format={pct} fill={beside} />
             </Part>
           </div>
           <Part id="cores" hidden={hidden}>

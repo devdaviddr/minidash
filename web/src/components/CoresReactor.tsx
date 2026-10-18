@@ -58,8 +58,8 @@ export function CoresReactor({ cores }: { cores: number[] }) {
                 }}
               />
             </g>
-            {/* the edge brightens with load */}
-            <polygon points={outline} fill="none" stroke={color} strokeWidth={0.07} strokeOpacity={0.25 + 0.75 * (pct / 100)} />
+            {/* the edge brightens with load; it stays clearly visible when idle, so a low fill in the cell's tip reads as inside the cell */}
+            <polygon points={outline} fill="none" stroke={color} strokeWidth={0.07} strokeOpacity={0.55 + 0.45 * (pct / 100)} />
             <text x={cell.cx} y={cell.cy + 0.2} textAnchor="middle" fontSize={0.62} fontWeight={650} fill="var(--fg)" className="tabular-nums">
               {Math.round(pct)}
             </text>

@@ -15,6 +15,8 @@ interface Props {
   data: number[][]
   series: ChartSeries[]
   height?: number
+  /** Grow to the height the parent gives it (a flex child), never below `height`. */
+  fill?: boolean
   /** Fixed y range; omit to auto-scale from 0. */
   yMax?: number
   format?: (v: number) => string
@@ -31,7 +33,7 @@ const gradient = (color: string) => (u: uPlot) => {
 const css = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 
 /** Streaming area chart on uPlot. Re-themes itself when the OS colour scheme changes. */
-export function Chart({ data, series, height = 120, yMax, format }: Props) {
+export function Chart({ data, series, height = 120, yMax, format, fill = false }: Props) {
   const host = useRef<HTMLDivElement>(null)
   const plot = useRef<uPlot | null>(null)
   const latest = useRef(data)
@@ -41,6 +43,8 @@ export function Chart({ data, series, height = 120, yMax, format }: Props) {
   useEffect(() => {
     const el = host.current
     if (!el) return
+    // With fill, the plot is absolutely positioned inside the host, so the host's height comes from the layout, not the canvas.
+    const h = () => (fill ? Math.max(el.clientHeight, height) : height)
     const build = () => {
       plot.current?.destroy()
       const grid = css('--line')
@@ -48,7 +52,7 @@ export function Chart({ data, series, height = 120, yMax, format }: Props) {
       plot.current = new uPlot(
         {
           width: el.clientWidth,
-          height,
+          height: h(),
           legend: { show: false },
           cursor: { show: false },
           padding: CHART_PADDING,
@@ -73,11 +77,11 @@ export function Chart({ data, series, height = 120, yMax, format }: Props) {
           ],
         },
         latest.current as uPlot.AlignedData,
-        el,
+        fill ? (el.firstElementChild as HTMLElement) : el,
       )
     }
     build()
-    const ro = new ResizeObserver(() => plot.current?.setSize({ width: el.clientWidth, height }))
+    const ro = new ResizeObserver(() => plot.current?.setSize({ width: el.clientWidth, height: h() }))
     ro.observe(el)
     return () => {
       ro.disconnect()
@@ -85,11 +89,16 @@ export function Chart({ data, series, height = 120, yMax, format }: Props) {
       plot.current = null
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [height, yMax, theme, series.map((s) => s.color).join()])
+  }, [height, fill, yMax, theme, series.map((s) => s.color).join()])
 
   useEffect(() => {
     plot.current?.setData(data as uPlot.AlignedData)
   }, [data])
 
-  return <div ref={host} className="w-full" />
+  if (!fill) return <div ref={host} className="w-full" />
+  return (
+    <div ref={host} data-chart-fill className="relative w-full flex-1" style={{ minHeight: height }}>
+      <div className="absolute inset-0" />
+    </div>
+  )
 }

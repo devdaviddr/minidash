@@ -104,10 +104,10 @@ docker compose -f deploy/compose.yaml up -d --build
 grep MINIDASH_TOKEN ~/.config/minidash/agent.env
 ```
 
-The browser remembers the token after the first time. Upgrade, uninstall and verification steps are in **[docs/deploy.md](docs/deploy.md)**.
+The browser remembers the token after the first time. Later, upgrade in one command from your dev machine with `deploy/upgrade.sh`. Uninstall and verification steps are in **[docs/deploy.md](docs/deploy.md)**.
 
 > [!WARNING]
-> The dashboard speaks plain HTTP and `ws://` on your network, so the token and the metrics are not encrypted in transit. If your network has devices you do not trust, reach it over [Tailscale](https://tailscale.com) or put TLS in front. See [docs/security.md](docs/security.md).
+> On the LAN the dashboard speaks plain HTTP and `ws://`, so the token and metrics are not encrypted in transit. If the Mac is on a [Tailscale](https://tailscale.com) tailnet, run `deploy/tailscale-https.sh on` to publish it over HTTPS to the tailnet only, with certificates Tailscale manages ([how](docs/deploy.md#3-https-over-tailscale-optional-recommended)). See [docs/security.md](docs/security.md).
 
 ## Requirements
 

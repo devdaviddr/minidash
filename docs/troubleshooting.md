@@ -54,6 +54,22 @@ Each card reports its own collector. One failing collector never affects the oth
 | A width of 3 became 2 after an import | The file has width 3 but this build is 1.1.0, which only knows 1, 2 and 4 | Update minidash; widths 1 to 4 are supported from 1.2.0. |
 | A card looks cramped or has overflowing content | The card is narrower than the layout inside it expects | Widen the card, and report it with the card, its width and your screen size. |
 
+## HTTPS over Tailscale
+| You see | Cause | Fix |
+| --- | --- | --- |
+| `deploy/tailscale-https.sh on` says Serve is not enabled (exit 3) | Tailscale Serve is off for your tailnet, an account setting | Open the link the script prints, enable it, and run the script again. Nothing was changed. |
+| It says HTTPS certificates are not enabled | The tailnet's "HTTPS Certificates" setting is off | Enable it in the Tailscale admin console (DNS page), then run again. |
+| The HTTPS page loads but stays "disconnected" | The agent does not allow the page's origin, or the agent's HTTPS port is not served | `deploy/tailscale-https.sh status` should say the agent allows the origin and show 443 and 8787. Run `on` again to repair both. |
+| The browser blocks the connection as mixed content | An old UI build that always used `ws://` | Upgrade (`deploy/upgrade.sh`) and hard-refresh. From 1.3.0 the UI uses `wss://` on HTTPS pages. |
+| The script stops with exit 4 | Funnel (public internet) is on for this machine | Turn it off with `tailscale funnel reset`. This dashboard is tailnet-only. |
+| The HTTPS address does not resolve | The device is not on the tailnet, or MagicDNS is off | Connect Tailscale on that device and check the machine name in `deploy/tailscale-https.sh status`. |
+
+## Upgrading
+| You see | Cause | Fix |
+| --- | --- | --- |
+| `deploy/upgrade.sh` stops with "cannot reach macmini over SSH" | SSH is not set up without a password | Set up key login (see the macmini-ssh notes), or pass `--host <ssh-name>`. |
+| It builds and copies, then a check fails (exit 1) | The agent or UI did not come up | The failing check is named. See `~/Library/Logs/minidash/agent.log` and `docker logs deploy-web-1`. |
+
 ## The agent will not start
 | Log or exit | Cause |
 | --- | --- |

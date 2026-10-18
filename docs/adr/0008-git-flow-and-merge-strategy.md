@@ -1,6 +1,6 @@
 # 8. Trunk-based git flow and merge strategy
 
-Status: accepted. The merge-strategy part is superseded by [ADR 0011](0011-squash-merge-and-labelled-releases.md) (squash every PR).
+Status: Superseded by [0013](0013-git-flow-and-merge-commits.md) (Git Flow with merge commits). The merge-strategy part was first superseded by [ADR 0011](0011-squash-merge-and-labelled-releases.md) (squash every PR).
 
 ## Context
 The first build was developed as 13 stacked branches that were never merged, which is hard to review and easy to lose.

@@ -3,6 +3,12 @@
 All notable changes are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow the spec version in `spec/`, and each is published as a [GitHub Release](https://github.com/devdaviddr/minidash/releases) when tagged (see [docs/releasing.md](docs/releasing.md)).
 
 ## [Unreleased]
+### Added (spec 0.5.0)
+- **CPU reactor:** per-core utilisation is now a honeycomb of hexagons. Each cell shows its core's load as a rounded percentage and a fill that rises from its base, shifts colour at 60% and 85%, and its edge brightens with load. It works for any core count (a true hexagon for 7, 10, 19, 24 cores; a few empty slots for awkward counts), fills the space the CPU card has to spare instead of leaving it empty, drops the core numbers when the card is narrow, and has `Core N: X%` text alternatives. The detail keeps its id, so saved layouts still work; it is labelled "Per-core reactor" in Customise.
+
+### Fixed
+- The `0%` axis label on every chart was cut in half at the bottom edge; chart padding now follows the label size.
+
 ### Added (spec 0.4.0)
 - **HTTPS over Tailscale:** `deploy/tailscale-https.sh on|off|status` publishes the UI (HTTPS 443) and the agent stream (HTTPS 8787) to your tailnet with `tailscale serve`, so the token and metrics are encrypted. Reversible, idempotent, with a dry run; it allows the HTTPS origin in the agent, never uses Funnel (public), and explains (without hanging) when Serve is not enabled on the tailnet. Plain HTTP on the LAN keeps working. ADR 0012.
 - **`wss://` from HTTPS pages:** the UI opens its stream with `wss://` when the page is HTTPS and `ws://` when it is HTTP (browsers block `ws://` from HTTPS pages). A build-time override is used as given.

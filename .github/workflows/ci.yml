@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v7
         with: { fetch-depth: 0 }
       - name: PR labelling logic
-        run: node --test .github/scripts/
+        run: node --test .github/scripts/*.test.cjs
       - name: Spec tool runs and a current version exists
         run: python3 -I tools/sdd/scripts/spec_tool.py list
       - name: Approved spec has no open questions

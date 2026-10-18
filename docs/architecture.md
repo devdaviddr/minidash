@@ -144,18 +144,22 @@ flowchart TB
     gv["gvproxy<br/>publishes :8080 to the host"]
   end
 
+  tsh["tailscale serve<br/>HTTPS 443 and 8787<br/>(tailnet only)"]
+
   lan --> gv
-  ts --> gv
   gv --> ct
   lan -. "WebSocket" .-> ag
-  ts -. "WebSocket" .-> ag
+  ts -- "HTTPS" --> tsh
+  tsh --> ct
+  ts -. "wss" .-> tsh
+  tsh -. "to 127.0.0.1:8787" .-> ag
 ```
 
 - The agent runs as **you**, not root, so it can reach your per-user container sockets. `KeepAlive` restarts it if it dies (observed: about one second).
 - The token lives in a mode-600 env file, never in the plist or the container.
 - The container cannot see host metrics (it runs in a Linux VM), which is why it only serves static files.
 
-Install steps are in [deploy.md](deploy.md); settings are in [configuration.md](configuration.md).
+The HTTPS path is optional: `deploy/tailscale-https.sh on` makes Tailscale terminate TLS (certificates are Tailscale's job) and forward to the local ports, and the page then connects with `wss://`. See [ADR 0012](adr/0012-https-through-tailscale-serve.md). Install steps are in [deploy.md](deploy.md); settings are in [configuration.md](configuration.md).
 
 ## Web UI: layout and theme (spec 0.2.0)
 

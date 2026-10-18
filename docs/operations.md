@@ -31,19 +31,21 @@ docker compose -f deploy/compose.yaml restart            # UI container
 The agent is a **LaunchAgent**, so it runs while your user is logged in (it starts at login). That is intentional: it needs your user's container sockets. If the Mac boots and nobody logs in, it does not run.
 
 ## Upgrading
-Build on a machine with Go, then copy to the mini (the mini does not need Go):
+From your development Mac, in the repo:
 
 ```sh
-# on your development Mac, in the repo
-cd agent && go build -trimpath -o ../bin/minidash-agent ./cmd/minidash-agent && cd ..
-rsync -az --exclude node_modules --exclude dist bin deploy web macmini:minidash-staging/
-
-# on the mini
-cd ~/minidash-staging
-deploy/install-agent.sh install                          # keeps your token, restarts the service
-docker compose -f deploy/compose.yaml up -d --build      # rebuilds the UI
+deploy/upgrade.sh --dry-run    # optional: show the plan
+deploy/upgrade.sh              # build, copy, install, rebuild the UI, then verify
 ```
-Hard-refresh the browser (Cmd+Shift+R) to pick up the new UI. Re-running `install` is safe: an existing `agent.env` is never overwritten.
+It checks the agent, the UI container, the UI page and the live stream, exits non-zero if any fails, and prints the URLs when all pass. Re-running is safe: your token is never overwritten. Hard-refresh the browser (Cmd+Shift+R) to pick up a new UI.
+
+The manual steps it automates, if you ever need them:
+
+```sh
+cd agent && CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath -o ../bin/minidash-agent ./cmd/minidash-agent && cd ..
+rsync -az --exclude node_modules --exclude dist bin deploy web macmini:minidash-staging/
+ssh macmini 'export PATH=/opt/homebrew/bin:$PATH; cd ~/minidash-staging && deploy/install-agent.sh install && docker compose -f deploy/compose.yaml up -d --build'
+```
 
 ## Uninstalling
 ```sh

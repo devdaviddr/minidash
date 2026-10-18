@@ -148,14 +148,14 @@ The full index is [docs/README.md](docs/README.md).
 
 ## Status
 
-Spec 0.1.0 (the monitor) is implemented, tested and deployed to a real Mac mini. Specs 0.2.0 (themes, restyle, customisable layout) and 0.3.0 (select, drag-to-resize, responsive cards) are approved and implemented in code. A GPU-load check and a visual review in a browser are still pending before the specs are marked `implemented`. See the [spec](spec/0.3.0/spec.md) and the [changelog](CHANGELOG.md).
+Pre-1.0 and in daily use on a real Mac mini. Every release from 0.1.0 (the monitor) to 0.5.0 (the CPU reactor) is published on the [releases page](https://github.com/devdaviddr/minidash/releases), each with its own spec. Still checked by hand: GPU load under a real workload and a visual review in a browser. See the [current spec](spec/0.5.0/spec.md) and the [changelog](CHANGELOG.md).
 
 <details>
 <summary><strong>Known limits</strong></summary>
 
 <br>
 
-- GPU use is system-wide. macOS does not expose per-process GPU use without root.
+- GPU use is shown system-wide only. macOS does expose per-process GPU time without root (in the IORegistry); minidash does not read it yet.
 - Connected-client account names can be blank, because macOS may serve SMB sessions as root.
 - Only SMB and NFS shares are covered (AFP is out of scope).
 - One shared access token, no per-user accounts, and no TLS built in.

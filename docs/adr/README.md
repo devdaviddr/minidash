@@ -6,7 +6,7 @@ Short, numbered, append-only. Supersede a decision with a new ADR rather than ed
 | --- | --- | --- |
 | [0001](0001-record-architecture-decisions.md) | Record architecture decisions | accepted |
 | [0002](0002-native-agent-containerised-ui.md) | Native agent, containerised UI | accepted |
-| [0003](0003-macmon-for-gpu-and-power.md) | Use macmon for GPU, power and thermals | accepted |
+| [0003](0003-macmon-for-gpu-and-power.md) | Use macmon for GPU, power and thermals | accepted; GPU-per-process note corrected by 0014 |
 | [0004](0004-websocket-first-message-auth.md) | WebSocket with first-message token auth | accepted |
 | [0005](0005-kernel-counters-for-network.md) | Read network counters from the kernel ifmib sysctl | accepted |
 | [0006](0006-cpu-budget-and-throttling.md) | CPU budget, throttling and lazy lookups | accepted |
@@ -17,3 +17,4 @@ Short, numbered, append-only. Supersede a decision with a new ADR rather than ed
 | [0011](0011-squash-merge-and-labelled-releases.md) | Squash every PR, auto-label, release by tag | squash superseded by 0013; labels and releases accepted |
 | [0012](0012-https-through-tailscale-serve.md) | HTTPS through Tailscale Serve | accepted |
 | [0013](0013-git-flow-and-merge-commits.md) | Git Flow with merge commits, pre-1.0 versioning | accepted |
+| [0014](0014-per-process-gpu-time-without-root.md) | Per-process GPU time is readable without root | accepted |

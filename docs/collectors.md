@@ -10,7 +10,7 @@ Each collector is one entry in the snapshot's `collectors` map. A failure shows 
 
 ## Notes
 - **Used memory** follows Activity Monitor's idea of "memory pressure" (active + wired + compressed). Inactive pages are reclaimable and excluded.
-- **GPU** utilisation is system-wide. macOS does not expose per-process GPU use without root, so the process table has no GPU column.
+- **GPU** utilisation is system-wide. The process table has no GPU column yet. macOS does expose per-process GPU time to normal users: each GPU client in the IORegistry (`ioreg -r -c AGXDeviceUserClient -l`) names its process and reports an `accumulatedGPUTime` counter, though some clients are created on an app's behalf by `runningboardd` or `WindowServer`. See [ADR 0014](adr/0014-per-process-gpu-time-without-root.md).
 - **Manual check (AC-2)**: run a GPU-heavy app (a game, `ffmpeg` with VideoToolbox, a Metal benchmark) and watch GPU % and power rise on the dashboard. This cannot be automated headlessly.
 
 ## disks

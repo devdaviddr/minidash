@@ -31,6 +31,12 @@ test('dependency updates are labelled by scope or by author', () => {
   assert.ok(add('Bump something', { author: 'dependabot[bot]' }).includes('dependencies'))
 })
 
+test('release and merge-back PRs get the release label so the notes leave them out', () => {
+  assert.deepEqual(add('chore(release): 0.5.0', { lines: 40 }), ['chore', 'release', 'size/S'])
+  assert.deepEqual(add('chore(release): merge 0.5.0 back into develop', { lines: 40 }), ['chore', 'release', 'size/S'])
+  assert.deepEqual(add('fix(web): show 0% on the chart axis', { lines: 5 }), ['fix', 'size/XS'], 'a hotfix PR stays in the notes')
+})
+
 test('a title that is not Conventional gets only a size label (the CI title check rejects it separately)', () => {
   assert.deepEqual(add('Update stuff', { lines: 100 }), ['size/M'])
   assert.deepEqual(add('wip', { lines: 100 }), ['size/M'])

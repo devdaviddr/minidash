@@ -1,10 +1,12 @@
 # How GitHub groups auto-generated release notes. A PR goes in the FIRST category it matches, so Dependencies comes
 # before Tests and CI: Dependabot's `ci(deps)` PRs carry both labels and belong under Dependencies. Pull requests are grouped by the labels that
-# pr-labels.yml adds from their Conventional Commit titles.
+# pr-labels.yml adds from their Conventional Commit titles. Release and merge-back PRs (`chore(release): ...`) are
+# labelled `release` and left out: the notes list the PRs merged into develop since the previous tag.
 changelog:
   exclude:
     labels:
       - skip-changelog
+      - release
   categories:
     - title: Breaking changes
       labels: [breaking]

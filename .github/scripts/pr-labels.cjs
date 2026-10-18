@@ -14,6 +14,7 @@ const LABELS = [
   { name: 'chore', color: '8c959f', description: 'Maintenance' },
   { name: 'dependencies', color: '0366d6', description: 'Dependency updates' },
   { name: 'breaking', color: 'b60205', description: 'Breaking change' },
+  { name: 'release', color: 'ededed', description: 'Release or merge-back PR; left out of release notes' },
   { name: 'size/XS', color: 'c2e0c6', description: 'Under 10 lines changed' },
   { name: 'size/S', color: 'bfdadc', description: '10 to 49 lines changed' },
   { name: 'size/M', color: 'fef2c0', description: '50 to 249 lines changed' },
@@ -62,6 +63,8 @@ function labelsFor(title, { author = '', lines = 0 } = {}) {
     if (label) add.push(label)
     if (bang) add.push('breaking')
     if (scope === 'deps' || /dependabot/i.test(author)) add.push('dependencies')
+    // Git Flow release and merge-back PRs (`chore(release): 0.5.0`) carry no change of their own.
+    if (scope === 'release') add.push('release')
   } else if (/dependabot/i.test(author)) {
     add.push('dependencies')
   }

@@ -88,9 +88,10 @@ gitGraph
 | Parsers on recorded fixtures | `macmon` JSON, `diskutil` plist, `mount`, `sharing -l`, `netstat`; all fixtures use invented or sanitised data | `testdata/`, inline constants |
 | Contract | Every collector's output, through the aggregator, validated against the JSON Schema | `testutil.AssertMatchesContract` |
 | Real-host smoke | Each collector run against the machine running the tests; skipped off macOS where needed | `TestRealHostSane` |
-| Cross-checks | Kernel network counters against `netstat -ib`; top memory process against `ps` | network and processes tests |
+| Cross-checks | Kernel network counters against `netstat -ib` (netstat must fall between kernel reads taken before and after it); top memory process against `ps` | network and processes tests |
 | Protocol | Auth, wrong token, slow client, reconnect and backoff, stall detection | `hub_test.go`, `stream.test.ts` |
 | Deploy scripts | `tailscale-https.sh` and `upgrade.sh` against stubbed `tailscale`, `ssh`, `rsync`, `go` and `node`: success, each failure, dry run, no token leaks | `deploy/tests/*.test.sh` (run in CI) |
+| Claude hooks | `guard-bash.sh` fed PreToolUse JSON with a stubbed `gh`: PRs into `develop` allowed, into `main` or with no base blocked, force pushes blocked | `.claude/hooks/tests/*.test.sh` (run in CI) |
 | UI components | Every card rendered from a fixture, healthy and degraded (jsdom) | `web/src/components/*.test.tsx` |
 | Manual, on the Mac mini | GPU load, plugging a drive, starting Colima, a client connecting | [deploy.md](deploy.md#manual-acceptance-checks-need-the-real-mini) |
 

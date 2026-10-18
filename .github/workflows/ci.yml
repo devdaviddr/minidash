@@ -16,6 +16,8 @@ jobs:
         run: node --test .github/scripts/*.test.cjs
       - name: Deploy script tests
         run: for t in deploy/tests/*.test.sh; do bash "$t"; done
+      - name: Claude hook tests
+        run: for t in .claude/hooks/tests/*.test.sh; do bash "$t"; done
       - name: Spec tool runs and a current version exists
         run: python3 -I tools/sdd/scripts/spec_tool.py list
       - name: Approved spec has no open questions

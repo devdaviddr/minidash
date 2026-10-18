@@ -100,12 +100,15 @@ func TestParseIfMibKeeps64Bits(t *testing.T) {
 	}
 }
 
-// Cross-check the kernel table against `netstat -ib` on a real Mac: same interface, nearly same bytes.
+// Cross-check the kernel table against `netstat -ib` on a real Mac: same interface, same bytes.
+// Traffic keeps flowing between reads, so the kernel table is read before and after netstat and
+// netstat's value must fall between the two, plus a little slack. A 32-bit wrap lands far outside.
 func TestKernelCountersAgreeWithNetstat(t *testing.T) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("macOS only")
 	}
-	got, err := newRealOS().Counters(context.Background())
+	src := newRealOS()
+	before, err := src.Counters(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -113,22 +116,31 @@ func TestKernelCountersAgreeWithNetstat(t *testing.T) {
 	if err != nil {
 		t.Skip("netstat unavailable")
 	}
+	after, err := src.Counters(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	const slack = 64 << 10
 	checked := 0
 	for _, line := range strings.Split(string(out), "\n")[1:] {
 		f := strings.Fields(line)
 		if len(f) < 10 || !strings.HasPrefix(f[2], "<Link#") {
 			continue
 		}
-		ib, err1 := strconv.ParseUint(f[6], 10, 64)
+		// Count from the end: the Address column is empty for interfaces without a MAC (lo0, utun*),
+		// which shifts every column after it.
+		ib, err1 := strconv.ParseUint(f[len(f)-5], 10, 64)
 		if err1 != nil || ib < 1<<20 {
 			continue // only compare busy interfaces; tiny counters are noisy
 		}
-		c, ok := got[f[0]]
-		if !ok {
-			t.Fatalf("interface %s missing from kernel table", f[0])
+		name := strings.TrimSuffix(f[0], "*")
+		b, ok1 := before[name]
+		a, ok2 := after[name]
+		if !ok1 || !ok2 {
+			t.Fatalf("interface %s missing from kernel table", name)
 		}
-		if c.Rx < ib || c.Rx-ib > 64<<20 { // netstat ran first, so the kernel value is >= it, within a modest window
-			t.Fatalf("%s: kernel rx %d vs netstat %d (32-bit wrap?)", f[0], c.Rx, ib)
+		if ib+slack < b.Rx || ib > a.Rx+slack {
+			t.Fatalf("%s: netstat rx %d outside kernel window [%d, %d] (32-bit wrap?)", name, ib, b.Rx, a.Rx)
 		}
 		checked++
 	}

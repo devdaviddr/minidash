@@ -142,7 +142,7 @@ How it stays this light: [ADR 0006](docs/adr/0006-cpu-budget-and-throttling.md).
 | [Operations](docs/operations.md) | [Security](docs/security.md) |
 | [Troubleshooting](docs/troubleshooting.md) | [Development](docs/development.md) |
 | [Contributing](CONTRIBUTING.md) | [Decision records](docs/adr/README.md) |
-| [Changelog](CHANGELOG.md) | The [spec](spec/0.3.0/spec.md) and [releasing](docs/releasing.md) |
+| [Changelog](CHANGELOG.md) | The [spec](spec/0.5.0/spec.md) and [releasing](docs/releasing.md) |
 
 The full index is [docs/README.md](docs/README.md).
 

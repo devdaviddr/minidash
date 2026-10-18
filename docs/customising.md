@@ -46,7 +46,7 @@ While the panel is open, every card shows a **Drag** handle at its top edge.
 | Storage | I/O chart, Per-volume throughput |
 | Shares & accounts | Mounted on this Mac, Shared by this Mac, Connected clients |
 | Containers | Runtimes that are not running |
-| Processes | Owner column, GPU note |
+| Processes | Owner column, GPU column, GPU attribution note |
 
 Hiding a detail removes only that detail. The rest of the card, and every other card, is untouched.
 

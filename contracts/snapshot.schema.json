@@ -568,7 +568,7 @@
         "total",
         "list"
       ],
-      "description": "list = union of top 25 by CPU and top 25 by memory, sorted by CPU.",
+      "description": "list = union of the top 25 by CPU, by memory and by GPU, sorted by CPU.",
       "properties": {
         "total": {
           "type": "integer",
@@ -611,9 +611,19 @@
               "threads": {
                 "type": "integer",
                 "minimum": 0
+              },
+              "gpu": {
+                "type": ["number", "null"],
+                "minimum": 0,
+                "maximum": 100,
+                "description": "GPU % over the last GPU interval, from IORegistry accumulatedGPUTime deltas. null = not known yet or the GPU source failed. Credited to the process macOS names."
               }
             }
           }
+        },
+        "gpuError": {
+          "type": "string",
+          "description": "Why per-process GPU values are null this round. Present only on failure or when turned off."
         }
       }
     },

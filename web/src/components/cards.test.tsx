@@ -51,6 +51,68 @@ describe('cards render a healthy snapshot', () => {
   })
 })
 
+// AC-28 (FR-28): the CPU card's header, its labels and how the chart and the reactor share the card.
+describe('cpu card layout', () => {
+  const box = (c: HTMLElement, name: string) => c.querySelector(`[data-cpu-${name}]`) as HTMLElement | null
+  const classes = (el: HTMLElement | null) => (el?.className ?? '').split(/\s+/)
+
+  it('shows the core count at the top right of the header and the load average under the total', () => {
+    render(<CpuCard history={h} />)
+    const header = screen.getByRole('heading', { name: 'CPU' }).parentElement as HTMLElement
+    expect(header.tagName).toBe('HEADER')
+    expect(header.lastElementChild?.textContent).toBe('4 cores') // the right slot, after the title
+    const total = screen.getByText('42').parentElement as HTMLElement
+    expect(total.parentElement?.textContent).toContain('load 1.50 · 1.20 · 1.00')
+    expect(total.parentElement?.textContent).not.toContain('cores') // no longer the label under the total
+  })
+
+  it('keeps the core count in the header when the load average is hidden', () => {
+    render(<CpuCard history={h} hidden={new Set(['load'])} />)
+    expect(screen.queryByText(/^load /)).toBeNull()
+    expect(screen.getByText('4 cores').closest('header')).toBeTruthy()
+  })
+
+  it('has no core count without CPU data', () => {
+    render(<CpuCard history={[fixture({ cpu: { ok: false, error: 'boom' } })]} />)
+    expect(screen.queryByText(/cores/)).toBeNull()
+  })
+
+  it('is a column by default and a row from the @md container width, with the reactor stretching to the row', () => {
+    const { container } = render(<CpuCard history={h} />)
+    const layout = box(container, 'layout')
+    expect(classes(layout)).toEqual(expect.arrayContaining(['flex', 'flex-col', '@md:flex-row']))
+    expect(classes(layout)).not.toContain('flex-row') // stacked unless the card is wide
+    expect(classes(box(container, 'main'))).toEqual(expect.arrayContaining(['min-w-0', '@md:flex-1']))
+    expect(classes(box(container, 'reactor'))).toEqual(expect.arrayContaining(['@md:w-2/5', '@md:self-stretch']))
+    // chart on the left, reactor on the right
+    const [left, right] = [...(layout?.children ?? [])]
+    expect(left.querySelector('[data-testid="chart"]')).toBeTruthy()
+    expect(right.querySelector('[aria-label="Per-core utilisation"]')).toBeTruthy()
+  })
+
+  it('stacked, the reactor takes the spare height (AC-26 as amended)', () => {
+    const { container } = render(<CpuCard history={h} />)
+    expect(classes(box(container, 'layout'))).toContain('flex-1')
+    expect(classes(box(container, 'reactor'))).toEqual(expect.arrayContaining(['flex-1', 'min-h-40']))
+    expect(classes(box(container, 'main'))).not.toContain('flex-1') // the left column does not compete for it
+  })
+
+  it('without the chart, the reactor is not put beside anything and takes the full width', () => {
+    const { container } = render(<CpuCard history={h} hidden={new Set(['chart'])} />)
+    expect(screen.getByLabelText('Per-core utilisation')).toBeTruthy()
+    expect(box(container, 'layout')?.className).not.toMatch(/flex-row/)
+    expect(box(container, 'reactor')?.className).not.toMatch(/w-2\/5/)
+  })
+
+  it('without the reactor, the total and the chart take the full width', () => {
+    const { container } = render(<CpuCard history={h} hidden={new Set(['cores'])} />)
+    expect(box(container, 'reactor')).toBeNull()
+    expect(box(container, 'layout')?.children.length).toBe(1)
+    expect(classes(box(container, 'main'))).toContain('@md:flex-1')
+    expect(box(container, 'main')?.className).not.toMatch(/(^|[\s:])w-/) // no width cap
+  })
+})
+
 // AC-6 (UI half): a stopped runtime is a calm state, an API failure is an error.
 describe('containers card', () => {
   it('shows each runtime with its own state', () => {

@@ -130,6 +130,8 @@ Measured on an M4 Mac mini over 60 seconds with a browser connected, 693 process
 | `macmon` (GPU and power sampler) | about 0.35% | small |
 | **Total** | **about 1.65%** (budget: under 2%) | |
 
+The per-process GPU column (0.6.0) adds about 0.2% at its default 3 s interval ([figures](docs/collectors.md#per-process-gpu-spec-060-t-37-ac-35)).
+
 How it stays this light: [ADR 0006](docs/adr/0006-cpu-budget-and-throttling.md).
 
 ## Documentation
@@ -142,20 +144,20 @@ How it stays this light: [ADR 0006](docs/adr/0006-cpu-budget-and-throttling.md).
 | [Operations](docs/operations.md) | [Security](docs/security.md) |
 | [Troubleshooting](docs/troubleshooting.md) | [Development](docs/development.md) |
 | [Contributing](CONTRIBUTING.md) | [Decision records](docs/adr/README.md) |
-| [Changelog](CHANGELOG.md) | The [spec](spec/0.3.0/spec.md) and [releasing](docs/releasing.md) |
+| [Changelog](CHANGELOG.md) | The [spec](spec/0.6.0/spec.md) and [releasing](docs/releasing.md) |
 
 The full index is [docs/README.md](docs/README.md).
 
 ## Status
 
-Pre-1.0 and in daily use on a real Mac mini. Every release from 0.1.0 (the monitor) to 0.5.0 (the CPU reactor) is published on the [releases page](https://github.com/devdaviddr/minidash/releases), each with its own spec. Still checked by hand: GPU load under a real workload and a visual review in a browser. See the [current spec](spec/0.5.0/spec.md) and the [changelog](CHANGELOG.md).
+Pre-1.0 and in daily use on a real Mac mini. Every release from 0.1.0 (the monitor) to 0.6.0 (CPU card side by side and per-process GPU) is published on the [releases page](https://github.com/devdaviddr/minidash/releases), each with its own spec. Still checked by hand: GPU load under a real workload and a visual review in a browser. See the [current spec](spec/0.6.0/spec.md) and the [changelog](CHANGELOG.md).
 
 <details>
 <summary><strong>Known limits</strong></summary>
 
 <br>
 
-- GPU use is shown system-wide only. macOS does expose per-process GPU time without root (in the IORegistry); minidash does not read it yet.
+- Per-process GPU time is credited to the process macOS names as the GPU client. System services such as `runningboardd` and `WindowServer` can carry GPU time on an app's behalf, so an app can look idle while one of them looks busy. See [collectors](docs/collectors.md#processes).
 - Connected-client account names can be blank, because macOS may serve SMB sessions as root.
 - Only SMB and NFS shares are covered (AFP is out of scope).
 - One shared access token, no per-user accounts, and no TLS built in.

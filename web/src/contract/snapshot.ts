@@ -163,7 +163,7 @@ export interface ProcessesResult {
   data?: ProcessesData;
 }
 /**
- * list = union of top 25 by CPU and top 25 by memory, sorted by CPU.
+ * list = union of the top 25 by CPU, by memory and by GPU, sorted by CPU.
  */
 export interface ProcessesData {
   total: number;
@@ -183,7 +183,15 @@ export interface ProcessesData {
      */
     rss: number;
     threads: number;
+    /**
+     * GPU % over the last GPU interval, from IORegistry accumulatedGPUTime deltas. null = not known yet or the GPU source failed. Credited to the process macOS names.
+     */
+    gpu?: number | null;
   }[];
+  /**
+   * Why per-process GPU values are null this round. Present only on failure or when turned off.
+   */
+  gpuError?: string;
 }
 export interface ContainersResult {
   ok: boolean;

@@ -104,7 +104,18 @@ describe('Dashboard renders the layout', () => {
     expect(screen.queryByLabelText('Per-core utilisation')).toBeNull()
     const cpuCard = container.querySelector('[data-card="cpu"]') as HTMLElement
     expect(within(cpuCard).getByText('42')).toBeTruthy() // the total is still there
+    expect(within(cpuCard).getByText('4 cores')).toBeTruthy() // the count is in the header, not in the reactor
     expect(order(container).length).toBe(8)
+  })
+
+  // AC-28: a layout saved before 0.6.0 (same card and part ids) still hides the parts it hid.
+  it('a saved layout hiding the CPU chart and load average still applies to the new CPU layout', () => {
+    let l = layoutReducer(defaultLayout(), { type: 'togglePart', id: 'cpu', part: 'chart' })
+    l = layoutReducer(l, { type: 'togglePart', id: 'cpu', part: 'load' })
+    const cpuCard = renderDash(l).container.querySelector('[data-card="cpu"]') as HTMLElement
+    expect(parts(cpuCard)).toEqual(['cores'])
+    expect(within(cpuCard).getByText('4 cores')).toBeTruthy()
+    expect(within(cpuCard).getByLabelText('Per-core utilisation')).toBeTruthy()
   })
 
   // AC-16

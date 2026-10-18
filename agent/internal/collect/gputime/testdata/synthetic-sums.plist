@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<!-- pid 10: two clients, the first with two AppUsage entries: 100 + 200 + 300 = 600 -->
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>100</integer>
+			</dict>
+			<dict>
+				<key>API</key>
+				<string>OpenCL</string>
+				<key>accumulatedGPUTime</key>
+				<integer>200</integer>
+			</dict>
+		</array>
+		<key>IOUserClientCreator</key>
+		<string>pid 10, ExampleApp1</string>
+		<key>UnknownFutureKey</key>
+		<dict>
+			<key>nested</key>
+			<array><string>ignored</string></array>
+		</dict>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>accumulatedGPUTime</key>
+				<integer>300</integer>
+			</dict>
+		</array>
+		<key>IOUserClientCreator</key>
+		<string>pid 10, ExampleApp1</string>
+	</dict>
+	<!-- pid 20: a client with an empty AppUsage list reads 0 -->
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOUserClientCreator</key>
+		<string>pid 20, runningboardd</string>
+	</dict>
+	<!-- pid 30: one entry has no accumulatedGPUTime and counts as 0 -->
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+			</dict>
+			<dict>
+				<key>accumulatedGPUTime</key>
+				<integer>50</integer>
+			</dict>
+		</array>
+		<key>IOUserClientCreator</key>
+		<string>pid 30, Example App With Spaces</string>
+	</dict>
+	<!-- pid 40: no AppUsage key at all -->
+	<dict>
+		<key>IOUserClientCreator</key>
+		<string>pid 40, ExampleApp2</string>
+	</dict>
+	<!-- malformed creators: skipped and counted -->
+	<dict>
+		<key>AppUsage</key>
+		<array><dict><key>accumulatedGPUTime</key><integer>999</integer></dict></array>
+		<key>IOUserClientCreator</key>
+		<string>process 50, ExampleApp3</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array><dict><key>accumulatedGPUTime</key><integer>999</integer></dict></array>
+		<key>IOUserClientCreator</key>
+		<string>pid 0, kernel_task</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array><dict><key>accumulatedGPUTime</key><integer>999</integer></dict></array>
+		<key>IOUserClientCreator</key>
+		<string>pid 123456, ExampleApp4</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array><dict><key>accumulatedGPUTime</key><integer>999</integer></dict></array>
+	</dict>
+</array>
+</plist>

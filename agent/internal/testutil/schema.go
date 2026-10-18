@@ -18,12 +18,22 @@ import (
 // from the types the web app is generated from.
 func AssertMatchesContract(t *testing.T, c snapshot.Collector) snapshot.Result {
 	t.Helper()
-	sch, err := jsonschema.NewCompiler().Compile(filepath.Join("..", "..", "..", "..", "contracts", "snapshot.schema.json"))
+	snap := snapshot.NewAggregator(time.Second, c).Sample(context.Background())
+	raw, err := json.Marshal(snap)
 	if err != nil {
 		t.Fatal(err)
 	}
-	snap := snapshot.NewAggregator(time.Second, c).Sample(context.Background())
-	raw, err := json.Marshal(snap)
+	if err := ValidateSnapshot(t, raw); err != nil {
+		t.Fatalf("%s violates contract: %v\n%s", c.Name(), err, raw)
+	}
+	return snap.Collectors[c.Name()]
+}
+
+// ValidateSnapshot checks raw snapshot JSON against contracts/snapshot.schema.json. It is
+// called from a collector package directory (agent/internal/collect/<name>).
+func ValidateSnapshot(t *testing.T, raw []byte) error {
+	t.Helper()
+	sch, err := jsonschema.NewCompiler().Compile(filepath.Join("..", "..", "..", "..", "contracts", "snapshot.schema.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,8 +41,5 @@ func AssertMatchesContract(t *testing.T, c snapshot.Collector) snapshot.Result {
 	if err := json.Unmarshal(raw, &v); err != nil {
 		t.Fatal(err)
 	}
-	if err := sch.Validate(v); err != nil {
-		t.Fatalf("%s violates contract: %v\n%s", c.Name(), err, raw)
-	}
-	return snap.Collectors[c.Name()]
+	return sch.Validate(v)
 }

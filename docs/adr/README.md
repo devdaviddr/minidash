@@ -18,3 +18,4 @@ Short, numbered, append-only. Supersede a decision with a new ADR rather than ed
 | [0012](0012-https-through-tailscale-serve.md) | HTTPS through Tailscale Serve | accepted |
 | [0013](0013-git-flow-and-merge-commits.md) | Git Flow with merge commits, pre-1.0 versioning | accepted |
 | [0014](0014-per-process-gpu-time-without-root.md) | Per-process GPU time is readable without root | accepted |
+| [0015](0015-read-gpu-time-by-forking-ioreg.md) | Read per-process GPU time by forking `ioreg` | accepted |

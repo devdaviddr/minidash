@@ -1,7 +1,7 @@
-// Package processes lists the busiest processes by CPU and by memory.
+// Package processes lists the busiest processes by CPU, by memory and by GPU.
 //
-// The agent sends the union of the top N by CPU and the top N by resident memory, so the
-// browser can sort either way without the full process table crossing the wire.
+// The agent sends the union of the top N by CPU, the top N by resident memory and the top N
+// by GPU %, so the browser can sort any way without the full process table crossing the wire.
 package processes
 
 import (
@@ -13,26 +13,38 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/v4/process"
+
+	"github.com/devdaviddr/minidash/agent/internal/collect/gputime"
 )
 
 // TopN is how many processes are kept per ranking.
 const TopN = 25
 
+// Refresh is how often the agent refreshes the process list (snapshot.Throttle in main).
+// The GPU interval is a whole number of refreshes.
+const Refresh = 3 * time.Second
+
+// GPUOff is the gpuError text when per-process GPU is turned off in configuration.
+const GPUOff = "per-process GPU is turned off (MINIDASH_PROC_GPU_INTERVAL_MS=0)"
+
 // Data is the processes collector payload (contracts/snapshot.schema.json#/$defs/processesData).
 type Data struct {
-	Total int    `json:"total"` // processes visible to the agent
-	List  []Proc `json:"list"`
+	Total    int    `json:"total"` // processes visible to the agent
+	List     []Proc `json:"list"`
+	GPUError string `json:"gpuError,omitempty"` // why every GPU value is null (FR-31)
 }
 
 // Proc is one process. CPU is percent of a single core (can exceed 100). RSS is bytes.
+// GPU is percent of the whole GPU (0-100), nil when not known (FR-29).
 // Only the executable name is reported, never arguments, which can hold secrets.
 type Proc struct {
-	PID     int32   `json:"pid"`
-	Name    string  `json:"name"`
-	User    string  `json:"user"`
-	CPU     float64 `json:"cpu"`
-	RSS     uint64  `json:"rss"`
-	Threads int32   `json:"threads"`
+	PID     int32    `json:"pid"`
+	Name    string   `json:"name"`
+	User    string   `json:"user"`
+	CPU     float64  `json:"cpu"`
+	RSS     uint64   `json:"rss"`
+	Threads int32    `json:"threads"`
+	GPU     *float64 `json:"gpu"`
 }
 
 // Raw is the cheap per-process reading taken for every process each tick.
@@ -58,20 +70,27 @@ type Collector struct {
 	mu    sync.Mutex
 	prev  map[int32]float64
 	prevT time.Time
+	gpu   *gpuState
 }
 
-// New returns a processes collector using the real OS.
-func New() *Collector { return NewWith(newRealOS()) }
+// New returns a processes collector using the real OS. The GPU reader runs on every
+// gpuEvery-th refresh; 0 turns it off.
+func New(gpuEvery int) *Collector { return NewWith(newRealOS(), gputime.New(), gpuEvery) }
 
-// NewWith returns a collector using the given OS (tests).
-func NewWith(o OS) *Collector { return &Collector{os: o, now: time.Now} }
+// NewWith returns a collector using the given OS and GPU reader (tests).
+func NewWith(o OS, gpu gputime.Reader, gpuEvery int) *Collector {
+	return &Collector{os: o, now: time.Now, gpu: newGPUState(gpu, gpuEvery)}
+}
 
 // Name implements snapshot.Collector.
 func (*Collector) Name() string { return "processes" }
 
-// Collect implements snapshot.Collector.
+// Collect implements snapshot.Collector. The GPU read, when due, runs alongside the process
+// scan so its fork overlaps the scan instead of adding to it.
 func (c *Collector) Collect(ctx context.Context) (any, error) {
+	gpuRead := c.gpu.start(ctx)
 	raw, err := c.os.List(ctx)
+	gpu := c.gpu.finish(gpuRead, pidsOf(raw))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +105,7 @@ func (c *Collector) Collect(ctx context.Context) (any, error) {
 	all := make([]Proc, 0, len(raw))
 	for _, r := range raw {
 		cur[r.PID] = r.CPUSeconds
-		p := Proc{PID: r.PID, RSS: r.RSS, Threads: r.Threads}
+		p := Proc{PID: r.PID, RSS: r.RSS, Threads: r.Threads, GPU: gpu.For(r.PID)}
 		if before, ok := prev[r.PID]; ok && secs > 0 && r.CPUSeconds >= before {
 			p.CPU = (r.CPUSeconds - before) / secs * 100
 		}
@@ -96,19 +115,35 @@ func (c *Collector) Collect(ctx context.Context) (any, error) {
 	for i := range top {
 		top[i].Name, top[i].User = c.os.Detail(ctx, top[i].PID)
 	}
-	return Data{Total: len(all), List: top}, nil
+	return Data{Total: len(all), List: top, GPUError: gpu.err}, nil
 }
 
-// topUnion returns the top TopN by CPU plus the top TopN by RSS, each process once.
+func pidsOf(raw []Raw) map[int32]bool {
+	out := make(map[int32]bool, len(raw))
+	for _, r := range raw {
+		out[r.PID] = true
+	}
+	return out
+}
+
+// topUnion returns the top TopN by CPU, by RSS and by GPU (above 0 only), each process once,
+// sorted by CPU.
 func topUnion(all []Proc) []Proc {
 	byCPU := append([]Proc(nil), all...)
 	sort.Slice(byCPU, func(i, j int) bool { return byCPU[i].CPU > byCPU[j].CPU })
 	byRSS := append([]Proc(nil), all...)
 	sort.Slice(byRSS, func(i, j int) bool { return byRSS[i].RSS > byRSS[j].RSS })
+	byGPU := make([]Proc, 0, TopN)
+	for _, p := range all {
+		if p.GPU != nil && *p.GPU > 0 {
+			byGPU = append(byGPU, p)
+		}
+	}
+	sort.Slice(byGPU, func(i, j int) bool { return *byGPU[i].GPU > *byGPU[j].GPU })
 
 	seen := map[int32]bool{}
 	out := []Proc{}
-	for _, list := range [][]Proc{byCPU, byRSS} {
+	for _, list := range [][]Proc{byCPU, byRSS, byGPU} {
 		for i := 0; i < TopN && i < len(list); i++ {
 			if !seen[list[i].PID] {
 				seen[list[i].PID] = true

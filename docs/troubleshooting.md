@@ -33,7 +33,8 @@ Each card reports its own collector. One failing collector never affects the oth
 
 ## Data looks different from what you expect
 - **A connected SMB client shows "unknown account".** macOS can serve SMB sessions as root, and the real user is not visible without privileges.
-- **No GPU column in the process table.** It is not built yet. macOS does make per-process GPU time readable without root ([ADR 0014](adr/0014-per-process-gpu-time-without-root.md)).
+- **The GPU column shows "–".** A process seen for the first time, or one whose GPU time went down (a GPU client closed), reads "–" until the next GPU read, 3 s later by default. Every row reads "–" when the agent is older than 0.6.0, when `MINIDASH_PROC_GPU_INTERVAL_MS=0`, or when the read failed; the last two show "GPU unavailable: <reason>" under the table. A reason that mentions the expected format and a macOS version means a macOS update changed the IORegistry layout ([ADR 0015](adr/0015-read-gpu-time-by-forking-ioreg.md)).
+- **A system service shows GPU use that belongs to an app.** GPU time is credited to the process that opened the GPU client. `runningboardd` and `WindowServer` open clients on apps' behalf, so their GPU % can include an app's work. minidash reports what macOS reports and does not re-attribute it.
 - **A mounted share shows an Apple ID instead of a user name.** Shares authenticated with an Apple ID are shown as "Apple ID" on purpose.
 - **A volume you expect is missing from Storage.** Only the internal Data volume and local filesystems mounted under `/Volumes` are listed. Network shares appear under Shares.
 - **Podman containers appear under Podman, not Docker, though `docker` works.** The Docker socket resolves to Podman's, and each socket is counted once (Colima and Podman are checked first).
@@ -75,6 +76,7 @@ Each card reports its own collector. One failing collector never affects the oth
 | --- | --- |
 | `MINIDASH_TOKEN is required` | Empty token. Set it in `agent.env`. |
 | `MINIDASH_SOC_INTERVAL_MS must be an integer >= 250` | Bad interval value. |
+| `MINIDASH_PROC_GPU_INTERVAL_MS must be 0 (off) or a multiple of 3000 up to 3600000` | Bad per-process GPU interval. |
 | `missing ~/.config/minidash/agent.env` (exit 78) | The env file is absent. Re-run `deploy/install-agent.sh install`. |
 | `address already in use` | Something else holds port 8787. `lsof -nP -iTCP:8787 -sTCP:LISTEN`. |
 | Starts, then nothing listens | Check `~/Library/Logs/minidash/agent.log`. |

@@ -9,6 +9,10 @@ All notable changes are recorded here. The format follows [Keep a Changelog](htt
   "Could not load stored history from the agent." (The 0.7.0 header Range selector had the same
   bug but swallowed the error.) The endpoint now echoes `Access-Control-Allow-Origin` when the
   request's `Origin` matches the same `MINIDASH_ORIGINS` patterns as the WebSocket.
+- **The dashboard's CSP still blocked the fetch.** The UI allows `connect-src 'self' ws: wss:`, so
+  a direct `http://host:8787/history` fetch could never load. The UI now fetches `/history` on its
+  own origin: the UI container's nginx proxies it to the agent, and `deploy/tailscale-https.sh on`
+  forwards `/history` alongside `/ws`, so the HTTPS path works too.
 ### Changed
 - **Settings panel:** the header **Customise** button and panel are renamed **Settings**, and the
   chart **Range** selector has moved out of the header into a **Retention** section inside the panel.

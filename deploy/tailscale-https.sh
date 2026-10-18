@@ -7,8 +7,9 @@
 #
 # Run it ON the Mac mini. It uses `tailscale serve`, so Tailscale issues and renews the certificates; there is
 # nothing to manage. It sets up:
-#   https://<host>.ts.net/        -> the web UI      (127.0.0.1:8080)
+#   https://<host>.ts.net/ and /history -> the web UI      (127.0.0.1:8080)
 #   https://<host>.ts.net/ws      -> the agent's stream (127.0.0.1:8787/ws); the UI connects with wss://<host>.ts.net/ws
+# /history goes to the UI too, so nginx proxies it to the agent and the page keeps one origin.
 # Only port 443 is served: serving the agent's own port would take that port from the agent (ADR 0016).
 # and adds <host>.ts.net to the agent's allowed origins (MINIDASH_ORIGINS), then restarts the agent.
 # Plain HTTP on the LAN is left exactly as it was. Funnel (public internet) is never used.
@@ -130,7 +131,7 @@ case "$CMD" in
   on)
     no_funnel
     if [ "$DRY" = 1 ]; then
-      echo "[dry-run] would serve https://$HOST/ -> http://127.0.0.1:$UI_PORT"
+      echo "[dry-run] would serve https://$HOST/ and /history -> http://127.0.0.1:$UI_PORT"
       echo "[dry-run] would serve https://$HOST/ws -> http://127.0.0.1:$AGENT_PORT/ws"
       echo "[dry-run] would allow the origin $HOST in $ENV_FILE and restart the agent"
       exit 0
@@ -139,12 +140,13 @@ case "$CMD" in
     # A serve on the agent's port from an older version takes that port from the agent; drop it first.
     limited "${MINIDASH_TS_TIMEOUT:-15}" "$TS" serve "--https=$AGENT_PORT" off >/dev/null 2>&1 || true
     serve_on / "http://127.0.0.1:$UI_PORT"
+    serve_on /history "http://127.0.0.1:$UI_PORT"
     serve_on /ws "http://127.0.0.1:$AGENT_PORT/ws"
     no_funnel
     add_origin
     restart_agent
     say "done. Open https://$HOST/ from any device on your tailnet."
-    say "The page connects to wss://$HOST/ws. Plain HTTP on the LAN still works."
+    say "The page connects to wss://$HOST/ws and fetches /history from the same origin. Plain HTTP on the LAN still works."
     ;;
   off)
     if [ "$DRY" = 1 ]; then

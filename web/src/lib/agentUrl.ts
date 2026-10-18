@@ -2,8 +2,8 @@
 export const AGENT_PORT = 8787
 
 /**
- * The agent's HTTP base (for /history and /healthz), derived the same way as the stream URL:
- * over HTTPS the agent is on the page origin; over plain HTTP it is on its own port.
+ * The agent's HTTP base, derived from the stream URL. The built UI fetches /history from its own
+ * origin (nginx proxies it to the agent), so this is only used for a build-time override (dev).
  */
 export function agentHttpBase(loc: Pick<Location, 'protocol' | 'hostname'>, override?: string): string {
   if (override) return override.replace(/^wss?:\/\//, 'http://').replace(/^ws:/, 'http:')

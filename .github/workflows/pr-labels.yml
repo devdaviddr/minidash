@@ -1,0 +1,47 @@
+name: pr-labels
+# Labels each pull request from its Conventional Commit title and its size, so the PR list is easy to scan
+# and release notes can be grouped by type. Runs on the base branch's code (pull_request_target) so it has
+# permission to label PRs from forks; it never checks out or runs the PR's own code.
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7 # the base branch, because of pull_request_target
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const { labelsFor, LABELS } = require('./.github/scripts/pr-labels.cjs')
+            const { owner, repo } = context.repo
+            const pr = context.payload.pull_request
+
+            // Size counts real changes: lockfiles and images would drown the signal.
+            const files = await github.paginate(github.rest.pulls.listFiles, { owner, repo, pull_number: pr.number, per_page: 100 })
+            const lines = files
+              .filter((f) => !/(^|\/)package-lock\.json$|\.svg$/.test(f.filename))
+              .reduce((n, f) => n + f.additions + f.deletions, 0)
+
+            const { add, managed } = labelsFor(pr.title, { author: pr.user.login, lines })
+
+            // Make sure the labels exist, with colours and descriptions (422 means it already does).
+            for (const l of LABELS.filter((l) => add.includes(l.name))) {
+              try {
+                await github.rest.issues.createLabel({ owner, repo, ...l })
+              } catch (e) {
+                if (e.status !== 422) throw e
+              }
+            }
+
+            const current = pr.labels.map((l) => l.name)
+            for (const name of current.filter((n) => managed.includes(n) && !add.includes(n))) {
+              await github.rest.issues.removeLabel({ owner, repo, issue_number: pr.number, name })
+            }
+            const missing = add.filter((n) => !current.includes(n))
+            if (missing.length) await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: missing })
+            core.info(`labels: ${add.join(', ')} (${lines} lines)`)

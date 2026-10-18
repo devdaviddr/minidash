@@ -19,7 +19,7 @@ make check        # must pass before you push
 3. **Commit** with [Conventional Commits](https://www.conventionalcommits.org): `type(scope): summary`, 72 characters or fewer. In the body say why and cite the task and requirement (`Refs: T-3, FR-1, AC-1`). One logical change per commit. The git hooks enforce this.
 4. **Test.** Every acceptance criterion needs an automated check, or a documented manual check when it needs real hardware. Keep fixtures free of real hostnames, IPs, share names and account names.
 5. **Document.** Update the docs in the same commit as the behaviour. A decision with trade-offs gets an [ADR](docs/adr/README.md). Each collector is documented in [docs/collectors.md](docs/collectors.md).
-6. **Open a pull request** into `main`. The title is a Conventional Commit. Fill in the template. CI (`governance`, `agent`, `web`) must be green.
+6. **Open a pull request** into `main`. The **title and description become the commit on `main` and the release note** (every PR is squash-merged), so write them for a reader. The title is a Conventional Commit (`feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `ci`, `chore`; `!` for a breaking change). Type and size labels are added automatically. Fill in the template. CI (`governance`, `agent`, `web`) must be green.
 
 ## Rules that are enforced
 - No commits or pushes directly to `main`; no `--no-verify`; no force-pushes to shared branches.

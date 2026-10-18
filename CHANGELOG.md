@@ -3,6 +3,11 @@
 All notable changes are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow the spec version in `spec/` rather than git tags until a first release is cut.
 
 ## [Unreleased]
+### Process
+- Every PR is squash-merged (ADR 0011): the PR title and description become the commit and the release note. Rebase and merge commits are turned off.
+- PRs are labelled automatically from their Conventional Commit title and size; release notes are grouped by those labels.
+- Releases are published by a workflow when a `vX.Y.Z` tag is pushed: tests, the agent for Apple Silicon, the built web UI, checksums and grouped notes. They start as pre-releases.
+
 ### Added (spec 1.2.0)
 - **Click to select:** while Customise is open, clicking a card outlines it and the sidebar shows just that card (show/hide, order, width, details). The overview list can select too, so no pointer is needed.
 - **Drag to resize:** a grip on each card's right edge snaps its width to 1, 2, 3 or 4 columns with a live badge. Escape cancels; the grip is also a keyboard slider. New width: **3 columns**.

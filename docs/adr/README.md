@@ -15,7 +15,8 @@ Short, numbered, append-only. Supersede a decision with a new ADR rather than ed
 | [0009](0009-browser-side-layout-and-theme.md) | Browser-side layout and theme state | accepted |
 | [0010](0010-container-queries-and-width-resize.md) | Container queries and width-only resize | accepted |
 | [0011](0011-squash-merge-and-labelled-releases.md) | Squash every PR, auto-label, release by tag | squash superseded by 0013; labels and releases accepted |
-| [0012](0012-https-through-tailscale-serve.md) | HTTPS through Tailscale Serve | accepted |
+| [0012](0012-https-through-tailscale-serve.md) | HTTPS through Tailscale Serve | accepted; agent port superseded by 0016 |
 | [0013](0013-git-flow-and-merge-commits.md) | Git Flow with merge commits, pre-1.0 versioning | accepted |
 | [0014](0014-per-process-gpu-time-without-root.md) | Per-process GPU time is readable without root | accepted |
 | [0015](0015-read-gpu-time-by-forking-ioreg.md) | Read per-process GPU time by forking `ioreg` | accepted |
+| [0016](0016-same-origin-stream-over-https.md) | Serve the stream on the page's origin over HTTPS | accepted |

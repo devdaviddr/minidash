@@ -8,7 +8,8 @@
 # Run it ON the Mac mini. It uses `tailscale serve`, so Tailscale issues and renews the certificates; there is
 # nothing to manage. It sets up:
 #   https://<host>.ts.net/        -> the web UI      (127.0.0.1:8080)
-#   https://<host>.ts.net:8787/   -> the agent       (127.0.0.1:8787)   the UI connects with wss://
+#   https://<host>.ts.net/ws      -> the agent's stream (127.0.0.1:8787/ws); the UI connects with wss://<host>.ts.net/ws
+# Only port 443 is served: serving the agent's own port would take that port from the agent (ADR 0016).
 # and adds <host>.ts.net to the agent's allowed origins (MINIDASH_ORIGINS), then restarts the agent.
 # Plain HTTP on the LAN is left exactly as it was. Funnel (public internet) is never used.
 #
@@ -99,10 +100,14 @@ restart_agent() {
   launchctl kickstart -k "gui/$(id -u)/$LABEL" >/dev/null 2>&1 || say "could not restart the agent; restart it yourself: launchctl kickstart -k gui/\$(id -u)/$LABEL"
 }
 
-serve_on() { # $1 = https port, $2 = local port
+serve_on() { # $1 = path on https 443, $2 = local target URL
   local rc=0
   # A non-zero status (including a timeout) is handled below, so it must not trip `set -e`.
-  limited "${MINIDASH_TS_TIMEOUT:-15}" "$TS" serve --bg "--https=$1" "http://127.0.0.1:$2" || rc=$?
+  if [ "$1" = / ]; then
+    limited "${MINIDASH_TS_TIMEOUT:-15}" "$TS" serve --bg --https=443 "$2" || rc=$?
+  else
+    limited "${MINIDASH_TS_TIMEOUT:-15}" "$TS" serve --bg --https=443 "--set-path=$1" "$2" || rc=$?
+  fi
   if grep -qi "not enabled on your tailnet" "$OUT"; then
     echo "tailscale-https: Tailscale Serve is not enabled on your tailnet yet. This is an account setting only you can change." >&2
     grep -Eo 'https://login\.tailscale\.com[^ ]*' "$OUT" | head -1 | sed 's/^/tailscale-https: Enable it here, then run this again: /' >&2
@@ -126,22 +131,24 @@ case "$CMD" in
     no_funnel
     if [ "$DRY" = 1 ]; then
       echo "[dry-run] would serve https://$HOST/ -> http://127.0.0.1:$UI_PORT"
-      echo "[dry-run] would serve https://$HOST:$AGENT_PORT/ -> http://127.0.0.1:$AGENT_PORT"
+      echo "[dry-run] would serve https://$HOST/ws -> http://127.0.0.1:$AGENT_PORT/ws"
       echo "[dry-run] would allow the origin $HOST in $ENV_FILE and restart the agent"
       exit 0
     fi
     # Serve first: if it is not enabled we stop here and have changed nothing.
-    serve_on 443 "$UI_PORT"
-    serve_on "$AGENT_PORT" "$AGENT_PORT"
+    # A serve on the agent's port from an older version takes that port from the agent; drop it first.
+    limited "${MINIDASH_TS_TIMEOUT:-15}" "$TS" serve "--https=$AGENT_PORT" off >/dev/null 2>&1 || true
+    serve_on / "http://127.0.0.1:$UI_PORT"
+    serve_on /ws "http://127.0.0.1:$AGENT_PORT/ws"
     no_funnel
     add_origin
     restart_agent
     say "done. Open https://$HOST/ from any device on your tailnet."
-    say "The page connects to wss://$HOST:$AGENT_PORT/ws. Plain HTTP on the LAN still works."
+    say "The page connects to wss://$HOST/ws. Plain HTTP on the LAN still works."
     ;;
   off)
     if [ "$DRY" = 1 ]; then
-      echo "[dry-run] would turn off the HTTPS serve on 443 and $AGENT_PORT, remove the origin $HOST, restart the agent"
+      echo "[dry-run] would turn off the HTTPS serve on 443 (and any older serve on $AGENT_PORT), remove the origin $HOST, restart the agent"
       exit 0
     fi
     limited "${MINIDASH_TS_TIMEOUT:-15}" "$TS" serve "--https=443" off || true

@@ -51,7 +51,9 @@ check "dry run leaves the origins alone"     test "$(origins)" = "MINIDASH_ORIGI
 fresh_env; run on
 check "on exits 0"                           test "$CODE" = 0
 check "on serves the UI on HTTPS 443"        grep -qF 'serve --bg --https=443 http://127.0.0.1:8080' "$STUB_LOG"
-check "on serves the agent on HTTPS 8787"    grep -qF 'serve --bg --https=8787 http://127.0.0.1:8787' "$STUB_LOG"
+check "on serves the stream at /ws on 443"   grep -qF 'serve --bg --https=443 --set-path=/ws http://127.0.0.1:8787/ws' "$STUB_LOG"
+check "on never serves the agent's port"     bash -c '! grep -qF -- "--bg --https=8787" "$1"' _ "$STUB_LOG"
+check "on drops an older serve on 8787"      grep -qF 'serve --https=8787 off' "$STUB_LOG"
 check "on allows the HTTPS origin"           test "$(origins)" = "MINIDASH_ORIGINS=*:8080,frank.example.ts.net"
 check "on keeps the LAN origin"              has "Plain HTTP on the LAN still works"
 check "on keeps the env file private (600)"  test "$(mode)" = 600

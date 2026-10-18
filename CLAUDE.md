@@ -3,7 +3,7 @@
 Realtime monitoring dashboard for an M4 Mac mini: CPU, GPU, unified memory, disks (internal and external), network, processes, containers (Docker, Podman, Colima), shares and network accounts. Public repo: github.com/devdaviddr/minidash.
 
 ## Status
-Spec 0.1.0 is approved and all tasks T-1..T-11 are implemented. Left: the manual acceptance checks on the real Mac mini and the owner's visual review, then bump the spec to `implemented`. Deployment: native agent under launchd plus containerised web UI (plan DD-4). Work tasks in `spec/0.1.0/tasks.md` order; scope changes bump the spec first (see `.claude/rules/sdd.md`).
+Spec 0.5.0 (the CPU reactor) is current and approved. Releases v0.1.0 to v0.4.1 are published; v0.5.0 is in release. The project stays below 1.0.0: each release is a MINOR with its own spec directory, hotfixes are a PATCH, and the spec version equals the release version (ADR 0013). Deployment: native agent under launchd plus containerised web UI. Work tasks in the current `spec/<version>/tasks.md` order; scope changes go through the spec first (see `.claude/rules/sdd.md`).
 
 ## Where things are
 - `spec/<version>/{spec,plan,tasks}.md`: the contract. Highest version is current. Older versions are frozen.
@@ -14,7 +14,7 @@ Spec 0.1.0 is approved and all tasks T-1..T-11 are implemented. Left: the manual
 
 ## Rules (summary; full text in `.claude/rules/`)
 1. **Spec first.** Build only what an approved spec and task describe. Scope change means bump the spec version first.
-2. **Git.** Branch from `main`, never commit to `main`, Conventional Commits, one logical change per commit, reference task IDs (`T-3`) in commits. Never open or merge a PR into `main` yourself; the owner does that with the ship skill.
+2. **Git.** Git Flow (ADR 0013). Branch from `develop`, never commit to `main` or `develop`, Conventional Commits, one logical change per commit (branch commits are kept by merge commits, so keep them tidy), reference task IDs (`T-3`) in commits. PRs go into `develop`; merge one only when the owner asks. Never open or merge a PR into `main` yourself; release and hotfix PRs are the owner's, via the ship skill.
 3. **Docs.** Any user-visible or architectural change updates docs in the same commit. Decisions with trade-offs get an ADR.
 4. **Code.** Small functions, typed contracts, collectors behind interfaces, tests for every acceptance criterion. Read-only agent: nothing may change system or container state.
 5. **Security.** No secrets in the repo (it is public). Agent is LAN-reachable only with a shared access token.

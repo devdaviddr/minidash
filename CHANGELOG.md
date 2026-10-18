@@ -4,6 +4,13 @@ All notable changes are recorded here. The format follows [Keep a Changelog](htt
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-18
+Hotfix.
+
+### Fixed
+- **CPU card:** in a tall card (for example beside a taller GPU card) the chart kept a fixed height and left an empty band under it. Beside the reactor the chart now grows to the row's height.
+- **CPU reactor:** at low load the hexagon outlines were so faint that the fill in a cell's pointed base looked like it spilled between rows. Outlines now stay clearly visible when idle.
+
 ## [0.6.0] - 2026-10-18
 Spec 0.6.0.
 
@@ -124,7 +131,8 @@ First complete implementation of spec 0.1.0. A GPU-load check (AC-2) and a visua
 - Architecture with diagrams, configuration, operations, troubleshooting, security model and development guide; decision records 0002 to 0008.
 - README with a banner, a dashboard layout illustration (clearly labelled, made-up values), badges, requirements, a performance table and a quick start.
 
-[Unreleased]: https://github.com/devdaviddr/minidash/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/devdaviddr/minidash/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/devdaviddr/minidash/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/devdaviddr/minidash/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/devdaviddr/minidash/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/devdaviddr/minidash/compare/v0.5.0...v0.5.1

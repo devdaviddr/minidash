@@ -14,7 +14,7 @@ import { SharesCard } from './SharesCard'
 import { Summary } from './Summary'
 
 // uPlot needs a real canvas; the chart wrapper is covered by the stream/history tests and visual review.
-vi.mock('./Chart', () => ({ Chart: () => <div data-testid="chart" /> }))
+vi.mock('./Chart', () => ({ Chart: (p: { fill?: boolean }) => <div data-testid="chart" data-fill={p.fill ? 'yes' : 'no'} /> }))
 afterEach(cleanup)
 
 const h = [fixture()]
@@ -75,6 +75,13 @@ describe('cpu card layout', () => {
   it('has no core count without CPU data', () => {
     render(<CpuCard history={[fixture({ cpu: { ok: false, error: 'boom' } })]} />)
     expect(screen.queryByText(/cores/)).toBeNull()
+  })
+
+  it('asks the chart to grow to the row height beside the reactor, so a tall card has no empty band', () => {
+    const { container } = render(<CpuCard history={h} />)
+    const chart = screen.getByTestId('chart')
+    expect(chart.dataset.fill).toBe('yes')
+    expect(box(container, 'main')?.contains(chart)).toBe(true)
   })
 
   it('is a column by default and a row from the @md container width, with the reactor stretching to the row', () => {

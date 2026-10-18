@@ -19,6 +19,15 @@ import { COMPONENTS } from '../layout/registry'
 import { ResizeGrip } from './ResizeGrip'
 import { SPAN_CLASS } from '../layout/spans'
 
+/** Six dots. A drawn icon, because the Braille character used before is missing from many fonts. */
+function GripIcon() {
+  return (
+    <svg width="8" height="12" viewBox="0 0 8 12" aria-hidden="true" className="fill-current">
+      {[1.5, 6, 10.5].flatMap((y) => [1.5, 6.5].map((x) => <circle key={`${x}-${y}`} cx={x} cy={y} r="1.1" />))}
+    </svg>
+  )
+}
+
 interface ItemProps {
   card: CardLayout
   history: Snapshot[]
@@ -54,9 +63,10 @@ function Item({ card, history, editing, selected, onSelect, onSpan }: ItemProps)
           {...attributes}
           {...listeners}
           aria-label={`Drag ${title} to reorder`}
-          className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 cursor-grab touch-none rounded-full border border-line bg-surface px-3 py-0.5 text-xs font-medium text-muted outline-none hover:text-fg focus-visible:ring-2 focus-visible:ring-accent/50 active:cursor-grabbing"
+          className="absolute -top-3 left-1/2 z-10 flex -translate-x-1/2 cursor-grab touch-none items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-0.5 text-xs font-medium text-muted outline-none hover:text-fg focus-visible:ring-2 focus-visible:ring-accent/50 active:cursor-grabbing"
         >
-          ⠿ Drag
+          <GripIcon />
+          Drag
         </button>
       )}
       <Card history={history} hidden={new Set(card.hidden)} />

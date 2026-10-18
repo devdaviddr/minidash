@@ -2,7 +2,7 @@
 feature: minidash-realtime-mac-mini-monitor
 title: minidash realtime Mac mini monitor
 version: 1.3.0
-status: approved
+status: implemented
 updated: 2026-10-18
 ---
 # minidash realtime Mac mini monitor — Implementation Plan

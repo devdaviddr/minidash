@@ -2,7 +2,7 @@
 feature: minidash-realtime-mac-mini-monitor
 title: minidash realtime Mac mini monitor
 version: 1.3.0
-status: approved
+status: implemented
 owner: devdaviddr
 created: 2026-10-18
 updated: 2026-10-18
@@ -194,10 +194,20 @@ Resolved 2026-10-18 by the owner for 1.3.0: HTTPS through Tailscale Serve, an up
 
 No open questions.
 
+**Accepted gaps.** The owner asked on 2026-10-18 for the specs to be marked implemented. These checks need real hardware, a browser or an account setting, and no result has been recorded for them:
+
+- **AC-2** (spec 1.0.0): the GPU-load check on the Mac mini.
+- **AC-12 and AC-18** (specs 1.1.0 and 1.2.0): real mouse and touch dragging and resizing in a browser. The keyboard paths and the snapping maths are tested.
+- **AC-20** (spec 1.2.0): the visual review of cards at one-column and full width.
+- **AC-23, live clause** (spec 1.3.0): the HTTPS page over Tailscale. It needs the owner to enable Tailscale Serve for the tailnet (https://login.tailscale.com/f/serve). The script's behaviour when Serve is off was verified live.
+
+They are listed with their steps in `docs/deploy.md`. Specs 1.0.0, 1.1.0 and 1.2.0 are frozen history; 1.3.0 is the cumulative current contract.
+
 ## Changelog
 
 | Version | Date | Level | Note |
 | --- | --- | --- | --- |
+| 1.3.0 | 2026-10-18 | implemented | Marked implemented at the owner's request, with the accepted gaps listed in section 9 |
 | 1.3.0 | 2026-10-18 | approve | Approved by the owner's request: HTTPS through Tailscale Serve and a one-command upgrade |
 | 1.3.0 | 2026-10-18 | minor | Encrypted access over Tailscale HTTPS (wss), and a one-command upgrade for the Mac mini |
 | 1.2.0 | 2026-10-18 | approve | Approved by the owner's answers: width-only resize snapping to columns, click-to-select with a per-card sidebar |

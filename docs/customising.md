@@ -59,7 +59,7 @@ The page adapts at two levels.
 
 | Card | Narrow (1 column) | Wide |
 | --- | --- | --- |
-| CPU | the hexagon cluster shrinks to fit and drops the core numbers, load average wraps under the total | bigger hexagons with core numbers, using the card's spare height |
+| CPU | the hexagon cluster sits under the chart, takes the card's spare height and drops the core numbers when very narrow | the chart on the left and the hexagon cluster on the right, as tall as the row (from a 28 rem card, so every width-2 card on a desktop). The core count is in the card header and the load average under the total at every width; with the chart or the cluster hidden, the other takes the full width |
 | GPU & power | tiles in one or two columns | four tiles across |
 | Memory | total and swap stacked | total and swap side by side |
 | Network | rates wrap, cumulative bytes hidden | cumulative bytes shown |

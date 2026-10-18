@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 100, runningboardd</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>25891067625833</integer>
+			</dict>
+		</array>
+		<key>CommandQueueCount</key>
+		<integer>1</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 110, WindowServer</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 100, runningboardd</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>5616083</integer>
+			</dict>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>325642246625</integer>
+			</dict>
+		</array>
+		<key>CommandQueueCount</key>
+		<integer>2</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 120, ExampleApp1</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 130, ExampleApp2</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 140, ExampleApp3</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>506708</integer>
+			</dict>
+		</array>
+		<key>CommandQueueCount</key>
+		<integer>1</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 150, ExampleApp4</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>1885132416</integer>
+			</dict>
+		</array>
+		<key>CommandQueueCount</key>
+		<integer>1</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 160, ExampleApp5</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>21335208</integer>
+			</dict>
+		</array>
+		<key>CommandQueueCount</key>
+		<integer>1</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 170, ExampleApp6</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 180, ExampleApp7</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>CommandQueueCount</key>
+		<integer>0</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 190, ExampleApp8</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>43705875</integer>
+			</dict>
+		</array>
+		<key>CommandQueueCount</key>
+		<integer>1</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 200, ExampleApp9</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>10984750</integer>
+			</dict>
+		</array>
+		<key>CommandQueueCount</key>
+		<integer>1</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 210, ExampleApp10</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 220, ExampleApp11</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>CommandQueueCount</key>
+		<integer>0</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 230, ExampleApp12</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 240, ExampleApp13</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 250, ExampleApp14</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>30836541</integer>
+			</dict>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>2467333</integer>
+			</dict>
+		</array>
+		<key>CommandQueueCount</key>
+		<integer>2</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 260, ExampleApp15</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 270, ExampleApp16</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>766291</integer>
+			</dict>
+		</array>
+		<key>CommandQueueCount</key>
+		<integer>1</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 280, ExampleApp17</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 290, ExampleApp18</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 300, ExampleApp19</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 310, ExampleApp20</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>CommandQueueCount</key>
+		<integer>0</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 320, ExampleApp21</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array>
+			<dict>
+				<key>API</key>
+				<string>Metal</string>
+				<key>accumulatedGPUTime</key>
+				<integer>2993208</integer>
+			</dict>
+		</array>
+		<key>CommandQueueCount</key>
+		<integer>1</integer>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 330, ExampleApp22</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 340, ExampleApp23</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOObjectClass</key>
+		<string>AGXDeviceUserClient</string>
+		<key>IOUserClientCreator</key>
+		<string>pid 350, ExampleApp24</string>
+	</dict>
+</array>
+</plist>

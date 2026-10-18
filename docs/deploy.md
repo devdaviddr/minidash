@@ -69,6 +69,14 @@ UI 0.3.0 (click to select, drag to resize, responsive cards) was deployed and ch
 
 Spec 0.4.0 tooling was also run for real against the mini: `deploy/upgrade.sh` built, copied, installed and rebuilt, and all four of its checks passed (agent health, UI container, UI page, live stream). `deploy/tailscale-https.sh` was run live: `status` and `--dry-run` work, `--funnel` is refused, and `on` stopped cleanly with the enable link because Tailscale Serve was not yet enabled on the tailnet, leaving the origins and serve config untouched. Both scripts have stub-based test suites that run in CI (37 and 35 checks).
 
+Releases 0.6.0 to 0.6.2 were deployed with `deploy/upgrade.sh` and all four checks passed each time.
+- **Per-process GPU (0.6.0):** a live snapshot carried a GPU value for every listed process, with no `gpuError`. With the GPU read every 3 s, the agent plus `macmon` measured 1.64-1.70% of one core.
+- **HTTPS over Tailscale, verified live (AC-23), 2026-10-18, with 0.6.2:**
+  - From another tailnet device, `https://<mini>.<tailnet>.ts.net/` loads with a valid certificate.
+  - A WebSocket upgrade to `wss://<mini>.<tailnet>.ts.net/ws` is accepted from the page's origin and refused (403) from any other origin.
+  - Snapshots stream over `wss://`, the agent keeps port 8787, and the LAN page still works.
+  - The first attempt, with 0.6.0's script, served the agent's own port and knocked the agent over; see ADR 0016.
+
 Still needs a human: the GPU-load check (AC-2) and a visual review of the UI in a browser. That includes real pointer and touch dragging and resizing, and how each card looks at one-column and full width, which automated tests cannot judge.
 
 ## Manual acceptance checks (need the real mini)
@@ -78,4 +86,20 @@ Still needs a human: the GPU-load check (AC-2) and a visual review of the UI in 
 4. Eject the external drive: it disappears; plug it in: it returns (AC-3).
 5. Start Colima: it lists its containers (AC-6).
 6. Mount a share on the mini: it is listed with its server and mount point (AC-7).
-7. After enabling Serve for your tailnet, run `deploy/tailscale-https.sh on` and open `https://<mini>.<tailnet>.ts.net/` from another tailnet device: the page loads over HTTPS and the stream connects over `wss://` (AC-23).
+7. After enabling Serve for your tailnet, run `deploy/tailscale-https.sh on` and open `https://<mini>.<tailnet>.ts.net/` from another tailnet device: the page loads over HTTPS and the stream connects over `wss://<mini>.<tailnet>.ts.net/ws` (AC-23; verified 2026-10-18).
+
+### Checks only the owner can do (open in a browser)
+These are the accepted gaps in the current spec (section 9). Tick them off here when done.
+8. **Card dragging and resizing (AC-12, AC-18):** open Customise.
+   - With a mouse, drag a card to a new place and drag its right edge across column boundaries. It snaps to 1-4 columns and Escape cancels.
+   - Do the same on a phone or tablet with touch.
+9. **Card widths (AC-20):** set each card to width 1 and then to width 4. Nothing is clipped, overflows or looks cramped.
+10. **CPU reactor (AC-26, AC-28):**
+    - On a desktop window, give the CPU card width 2: the chart is on the left and the honeycomb on the right, with "N cores" in the header. If the card is taller than its content (for example next to a taller GPU card), the chart fills the height.
+    - At width 1 and on a phone: the honeycomb sits under the chart, and the numbers are readable.
+    - Under load: each cell's fill rises from its base and stays inside the hexagon, turning amber from 60% and red from 85%.
+11. **GPU column, live (AC-29, AC-32):**
+    - Run a Metal workload (a game, a Metal benchmark, or `ffmpeg -hwaccel videotoolbox ...`).
+    - Sort the Processes card by GPU. The workload rises to the top within a few seconds, at a value in the same range as Activity Monitor's "% GPU" (Window > GPU History, or the "% GPU" column).
+    - Check the column at width 1 and at full width.
+12. **GPU load overall (AC-2):** during the same workload, the GPU card's % and power rise.

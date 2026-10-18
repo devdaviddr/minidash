@@ -42,7 +42,7 @@ flowchart LR
     soc["soc"]
     disks["disks"]
     net["network"]
-    procs["processes<br/>throttled 3 s"]
+    procs["processes<br/>throttled 3 s<br/>+ GPU per process"]
     cont["containers<br/>throttled 2 s"]
     shares["shares<br/>throttled 10 s"]
   end
@@ -73,7 +73,7 @@ Key properties:
 | `soc` | `macmon pipe` child process | 2 s (configurable) | [ADR 0003](adr/0003-macmon-for-gpu-and-power.md) |
 | `disks` | gopsutil + `diskutil` (cached per device) | 1 s | [collectors.md](collectors.md#disks) |
 | `network` | kernel `ifmib` sysctl | 1 s | [ADR 0005](adr/0005-kernel-counters-for-network.md) |
-| `processes` | gopsutil process table | 3 s | [collectors.md](collectors.md#processes) |
+| `processes` | gopsutil process table; GPU time per process from `ioreg` (`AGXDeviceUserClient`, no root, ADR 0015) | 3 s (GPU: `MINIDASH_PROC_GPU_INTERVAL_MS`, default 3 s) | [collectors.md](collectors.md#processes) |
 | `containers` | Docker Engine API over unix sockets | 2 s | [collectors.md](collectors.md#containers) |
 | `shares` | `mount`, `sharing -l`, `netstat`, `ps` | 10 s | [collectors.md](collectors.md#shares) |
 

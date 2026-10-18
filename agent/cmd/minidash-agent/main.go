@@ -16,6 +16,8 @@ import (
 	"github.com/devdaviddr/minidash/agent/internal/collect/shares"
 	"github.com/devdaviddr/minidash/agent/internal/collect/soc"
 	"github.com/devdaviddr/minidash/agent/internal/config"
+	"github.com/devdaviddr/minidash/agent/internal/history"
+	"github.com/devdaviddr/minidash/agent/internal/historyserver"
 	"github.com/devdaviddr/minidash/agent/internal/hub"
 	"github.com/devdaviddr/minidash/agent/internal/macmon"
 	"github.com/devdaviddr/minidash/agent/internal/snapshot"
@@ -39,10 +41,29 @@ func main() {
 		snapshot.Throttle(containers.New(), 2*time.Second),
 		snapshot.Throttle(shares.New(), 10*time.Second),
 	)
-	go agg.Run(context.Background(), h.Publish)
+	ctx := context.Background()
+	store := history.New(cfg.Retention)
+	go agg.Run(ctx, func(s snapshot.Snapshot) {
+		h.Publish(s)
+		store.Add(s)
+	})
+	// Compact on a slow cadence so older history coalesces without per-tick cost (FR-36).
+	go func() {
+		t := time.NewTicker(time.Minute)
+		defer t.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-t.C:
+				store.Compact()
+			}
+		}
+	}()
 
 	mux := http.NewServeMux()
 	mux.Handle("/ws", h)
+	mux.Handle("/history", historyserver.New(store, cfg.Token))
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = w.Write([]byte("ok"))
 	})

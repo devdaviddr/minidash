@@ -4,6 +4,18 @@ All notable changes are recorded here. The format follows [Keep a Changelog](htt
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-18
+Spec 0.7.0 — log retention.
+
+### Added
+- **Log retention:** the agent now stores collected history for a configurable window so charts can
+  show longer than the live 5-minute view. Set `MINIDASH_RETENTION` to one of `5m`, `10m`, `20m`,
+  `30m`, `1h`, `7h`, `1d`, `7d`, `28d` (default `1h`). Recent ticks are kept raw and older data is
+  downsampled into coarser buckets (10 s, 1 min, 5 min, 1 h) so a 28-day window stays small. Only the
+  lightweight time-series (CPU, memory, GPU/power, disk, network) are stored long-term. History is
+  served over an authenticated `GET /history` endpoint, and the dashboard has a **Range** selector in
+  the header to choose how far back the charts go.
+
 ## [0.6.2] - 2026-10-18
 Hotfix.
 

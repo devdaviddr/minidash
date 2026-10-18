@@ -32,6 +32,29 @@ Open `http://<mini>:8080`, enter the token once. The page connects to `ws://<sam
 
 The container is read-only, drops all capabilities and runs unprivileged (`nginx-unprivileged`). It holds no secrets: the token stays in your browser.
 
+## 3. HTTPS over Tailscale (optional, recommended)
+Plain HTTP on the LAN sends the token and metrics unencrypted. If the mini is on your Tailscale tailnet, publish the dashboard over HTTPS to the tailnet only:
+
+```sh
+# once, in your Tailscale admin console: enable Serve and HTTPS certificates
+# (the script prints the exact link if they are off)
+deploy/tailscale-https.sh on --dry-run   # show what it will do
+deploy/tailscale-https.sh on             # run on the Mac mini
+deploy/tailscale-https.sh status
+```
+Then open `https://<mini>.<tailnet>.ts.net/` from any device on the tailnet. The page connects with `wss://<mini>.<tailnet>.ts.net:8787/ws`. The script serves the UI on HTTPS 443 and the agent on HTTPS 8787 with `tailscale serve`, adds the name to the agent's allowed origins, and restarts the agent. It is safe to run twice, and `deploy/tailscale-https.sh off` undoes it. The LAN HTTP addresses keep working.
+
+It never uses Funnel, so nothing is exposed to the public internet; the script refuses it. See [ADR 0012](adr/0012-https-through-tailscale-serve.md) and, if something fails, [troubleshooting.md](troubleshooting.md#https-over-tailscale).
+
+## Upgrading
+From your development machine, in the repo:
+
+```sh
+deploy/upgrade.sh --dry-run       # show the plan
+deploy/upgrade.sh                 # build, copy, install, rebuild the UI, then check everything
+```
+It builds the agent for Apple Silicon, copies the files over SSH, installs the agent (your token is kept), rebuilds the UI container, and then checks the agent's `/healthz`, the UI container, the UI page and the live stream. If any check fails it exits non-zero and does not say it succeeded. On success it prints the URLs. Use `--host <ssh-name>` for a host other than `macmini`.
+
 ## Verification status
 Deployed to the Mac mini (M4, macOS 26.4, 693 processes, 14 Podman containers) and tested over the LAN from another Mac:
 - All eight collectors report `ok`. The external Media drive shows as external; Podman shows its containers; Colima and Docker read "not-running" (Docker's socket resolves to Podman's and is counted once).
@@ -44,6 +67,8 @@ UI 1.1.0 (themes, restyle, customisable layout) was also deployed to the mini an
 
 UI 1.2.0 (click to select, drag to resize, responsive cards) was deployed and checked the same way: the served CSS contains the container-query rules, the served bundle contains the resize slider and selection code, the container is unchanged (read-only, unprivileged, security headers), and the stream is accepted. The gzipped bundle is 21.7 kB above the 1.0.0 build (1.2.0 itself added 1.8 kB and no dependencies).
 
+Spec 1.3.0 tooling was also run for real against the mini: `deploy/upgrade.sh` built, copied, installed and rebuilt, and all four of its checks passed (agent health, UI container, UI page, live stream). `deploy/tailscale-https.sh` was run live: `status` and `--dry-run` work, `--funnel` is refused, and `on` stopped cleanly with the enable link because Tailscale Serve was not yet enabled on the tailnet, leaving the origins and serve config untouched. Both scripts have stub-based test suites that run in CI (37 and 35 checks).
+
 Still needs a human: the GPU-load check (AC-2) and a visual review of the UI in a browser. That includes real pointer and touch dragging and resizing, and how each card looks at one-column and full width, which automated tests cannot judge.
 
 ## Manual acceptance checks (need the real mini)
@@ -53,3 +78,4 @@ Still needs a human: the GPU-load check (AC-2) and a visual review of the UI in 
 4. Eject the external drive: it disappears; plug it in: it returns (AC-3).
 5. Start Colima: it lists its containers (AC-6).
 6. Mount a share on the mini: it is listed with its server and mount point (AC-7).
+7. After enabling Serve for your tailnet, run `deploy/tailscale-https.sh on` and open `https://<mini>.<tailnet>.ts.net/` from another tailnet device: the page loads over HTTPS and the stream connects over `wss://` (AC-23).

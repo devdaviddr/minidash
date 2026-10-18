@@ -160,6 +160,16 @@ describe('persistence and files (AC-15)', () => {
     expect(loadLayout(s).layout).toEqual(custom)
   })
   it('loads the default when nothing is saved', () => expect(loadLayout(mem()).layout).toEqual(defaultLayout()))
+  // AC-32: a layout saved before 0.6.0 has no gpu part, so the GPU column shows.
+  it('a saved 0.5.x layout loads with the GPU column shown', () => {
+    const old = defaultLayout()
+    old.cards = old.cards.map((c) => (c.id === 'processes' ? { ...c, hidden: ['note'] } : c))
+    const r = loadLayout(mem(JSON.stringify(old)))
+    const procs = r.layout.cards.find((c) => c.id === 'processes')
+    expect(procs?.hidden).toEqual(['note'])
+    expect(procs?.hidden).not.toContain('gpu')
+    expect(r.notes).toEqual([])
+  })
   it('falls back to the default on corrupt or invalid stored data, without throwing', () => {
     for (const bad of ['{not json', '[]', '{"version":9}', 'null']) {
       const r = loadLayout(mem(bad))

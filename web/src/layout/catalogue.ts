@@ -52,7 +52,8 @@ export const CARDS = [
   ] },
   { id: 'processes', title: 'Processes', defaultSpan: 4, parts: [
     { id: 'user', label: 'Owner column' },
-    { id: 'note', label: 'GPU note' },
+    { id: 'gpu', label: 'GPU column' },
+    { id: 'note', label: 'GPU attribution note' },
   ] },
 ] as const satisfies readonly CardDef[]
 

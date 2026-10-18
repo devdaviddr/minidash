@@ -1,0 +1,5 @@
++-o AGXDeviceUserClient  <class AGXDeviceUserClient, id 0x1, !registered, !matched, active, busy 0, retain 5>
+    {
+      "IOUserClientCreator" = "pid 10, ExampleApp1"
+      "AppUsage" = ({"accumulatedGPUTime"=100})
+    }

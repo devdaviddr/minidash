@@ -35,7 +35,7 @@ func main() {
 		soc.New(mm),
 		disk.New(),
 		network.New(),
-		snapshot.Throttle(processes.New(), 3*time.Second),
+		snapshot.Throttle(processes.New(int(cfg.ProcGPU/processes.Refresh)), processes.Refresh),
 		snapshot.Throttle(containers.New(), 2*time.Second),
 		snapshot.Throttle(shares.New(), 10*time.Second),
 	)

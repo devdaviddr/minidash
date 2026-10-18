@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<!-- A future macOS that renames the creator format: clients exist, none parses. -->
+	<dict>
+		<key>AppUsage</key>
+		<array><dict><key>accumulatedGPUTime</key><integer>10</integer></dict></array>
+		<key>IOUserClientCreator</key>
+		<string>ExampleApp1 [10]</string>
+	</dict>
+	<dict>
+		<key>AppUsage</key>
+		<array/>
+		<key>IOUserClientCreator</key>
+		<string>WindowServer [11]</string>
+	</dict>
+</array>
+</plist>

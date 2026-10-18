@@ -23,6 +23,7 @@ The token is compared in constant time. It travels in a WebSocket message, not t
 | `MINIDASH_ORIGINS` | none | Comma-separated allowed `Origin` host patterns. Set this to the host serving the web UI, since it is a different origin than the agent. |
 | `MINIDASH_MACMON` | `macmon` | macmon binary path. |
 | `MINIDASH_SOC_INTERVAL_MS` | `2000` | macmon sampling period, minimum 250. Lower is fresher GPU data and more CPU. |
+| `MINIDASH_PROC_GPU_INTERVAL_MS` | `3000` | Per-process GPU read period: `0` (off) or a multiple of 3000. When off or failing, every `gpu` is `null` and `processesData.gpuError` says why. |
 
 ## Web UI
 - `?wall` in the URL, or the "Wall display" button, switches to a wall-display layout: larger type, and the process table and shares card are hidden so the overview fits one screen.

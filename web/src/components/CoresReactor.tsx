@@ -39,23 +39,25 @@ export function CoresReactor({ cores }: { cores: number[] }) {
             </defs>
             {/* the empty cell */}
             <polygon points={outline} fill="var(--bg)" stroke="var(--line)" strokeWidth={0.05} />
-            {/* the level: a rect as tall as the cell, scaled from its base, clipped to the hexagon */}
-            <rect
-              data-level
-              x={cell.cx - 1}
-              y={cell.cy - CELL}
-              width={2}
-              height={CELL * 2}
-              fill={color}
-              fillOpacity={FILL_OPACITY}
-              clipPath={`url(#${clip})`}
-              style={{
-                transformBox: 'fill-box',
-                transformOrigin: '50% 100%',
-                transform: `scaleY(${pct / 100})`,
-                transition: 'transform 700ms ease',
-              }}
-            />
+            {/* the level: a rect as tall as the cell, scaled from its base. The clip sits on an untransformed group:
+                a clip on the scaled rect itself is scaled with it, squashing the hexagon so the fill leaks past the cell. */}
+            <g data-level-clip clipPath={`url(#${clip})`}>
+              <rect
+                data-level
+                x={cell.cx - 1}
+                y={cell.cy - CELL}
+                width={2}
+                height={CELL * 2}
+                fill={color}
+                fillOpacity={FILL_OPACITY}
+                style={{
+                  transformBox: 'fill-box',
+                  transformOrigin: '50% 100%',
+                  transform: `scaleY(${pct / 100})`,
+                  transition: 'transform 700ms ease',
+                }}
+              />
+            </g>
             {/* the edge brightens with load */}
             <polygon points={outline} fill="none" stroke={color} strokeWidth={0.07} strokeOpacity={0.25 + 0.75 * (pct / 100)} />
             <text x={cell.cx} y={cell.cy + 0.2} textAnchor="middle" fontSize={0.62} fontWeight={650} fill="var(--fg)" className="tabular-nums">

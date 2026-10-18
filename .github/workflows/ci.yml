@@ -11,11 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with: { fetch-depth: 0 }
+      - name: PR labelling logic
+        run: node --test .github/scripts/*.test.cjs
       - name: Spec tool runs and a current version exists
         run: python3 -I tools/sdd/scripts/spec_tool.py list
       - name: Approved spec has no open questions
         run: |
-          cur=$(ls spec | sort -V | tail -1)
+          cur=$(find spec -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort -V | tail -1)
           if grep -q '^status: *\(approved\|implemented\)' "spec/$cur/spec.md" && grep -v '^>' "spec/$cur/spec.md" | grep -q '\[NEEDS INPUT'; then
             echo "Approved spec $cur still has [NEEDS INPUT] markers"; exit 1
           fi

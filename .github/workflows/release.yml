@@ -1,0 +1,51 @@
+name: release
+# Pushing a tag like v0.3.0 publishes a GitHub Release: notes grouped by type (see .github/release.yml),
+# the agent binary for Apple Silicon, the built web UI and checksums. Releases are created as PRE-RELEASES.
+# After reviewing one (for example on the Mac mini), promote it:
+#   gh release edit v0.3.0 --prerelease=false --latest
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-go@v7
+        with: { go-version-file: agent/go.mod }
+      - uses: actions/setup-node@v7
+        with: { node-version: 22, cache: npm, cache-dependency-path: web/package-lock.json }
+      - name: Test before publishing
+        run: |
+          (cd agent && go vet ./... && go test ./...)
+          (cd web && npm ci && npm run lint && npm test)
+      - name: Build release assets
+        run: deploy/make-release-assets.sh "$GITHUB_REF_NAME"
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          spec=""
+          if [ -f "spec/$version/spec.md" ]; then
+            spec="Spec: [\`spec/$version\`](https://github.com/${GITHUB_REPOSITORY}/tree/${GITHUB_REF_NAME}/spec/$version)"
+          fi
+          {
+            echo "minidash $version, a realtime dashboard for an Apple Silicon Mac."
+            echo
+            [ -n "$spec" ] && echo "$spec" && echo
+            echo "**Install:** see [docs/deploy.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/docs/deploy.md)."
+            echo "The agent binary is for Apple Silicon Macs. Verify downloads with \`shasum -a 256 -c SHA256SUMS\`."
+            echo "If you download it in a browser, macOS may quarantine it: \`xattr -d com.apple.quarantine minidash-agent-$version-darwin-arm64\`."
+            echo
+            echo "---"
+            echo
+          } > release-header.md
+          gh release create "$GITHUB_REF_NAME" dist/release/* \
+            --title "minidash $version" \
+            --notes-file release-header.md \
+            --generate-notes \
+            --prerelease

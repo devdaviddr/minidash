@@ -151,3 +151,4 @@ vite.config.ts.timestamp-*
 # build output
 bin/
 web/dist/
+dist/

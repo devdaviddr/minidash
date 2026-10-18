@@ -70,7 +70,7 @@ gitGraph
 - Conventional Commits, 72 characters max for the first line: `feat(agent): add thing`. The body says why and cites `T-N`, `FR-N`, `AC-N`.
 - One logical change per commit. Never `--no-verify`, never force-push shared branches.
 - The `commit-msg`, `pre-commit` and `pre-push` hooks in `.githooks/` block bad messages, commits on `main`, edits to frozen spec versions, obvious secrets and pushes to `main`.
-- Open a PR into `main`. CI must pass (`governance`, `agent`, `web`). Squash single-task PRs; rebase-merge a PR whose commits are each atomic. See [ADR 0008](adr/0008-git-flow-and-merge-strategy.md).
+- Open a PR into `main`. CI must pass (`governance`, `agent`, `web`). Every PR is **squash-merged**: its title and description become the commit and the release note, and type and size labels are added automatically. See [ADR 0011](adr/0011-squash-merge-and-labelled-releases.md) and [releasing.md](releasing.md).
 
 ## Testing strategy
 | Layer | What | Where |
@@ -118,7 +118,7 @@ A card that shows an existing collector's data needs no agent change:
 3. Add it to the `COMPONENTS` record in `web/src/layout/registry.tsx`. The record is typed over the catalogue ids, so forgetting this fails to compile.
 4. Add data for it to `web/src/test/fixture.ts`.
 
-The test `Dashboard.test.tsx` then checks that every declared part renders and disappears when hidden. Existing users get the new card automatically (a missing card is appended with its defaults). Use theme tokens only: a test fails on fixed palette colours, and another on text pairs below 4.5:1 contrast.
+The test `Dashboard.test.tsx` then checks that every declared part renders and disappears when hidden. Existing users get the new card automatically (a missing card is appended with its defaults). Use theme tokens only: a test fails on fixed palette colours, and another on text pairs below 4.5:1 contrast. Lay out the inside of a card with **container variants** (`@xl:`, `@3xl:`, ...) and never viewport ones (`md:`, `lg:`): a test enforces both, and also that every card uses at least one container variant. Card content is about 17 rem wide at one column, 36 rem at two, 57 rem at three and 77 rem at four on a 1280 px screen, so `@2xs`, `@xl` and `@3xl` are the useful breakpoints.
 
 ## Changing the contract
 - Additive changes (a new optional field or a new collector) are a MINOR spec bump.
@@ -137,8 +137,8 @@ The test `Dashboard.test.tsx` then checks that every declared part renders and d
 
 | Job | Checks |
 | --- | --- |
-| `governance` | the spec tool runs; an approved spec has no unresolved `[NEEDS INPUT]` markers; PR titles are Conventional Commits |
+| `governance` | the spec tool runs; an approved spec has no unresolved `[NEEDS INPUT]` markers; PR titles are Conventional Commits; the PR labelling logic passes its tests |
 | `agent` | `go vet`, `go test` |
 | `web` | `npm ci`, oxlint, vitest, production build |
 
-Dependabot proposes weekly updates for Go modules, npm packages and GitHub Actions.
+Two more workflows run outside CI: `pr-labels` labels each PR from its title and size, and `release` publishes a GitHub Release when a `vX.Y.Z` tag is pushed ([releasing.md](releasing.md)). Dependabot proposes weekly updates for Go modules, npm packages and GitHub Actions.

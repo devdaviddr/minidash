@@ -11,6 +11,7 @@ CPU, GPU, memory, power, disks, network, processes, containers and shares. Read-
 
 [![ci](https://img.shields.io/github/actions/workflow/status/devdaviddr/minidash/ci.yml?branch=main&style=flat-square&label=ci)](https://github.com/devdaviddr/minidash/actions/workflows/ci.yml)
 [![license](https://img.shields.io/github/license/devdaviddr/minidash?style=flat-square)](LICENSE)
+[![release](https://img.shields.io/github/v/release/devdaviddr/minidash?include_prereleases&style=flat-square)](https://github.com/devdaviddr/minidash/releases)
 ![macOS](https://img.shields.io/badge/macOS-Apple%20Silicon-000000?style=flat-square&logo=apple&logoColor=white)
 ![Go](https://img.shields.io/badge/agent-Go-00ADD8?style=flat-square&logo=go&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/web-React%20%2B%20TypeScript-3178C6?style=flat-square&logo=react&logoColor=white)
@@ -47,7 +48,7 @@ CPU, GPU, memory, power, disks, network, processes, containers and shares. Read-
 | **Containers** | Docker, Podman and Colima side by side, with per-container CPU, memory and network |
 | **Shares and accounts** | Mounted SMB and NFS shares, folders this Mac shares, connected clients and their accounts |
 
-Make it yours: a **System / Light / Dark** theme switch, and a **Customise** panel to show or hide cards and details, reorder them by drag and drop, and resize them. Your layout is saved in the browser and can be exported and imported ([guide](docs/customising.md)). A wall-display mode (add `?wall` to the URL) hides the heavy cards for a big screen.
+Make it yours: a **System / Light / Dark** theme switch, and a **Customise** panel where you click a card to edit it, drag its edge to resize it, drag it to reorder, and show or hide cards and details. Every card adapts to the width you give it. Your layout is saved in the browser and can be exported and imported ([guide](docs/customising.md)). A wall-display mode (add `?wall` to the URL) hides the heavy cards for a big screen.
 
 ## How it works
 
@@ -141,13 +142,13 @@ How it stays this light: [ADR 0006](docs/adr/0006-cpu-budget-and-throttling.md).
 | [Operations](docs/operations.md) | [Security](docs/security.md) |
 | [Troubleshooting](docs/troubleshooting.md) | [Development](docs/development.md) |
 | [Contributing](CONTRIBUTING.md) | [Decision records](docs/adr/README.md) |
-| [Changelog](CHANGELOG.md) | The [spec](spec/0.2.0/spec.md) |
+| [Changelog](CHANGELOG.md) | The [spec](spec/0.3.0/spec.md) and [releasing](docs/releasing.md) |
 
 The full index is [docs/README.md](docs/README.md).
 
 ## Status
 
-Spec 0.1.0 (the monitor) is implemented, tested and deployed to a real Mac mini. Spec 0.2.0 (themes, restyle and a customisable layout) is approved and implemented in code. A GPU-load check and a visual review in a browser are still pending before the specs are marked `implemented`. See the [spec](spec/0.2.0/spec.md) and the [changelog](CHANGELOG.md).
+Spec 0.1.0 (the monitor) is implemented, tested and deployed to a real Mac mini. Specs 0.2.0 (themes, restyle, customisable layout) and 0.3.0 (select, drag-to-resize, responsive cards) are approved and implemented in code. A GPU-load check and a visual review in a browser are still pending before the specs are marked `implemented`. See the [spec](spec/0.3.0/spec.md) and the [changelog](CHANGELOG.md).
 
 <details>
 <summary><strong>Known limits</strong></summary>

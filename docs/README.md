@@ -12,6 +12,7 @@
 | [Security](security.md) | understand the threat model and limits before exposing it |
 | [Collectors](collectors.md) | know where each number comes from, its units and failure modes |
 | [Stream protocol](stream-protocol.md) | build a client or debug the WebSocket |
+| [Releasing](releasing.md) | cut a release: tags, notes, assets, promoting a pre-release |
 | [Development](development.md) | build, test, add a collector, follow the workflow |
 | [Decisions (ADRs)](adr/README.md) | learn why it is built this way |
-| [Spec](../spec/0.2.0/spec.md), [plan](../spec/0.2.0/plan.md), [tasks](../spec/0.2.0/tasks.md) | read the requirements and acceptance criteria |
+| [Spec](../spec/0.3.0/spec.md), [plan](../spec/0.3.0/plan.md), [tasks](../spec/0.3.0/tasks.md) | read the requirements and acceptance criteria |

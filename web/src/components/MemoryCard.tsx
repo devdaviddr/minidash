@@ -29,7 +29,7 @@ export function MemoryCard({ history, hidden = NONE }: CardProps) {
         <Unavailable error={r?.error} />
       ) : (
         <div className="flex flex-col gap-4">
-          <div className="flex items-end justify-between">
+          <div className="flex flex-col items-start gap-1 @sm:flex-row @sm:items-end @sm:justify-between">
             <Stat value={bytes(d.used)} label={`of ${bytes(d.total, 0)} · ${pct((d.used / d.total) * 100)} used`} />
             <Part id="swap" hidden={hidden}>
               <div className="text-right text-xs text-muted">

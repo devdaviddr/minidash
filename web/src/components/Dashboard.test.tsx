@@ -98,7 +98,7 @@ describe('Dashboard renders the layout', () => {
   })
 
   // AC-14
-  it('hiding the per-core bars leaves the CPU card and every other card intact', () => {
+  it('hiding the per-core reactor leaves the CPU card and every other card intact', () => {
     const l = layoutReducer(defaultLayout(), { type: 'togglePart', id: 'cpu', part: 'cores' })
     const { container } = renderDash(l)
     expect(screen.queryByLabelText('Per-core utilisation')).toBeNull()

@@ -12,7 +12,7 @@ import (
 )
 
 func TestHistoryAuth(t *testing.T) {
-	store := history.New(time.Hour)
+	store := history.New(time.Hour, "")
 	store.Add(snapshot.Snapshot{Seq: 1, TS: time.Now().UTC(), IntervalMS: 1000,
 		Collectors: map[string]snapshot.Result{"cpu": {OK: true, Data: map[string]any{"total": 1.0}}}})
 	h := New(store, "secret")
@@ -44,7 +44,7 @@ func TestHistoryAuth(t *testing.T) {
 }
 
 func TestHistoryBearerHeader(t *testing.T) {
-	store := history.New(time.Hour)
+	store := history.New(time.Hour, "")
 	h := New(store, "secret")
 	req := httptest.NewRequest("GET", "/history", nil)
 	req.Header.Set("Authorization", "Bearer secret")

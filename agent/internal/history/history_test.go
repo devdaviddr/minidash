@@ -1,6 +1,8 @@
 package history
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -26,7 +28,7 @@ func snap(ts time.Time, total float64) snapshot.Snapshot {
 // AC-37: recent ticks are kept raw; after Compact, older ticks coalesce into coarser buckets.
 func TestAddRawThenCoalesce(t *testing.T) {
 	clock := &fakeClock{t: time.Unix(0, 0)}
-	s := New(24 * time.Hour)
+	s := New(24*time.Hour, "")
 	s.now = clock.now
 
 	// 180 ticks spanning 3 hours, all added raw.
@@ -48,7 +50,7 @@ func TestAddRawThenCoalesce(t *testing.T) {
 // AC-37: Compact coalesces points older than 10 min into 10 s buckets.
 func TestCompactCoalesces(t *testing.T) {
 	clock := &fakeClock{t: time.Unix(0, 0)}
-	s := New(24 * time.Hour)
+	s := New(24*time.Hour, "")
 	s.now = clock.now
 
 	// Add 120 ticks at t=0..119, then advance the clock so those ticks are 12 min old.
@@ -67,7 +69,7 @@ func TestCompactCoalesces(t *testing.T) {
 // AC-37: averaging within a bucket uses the mean of numeric fields.
 func TestBucketAverages(t *testing.T) {
 	clock := &fakeClock{t: time.Unix(0, 0)}
-	s := New(time.Hour)
+	s := New(time.Hour, "")
 	s.now = clock.now
 	// Make the ticks 11 min old so they fall in 10 s buckets; t=0 and t=1 share bucket 0.
 	s.Add(snap(time.Unix(0, 0), 10))
@@ -86,7 +88,7 @@ func TestBucketAverages(t *testing.T) {
 // AC-37: snapshots older than the retention window are pruned.
 func TestPrune(t *testing.T) {
 	clock := &fakeClock{t: time.Unix(0, 0)}
-	s := New(10 * time.Second)
+	s := New(10*time.Second, "")
 	s.now = clock.now
 	for i := 0; i < 30; i++ {
 		s.Add(snap(clock.now(), float64(i)))
@@ -100,7 +102,7 @@ func TestPrune(t *testing.T) {
 // AC-37: heavy collectors (processes, containers, shares) are not stored.
 func TestHeavyCollectorsDropped(t *testing.T) {
 	clock := &fakeClock{t: time.Unix(0, 0)}
-	s := New(time.Hour)
+	s := New(time.Hour, "")
 	s.now = clock.now
 	snapFull := snapshot.Snapshot{
 		Seq: 1, TS: clock.now(), IntervalMS: 1000,
@@ -121,7 +123,7 @@ func TestHeavyCollectorsDropped(t *testing.T) {
 // AC-38: Query clamps a window larger than retention to the retention window.
 func TestQueryClampsWindow(t *testing.T) {
 	clock := &fakeClock{t: time.Unix(0, 0)}
-	s := New(10 * time.Second)
+	s := New(10*time.Second, "")
 	s.now = clock.now
 	for i := 0; i < 20; i++ {
 		s.Add(snap(clock.now(), float64(i)))
@@ -130,5 +132,59 @@ func TestQueryClampsWindow(t *testing.T) {
 	got := s.Query(24 * time.Hour) // larger than window -> clamped to 10 s
 	if len(got) > 10 {
 		t.Fatalf("expected clamped query to return at most 10 points, got %d", len(got))
+	}
+}
+
+// AC-34: history persists to disk and is reloaded on a new Store, so it survives a restart.
+func TestPersistAcrossRestart(t *testing.T) {
+	dir := t.TempDir()
+	clock := &fakeClock{t: time.Unix(0, 0)}
+	s := New(24*time.Hour, dir)
+	s.now = clock.now
+	for i := 0; i < 5; i++ {
+		s.Add(snap(clock.now(), float64(i)))
+		clock.tick()
+	}
+	s.Compact() // writes to disk
+
+	// A fresh store pointed at the same directory reloads the saved points.
+	restarted := New(24*time.Hour, dir)
+	restarted.now = clock.now
+	restarted.Load()
+	if len(restarted.points) != len(s.points) {
+		t.Fatalf("expected %d reloaded points, got %d", len(s.points), len(restarted.points))
+	}
+	if _, err := os.Stat(filepath.Join(dir, "history.jsonl")); err != nil {
+		t.Fatalf("history file not written: %v", err)
+	}
+}
+
+// AC-34: on load, points older than the retention window are dropped.
+func TestLoadPrunesOldPoints(t *testing.T) {
+	dir := t.TempDir()
+	clock := &fakeClock{t: time.Unix(0, 0)}
+	s := New(10*time.Second, dir)
+	s.now = clock.now
+	for i := 0; i < 30; i++ {
+		s.Add(snap(clock.now(), float64(i)))
+		clock.tick()
+	}
+	s.Compact()
+
+	// Advance the clock well past the window, then reload: everything is now older than 10 s.
+	clock.t = clock.t.Add(1 * time.Hour)
+	restarted := New(10*time.Second, dir)
+	restarted.now = clock.now
+	restarted.Load()
+	if len(restarted.points) != 0 {
+		t.Fatalf("expected all points pruned on load, got %d", len(restarted.points))
+	}
+}
+
+// AC-34: a missing or unreadable history file does not stop the agent (treated as empty).
+func TestLoadToleratesMissingFile(t *testing.T) {
+	s := New(time.Hour, t.TempDir())
+	if len(s.points) != 0 {
+		t.Fatalf("expected empty history with no file, got %d", len(s.points))
 	}
 }

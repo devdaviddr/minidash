@@ -4,6 +4,16 @@ All notable changes are recorded here. The format follows [Keep a Changelog](htt
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-10-18
+Hotfix.
+
+### Fixed
+- **History was not persisted.** 0.7.0 kept history only in memory, so it was lost on an agent
+  restart, contrary to FR-34. The store now writes history to a JSONL file under
+  `MINIDASH_HISTORY_DIR` (default `~/.config/minidash/history/history.jsonl`) on the compaction
+  cadence and reloads it at startup, so history survives restarts. A missing or unreadable file is
+  treated as empty rather than fatal.
+
 ## [0.7.0] - 2026-10-18
 Spec 0.7.0 — log retention.
 

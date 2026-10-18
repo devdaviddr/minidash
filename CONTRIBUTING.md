@@ -1,9 +1,9 @@
 # Contributing
 
-Thanks for helping. minidash is small and opinionated: it is **spec-driven** and **trunk-based**. This page is the short version; [docs/development.md](docs/development.md) has the detail.
+Thanks for helping. minidash is small and opinionated: it is **spec-driven** and uses **Git Flow**. This page is the short version; [docs/development.md](docs/development.md) has the detail.
 
 ## Before you start
-- Check [open issues](https://github.com/devdaviddr/minidash/issues) and the [spec](spec/0.3.0/spec.md). For anything bigger than a bug fix, open an issue first so the requirement and acceptance criteria can be agreed before code.
+- Check [open issues](https://github.com/devdaviddr/minidash/issues) and the [spec](spec/0.5.0/spec.md). For anything bigger than a bug fix, open an issue first so the requirement and acceptance criteria can be agreed before code.
 - Read the [code of conduct](CODE_OF_CONDUCT.md). Report security problems privately: [SECURITY.md](SECURITY.md).
 
 ## Set up
@@ -15,14 +15,15 @@ make check        # must pass before you push
 
 ## The workflow
 1. **Spec first.** A change in behaviour starts as a change in `spec/` (requirement, acceptance criterion, task), with the spec version bumped for scope changes. Code follows an approved spec.
-2. **Branch** from current `main`: `feat/…`, `fix/…`, `docs/…`, `chore/…`, `refactor/…` or `test/…`. Keep branches short-lived and do not stack them.
-3. **Commit** with [Conventional Commits](https://www.conventionalcommits.org): `type(scope): summary`, 72 characters or fewer. In the body say why and cite the task and requirement (`Refs: T-3, FR-1, AC-1`). One logical change per commit. The git hooks enforce this.
+2. **Branch** from current `develop`: `feat/…`, `fix/…`, `docs/…`, `chore/…`, `ci/…`, `perf/…`, `refactor/…` or `test/…`. Keep branches short-lived and do not stack them. `main` holds released code only and takes release and hotfix branches from the maintainer.
+3. **Commit** with [Conventional Commits](https://www.conventionalcommits.org): `type(scope): summary`, 72 characters or fewer. In the body say why and cite the task and requirement (`Refs: T-3, FR-1, AC-1`). One logical change per commit. PRs are merged with a merge commit, so every commit you push is kept: tidy your branch before review (no "wip" or "fix review" commits). The git hooks enforce the format.
 4. **Test.** Every acceptance criterion needs an automated check, or a documented manual check when it needs real hardware. Keep fixtures free of real hostnames, IPs, share names and account names.
 5. **Document.** Update the docs in the same commit as the behaviour. A decision with trade-offs gets an [ADR](docs/adr/README.md). Each collector is documented in [docs/collectors.md](docs/collectors.md).
-6. **Open a pull request** into `main`. The **title and description become the commit on `main` and the release note** (every PR is squash-merged), so write them for a reader. The title is a Conventional Commit (`feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `ci`, `chore`; `!` for a breaking change). Type and size labels are added automatically. Fill in the template. CI (`governance`, `agent`, `web`) must be green.
+6. **Open a pull request** into `develop`. The **title is the release note** and, with the description, goes on the merge commit, so write them for a reader. The title is a Conventional Commit (`feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `ci`, `chore`; `!` for a breaking change). Type and size labels are added automatically. Fill in the template. CI (`governance`, `agent`, `web`) must be green.
 
 ## Rules that are enforced
-- No commits or pushes directly to `main`; no `--no-verify`; no force-pushes to shared branches.
+- No commits or pushes directly to `main` or `develop`; no `--no-verify`; no force-pushes to shared branches.
+- PRs into `main` come only from `release/*` or `hotfix/*` branches (CI checks this). See [docs/releasing.md](docs/releasing.md).
 - No secrets, tokens, private hostnames or real machine data in the repo. It is public.
 - The agent stays **read-only**: nothing may start, stop or modify processes, containers, mounts or settings.
 - The whole monitor stays under 2% of one CPU core. Measure when you add a collector.

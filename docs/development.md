@@ -33,7 +33,7 @@ MINIDASH_TOKEN=dev node tools/probe.mjs ws://127.0.0.1:8787/ws 1 cpu
 | `make build` | `bin/minidash-agent` and `web/dist/` |
 
 ## How work flows
-minidash is spec-driven: the contract is written and approved before code, and a git workflow keeps `main` linear and releasable.
+minidash is spec-driven: the contract is written and approved before code. Git Flow keeps `main` equal to the latest release while work collects on `develop` ([ADR 0013](adr/0013-git-flow-and-merge-commits.md)).
 
 ```mermaid
 flowchart LR
@@ -54,23 +54,32 @@ flowchart LR
 
 ```mermaid
 gitGraph
-  commit id: "main"
+  commit id: "v0.4.1" tag: "v0.4.1"
+  branch develop
+  checkout develop
   branch feat/add-thing
   checkout feat/add-thing
   commit id: "feat: ... (T-12)"
   commit id: "test: ... (AC-9)"
   commit id: "docs: ..."
+  checkout develop
+  merge feat/add-thing id: "PR merged, CI green"
+  branch release/0.5.0
+  checkout release/0.5.0
+  commit id: "chore(release): 0.5.0"
   checkout main
-  merge feat/add-thing id: "PR merged, CI green" tag: "linear"
-  commit id: "next"
+  merge release/0.5.0 tag: "v0.5.0"
+  checkout develop
+  merge main id: "merge back"
 ```
 
 ### Git rules (enforced by hooks and branch protection)
-- Branch from current `main` as `type/short-slug` (`feat/`, `fix/`, `docs/`, `chore/`, `refactor/`, `test/`). Do not stack branches. Delete after merge.
+- Branch from current `develop` as `type/short-slug` (`feat/`, `fix/`, `docs/`, `chore/`, `ci/`, `perf/`, `refactor/`, `test/`). Do not stack branches. Delete after merge.
+- `main` holds released code only. Release branches (`release/x.y.z`) are cut from `develop` and hotfix branches (`hotfix/x.y.z`) from `main`; both merge into `main`, are tagged, and merge back into `develop`. See [releasing.md](releasing.md).
 - Conventional Commits, 72 characters max for the first line: `feat(agent): add thing`. The body says why and cites `T-N`, `FR-N`, `AC-N`.
-- One logical change per commit. Never `--no-verify`, never force-push shared branches.
-- The `commit-msg`, `pre-commit` and `pre-push` hooks in `.githooks/` block bad messages, commits on `main`, edits to frozen spec versions, obvious secrets and pushes to `main`.
-- Open a PR into `main`. CI must pass (`governance`, `agent`, `web`). Every PR is **squash-merged**: its title and description become the commit and the release note, and type and size labels are added automatically. See [ADR 0011](adr/0011-squash-merge-and-labelled-releases.md) and [releasing.md](releasing.md).
+- One logical change per commit. Branch commits are kept by the merge commit, so make each one tidy and meaningful. Never `--no-verify`, never force-push shared branches.
+- The `commit-msg`, `pre-commit` and `pre-push` hooks in `.githooks/` block bad messages, commits on `main` or `develop`, edits to frozen spec versions, obvious secrets and pushes to `main`.
+- Open a PR into `develop`. CI must pass (`governance`, `agent`, `web`). Every PR is merged with a **merge commit** (squash and rebase are off). The title is a Conventional Commit and becomes the release note; type and size labels are added automatically. PRs into `main` come only from `release/*` or `hotfix/*`. See [ADR 0013](adr/0013-git-flow-and-merge-commits.md), [ADR 0011](adr/0011-squash-merge-and-labelled-releases.md) for labels and notes, and [releasing.md](releasing.md).
 
 ## Testing strategy
 | Layer | What | Where |

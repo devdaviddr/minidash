@@ -165,7 +165,7 @@ Spec 0.1.0 (the monitor) is implemented, tested and deployed to a real Mac mini.
 
 ## Contributing
 
-minidash is spec-driven and trunk-based: write the requirement first, work on short-lived branches, use Conventional Commits, and merge through CI. Read [CONTRIBUTING.md](CONTRIBUTING.md) to get started. For security issues, follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
+minidash is spec-driven and uses Git Flow: write the requirement first, branch from `develop`, use Conventional Commits, and merge through CI. Read [CONTRIBUTING.md](CONTRIBUTING.md) to get started. For security issues, follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
 
 ## License
 

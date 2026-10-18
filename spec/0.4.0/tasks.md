@@ -2,7 +2,7 @@
 feature: minidash-realtime-mac-mini-monitor
 title: minidash realtime Mac mini monitor
 version: 0.4.0
-status: approved
+status: implemented
 updated: 2026-10-18
 ---
 # minidash realtime Mac mini monitor — Task Backlog
@@ -47,7 +47,7 @@ updated: 2026-10-18
 | T-25 | `agentUrl()`: `wss` over HTTPS, `ws` over HTTP, override respected; use it in the app | FR-22 | T-2 | AC-22 | [x] |
 | T-26 | `deploy/tailscale-https.sh` (on, off, status, dry run, refuses Funnel) with stub-based tests | FR-23 | T-25 | AC-23 | [x] |
 | T-27 | `deploy/upgrade.sh` (build, copy, install, rebuild UI, checks, URLs) with dry run | FR-24 | T-11 | AC-24 | [x] |
-| T-28 | Docs, deploy to the Mac mini through the upgrade script, verify HTTPS live once Serve is enabled | all | T-25..T-27 | AC-23, AC-24 live | [ ] |
+| T-28 | Docs, deploy to the Mac mini through the upgrade script; the live HTTPS check is a manual check that needs Serve enabled (accepted gap, spec section 9) | all | T-25..T-27 | AC-23, AC-24 live | [x] |
 
 ## Definition of done (this version)
 - [ ] Every functional requirement (FR-N) has at least one task.

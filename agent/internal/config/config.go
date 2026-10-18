@@ -17,6 +17,8 @@ type Config struct {
 	SoCInterval time.Duration // how often macmon samples; each sample costs CPU
 	ProcGPU     time.Duration // how often per-process GPU time is read; 0 = off
 	Origins     []string      // extra allowed WebSocket Origin host patterns for the dashboard UI
+	Retention   time.Duration // how long collected history is kept (FR-34, FR-35)
+	HistoryDir  string        // directory for stored history JSONL files
 }
 
 // DefaultProcGPU is the per-process GPU interval, set from the measurement on the Mac mini
@@ -38,11 +40,49 @@ var ErrBadProcGPUInterval = errors.New("MINIDASH_PROC_GPU_INTERVAL_MS must be 0 
 // ErrNoToken is returned when no access token is configured.
 var ErrNoToken = errors.New("MINIDASH_TOKEN is required: the agent refuses to start without an access token")
 
+// DefaultRetention is how long history is kept when MINIDASH_RETENTION is unset (FR-35).
+const DefaultRetention = time.Hour
+
+// retentionValues maps the accepted MINIDASH_RETENTION tokens to durations (FR-34).
+var retentionValues = map[string]time.Duration{
+	"5m":  5 * time.Minute,
+	"10m": 10 * time.Minute,
+	"20m": 20 * time.Minute,
+	"30m": 30 * time.Minute,
+	"1h":  time.Hour,
+	"7h":  7 * time.Hour,
+	"1d":  24 * time.Hour,
+	"7d":  7 * 24 * time.Hour,
+	"28d": 28 * 24 * time.Hour,
+}
+
+// ErrBadRetention is returned for an unusable MINIDASH_RETENTION value.
+var ErrBadRetention = errors.New("MINIDASH_RETENTION must be one of 5m, 10m, 20m, 30m, 1h, 7h, 1d, 7d, 28d")
+
+// parseRetention maps a retention token to a duration, or returns ErrBadRetention.
+func parseRetention(v string) (time.Duration, error) {
+	d, ok := retentionValues[v]
+	if !ok {
+		return 0, ErrBadRetention
+	}
+	return d, nil
+}
+
+// defaultHistoryDir returns ~/.config/minidash/history (FR-36).
+func defaultHistoryDir() string {
+	if home := os.Getenv("HOME"); home != "" {
+		return home + "/.config/minidash/history"
+	}
+	return ".minidash/history"
+}
+
 // FromEnv reads MINIDASH_ADDR (default :8787), MINIDASH_TOKEN (required) and
 // MINIDASH_ORIGINS (optional comma-separated allowed Origin host patterns) and
 // MINIDASH_MACMON (macmon binary, default "macmon"), MINIDASH_SOC_INTERVAL_MS
 // (macmon sampling period, default 2000, minimum 250) and MINIDASH_PROC_GPU_INTERVAL_MS
-// (per-process GPU read period, 0 = off or a multiple of 3000, default DefaultProcGPU).
+// (per-process GPU read period, 0 = off or a multiple of 3000, default DefaultProcGPU),
+// MINIDASH_RETENTION (history retention window, default 1h) and MINIDASH_HISTORY_DIR
+// (history directory, default ~/.config/minidash/history).
 func FromEnv() (Config, error) {
 	c := Config{Addr: os.Getenv("MINIDASH_ADDR"), Token: os.Getenv("MINIDASH_TOKEN")}
 	if o := os.Getenv("MINIDASH_ORIGINS"); o != "" {
@@ -66,6 +106,18 @@ func FromEnv() (Config, error) {
 			return Config{}, ErrBadProcGPUInterval
 		}
 		c.ProcGPU = time.Duration(ms) * time.Millisecond
+	}
+	c.Retention = DefaultRetention
+	if v := os.Getenv("MINIDASH_RETENTION"); v != "" {
+		d, err := parseRetention(v)
+		if err != nil {
+			return Config{}, err
+		}
+		c.Retention = d
+	}
+	c.HistoryDir = os.Getenv("MINIDASH_HISTORY_DIR")
+	if c.HistoryDir == "" {
+		c.HistoryDir = defaultHistoryDir()
 	}
 	if c.Addr == "" {
 		c.Addr = ":8787"

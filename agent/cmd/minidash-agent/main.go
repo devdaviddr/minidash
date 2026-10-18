@@ -42,7 +42,8 @@ func main() {
 		snapshot.Throttle(shares.New(), 10*time.Second),
 	)
 	ctx := context.Background()
-	store := history.New(cfg.Retention)
+	store := history.New(cfg.Retention, cfg.HistoryDir)
+	store.Load()
 	go agg.Run(ctx, func(s snapshot.Snapshot) {
 		h.Publish(s)
 		store.Add(s)

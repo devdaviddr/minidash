@@ -25,7 +25,7 @@ The token is compared in constant time. It travels in a WebSocket message, not t
 | `MINIDASH_SOC_INTERVAL_MS` | `2000` | macmon sampling period, minimum 250. Lower is fresher GPU data and more CPU. |
 | `MINIDASH_PROC_GPU_INTERVAL_MS` | `3000` | Per-process GPU read period: `0` (off) or a multiple of 3000. When off or failing, every `gpu` is `null` and `processesData.gpuError` says why. |
 | `MINIDASH_RETENTION` | `1h` | History retention window (spec 0.7.0): one of `5m`, `10m`, `20m`, `30m`, `1h`, `7h`, `1d`, `7d`, `28d`. |
-| `MINIDASH_HISTORY_DIR` | `~/.config/minidash/history` | Directory where stored history lives. |
+| `MINIDASH_HISTORY_DIR` | `~/.config/minidash/history` | Directory where history is persisted as JSONL (`history.jsonl`), so it survives an agent restart. |
 
 ## History endpoint (spec 0.7.0)
 
@@ -33,6 +33,11 @@ The agent stores collected snapshots for the configured retention window and ser
 `GET /history`. Recent ticks are kept raw; older data is downsampled into coarser buckets (10 s,
 1 min, 5 min, 1 h) so a 28-day window stays small. Only the lightweight time-series collectors (CPU,
 memory, SoC/GPU, disk, network) are stored long-term; the process, container and shares lists are not.
+
+History is persisted as JSONL to `MINIDASH_HISTORY_DIR` (default `~/.config/minidash/history/history.jsonl`)
+and reloaded at startup, so it survives an agent restart (FR-34). The file is rewritten on the
+compaction cadence (once a minute), not every tick. A missing or unreadable file is treated as empty
+rather than fatal.
 
 - Request: `GET /history?window=<seconds>&token=<token>` (the token may also be sent as an
   `Authorization: Bearer <token>` header). `window` is clamped to the retention window.

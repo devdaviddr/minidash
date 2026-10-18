@@ -39,7 +39,7 @@ CPU, GPU, memory, power, disks, network, processes, containers and shares. Read-
 
 | | |
 | --- | --- |
-| **CPU** | Total and per-core use, load average, 5 minute history |
+| **CPU** | Total use, a hexagon "reactor" showing every core's load, load average, 5 minute history |
 | **GPU and power** | GPU use and clock, CPU clusters, system power in watts, temperatures, fan speeds |
 | **Unified memory** | Used, wired, active, compressed and inactive memory, swap |
 | **Storage** | Internal and external volumes with capacity bars, per-disk read and write throughput |

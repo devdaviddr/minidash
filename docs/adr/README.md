@@ -15,3 +15,4 @@ Short, numbered, append-only. Supersede a decision with a new ADR rather than ed
 | [0009](0009-browser-side-layout-and-theme.md) | Browser-side layout and theme state | accepted |
 | [0010](0010-container-queries-and-width-resize.md) | Container queries and width-only resize | accepted |
 | [0011](0011-squash-merge-and-labelled-releases.md) | Squash every PR, auto-label, release by tag | accepted |
+| [0012](0012-https-through-tailscale-serve.md) | HTTPS through Tailscale Serve | accepted |

@@ -1,6 +1,6 @@
 # 12. HTTPS through Tailscale Serve
 
-Status: accepted
+Status: accepted. Serving the agent on HTTPS 8787 is superseded by [ADR 0016](0016-same-origin-stream-over-https.md): the stream is served at `/ws` on 443.
 
 ## Context
 The dashboard speaks plain HTTP and `ws://` on the network, so the access token and every metric cross it unencrypted ([security.md](../security.md)). The Mac mini is already on a Tailscale tailnet, which can terminate HTTPS for tailnet devices with certificates it issues and renews itself. A page served over HTTPS cannot open a plain `ws://` connection: browsers block it as mixed content.

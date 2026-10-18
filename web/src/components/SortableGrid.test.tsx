@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { useReducer } from 'react'
+import { useReducer, useState } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { CARDS } from '../layout/catalogue'
+import { CARDS, type CardId } from '../layout/catalogue'
 import { defaultLayout, layoutReducer } from '../layout/model'
 import { fixture } from '../test/fixture'
+import { CustomisePanel } from './CustomisePanel'
 import { Dashboard } from './Dashboard'
 
 vi.mock('./Chart', () => ({ Chart: () => <div data-testid="chart" /> }))
@@ -77,5 +78,35 @@ describe('keyboard drag (AC-12)', () => {
     await userEvent.keyboard('{ArrowLeft}')
     await userEvent.keyboard('{Escape}')
     expect(order(container).slice(0, 2)).toEqual(['cpu', 'gpu'])
+  })
+})
+
+describe('Escape while dragging with the customise panel open', () => {
+  beforeEach(() => {
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+      const i = CARDS.findIndex((c) => c.id === this.getAttribute('data-card'))
+      return i < 0 ? new DOMRect(0, 0, 0, 0) : new DOMRect((i % 2) * 520, Math.floor(i / 2) * 320, 500, 300)
+    })
+  })
+  function WithPanel({ onClose }: { onClose: () => void }) {
+    const [layout, dispatch] = useReducer(layoutReducer, defaultLayout())
+    const [selected, setSelected] = useState<CardId | null>('gpu')
+    return (
+      <>
+        <Dashboard history={history} layout={layout} wall={false} editing selectedId={selected} onSelect={setSelected} dispatch={dispatch} />
+        <CustomisePanel layout={layout} dispatch={dispatch} onClose={onClose} selectedId={selected} onSelect={setSelected} saved />
+      </>
+    )
+  }
+  it('cancels the drag only: the card stays selected and the panel stays open', async () => {
+    const onClose = vi.fn()
+    const { container } = render(<WithPanel onClose={onClose} />)
+    screen.getByRole('button', { name: 'Drag GPU & power to reorder' }).focus()
+    await userEvent.keyboard(' ')
+    await userEvent.keyboard('{ArrowLeft}')
+    await userEvent.keyboard('{Escape}')
+    expect(order(container.querySelector('main') as HTMLElement).slice(0, 2)).toEqual(['cpu', 'gpu']) // order unchanged
+    expect(container.querySelector('[data-card="gpu"]')?.getAttribute('data-selected')).toBe('true')
+    expect(onClose).not.toHaveBeenCalled()
   })
 })

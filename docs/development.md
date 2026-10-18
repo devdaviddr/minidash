@@ -81,6 +81,7 @@ gitGraph
 | Real-host smoke | Each collector run against the machine running the tests; skipped off macOS where needed | `TestRealHostSane` |
 | Cross-checks | Kernel network counters against `netstat -ib`; top memory process against `ps` | network and processes tests |
 | Protocol | Auth, wrong token, slow client, reconnect and backoff, stall detection | `hub_test.go`, `stream.test.ts` |
+| Deploy scripts | `tailscale-https.sh` and `upgrade.sh` against stubbed `tailscale`, `ssh`, `rsync`, `go` and `node`: success, each failure, dry run, no token leaks | `deploy/tests/*.test.sh` (run in CI) |
 | UI components | Every card rendered from a fixture, healthy and degraded (jsdom) | `web/src/components/*.test.tsx` |
 | Manual, on the Mac mini | GPU load, plugging a drive, starting Colima, a client connecting | [deploy.md](deploy.md#manual-acceptance-checks-need-the-real-mini) |
 
@@ -137,7 +138,7 @@ The test `Dashboard.test.tsx` then checks that every declared part renders and d
 
 | Job | Checks |
 | --- | --- |
-| `governance` | the spec tool runs; an approved spec has no unresolved `[NEEDS INPUT]` markers; PR titles are Conventional Commits; the PR labelling logic passes its tests |
+| `governance` | the spec tool runs; an approved spec has no unresolved `[NEEDS INPUT]` markers; PR titles are Conventional Commits; the PR labelling logic and the deploy script tests pass |
 | `agent` | `go vet`, `go test` |
 | `web` | `npm ci`, oxlint, vitest, production build |
 

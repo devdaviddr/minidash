@@ -3,7 +3,13 @@
 All notable changes are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow the spec version in `spec/`, and each is published as a [GitHub Release](https://github.com/devdaviddr/minidash/releases) when tagged (see [docs/releasing.md](docs/releasing.md)).
 
 ## [Unreleased]
-Nothing yet.
+### Added (spec 0.4.0)
+- **HTTPS over Tailscale:** `deploy/tailscale-https.sh on|off|status` publishes the UI (HTTPS 443) and the agent stream (HTTPS 8787) to your tailnet with `tailscale serve`, so the token and metrics are encrypted. Reversible, idempotent, with a dry run; it allows the HTTPS origin in the agent, never uses Funnel (public), and explains (without hanging) when Serve is not enabled on the tailnet. Plain HTTP on the LAN keeps working. ADR 0012.
+- **`wss://` from HTTPS pages:** the UI opens its stream with `wss://` when the page is HTTPS and `ws://` when it is HTTP (browsers block `ws://` from HTTPS pages). A build-time override is used as given.
+- **One-command upgrade:** `deploy/upgrade.sh [--host NAME] [--dry-run]` builds, copies, installs, rebuilds the UI, then checks the agent, the UI container, the UI page and the live stream, and exits non-zero without claiming success if any check fails.
+
+### Changed
+- Docs: deploy, operations, security, configuration, troubleshooting and the deployment diagram cover HTTPS and the upgrade script.
 
 ## [0.3.0] - 2026-10-18
 Spec 0.2.0 (themes, restyle, customisable layout) and spec 0.3.0 (select, resize, responsive cards) shipped together, so there is no separate 0.2.0 release.

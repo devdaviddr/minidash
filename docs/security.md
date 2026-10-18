@@ -47,7 +47,7 @@ SMB accounts that are opaque Apple ID service identifiers (`com.apple.idms.*`, w
 ## Known limitations
 Read these before deciding how to expose it.
 
-1. **Plain HTTP and `ws://`.** The token and all metrics cross the LAN unencrypted. Anyone who can sniff your network can read them. Use it over **Tailscale** (WireGuard, encrypted), or put TLS in front, for example a reverse proxy such as Traefik with a certificate and a `wss://` agent URL.
+1. **Plain HTTP and `ws://` on the LAN.** Over the LAN addresses the token and all metrics cross the network unencrypted, and anyone who can sniff your network can read them. Use the **HTTPS over Tailscale** path instead: `deploy/tailscale-https.sh on` publishes the UI and the agent stream over HTTPS to your tailnet only, with certificates Tailscale manages ([deploy.md](deploy.md#3-https-over-tailscale-optional-recommended), [ADR 0012](adr/0012-https-through-tailscale-serve.md)). Tailscale's own connections are also WireGuard-encrypted. The plain HTTP addresses remain as a fallback, so prefer the HTTPS URL and avoid the plain one on networks you do not trust.
 2. **One shared token.** There are no per-user accounts and no audit trail. Rotate it if it leaks ([configuration.md](configuration.md#rotating-the-token)).
 3. **No rate limiting on authentication.** A client has 5 seconds per connection and the token has 192 bits, so guessing is not practical, but repeated attempts are not throttled.
 4. **`/healthz` is unauthenticated** and returns `ok`. It reveals only that the service is up.
@@ -56,7 +56,8 @@ Read these before deciding how to expose it.
 7. **Third-party binary.** `macmon` runs as your user and is trusted to report sensor data. It is installed from Homebrew.
 
 ## Hardening checklist
-- [ ] Reach it over Tailscale or behind TLS, not bare LAN, if your network has untrusted devices.
+- [ ] Reach it over the HTTPS Tailscale address (`deploy/tailscale-https.sh on`) rather than the plain LAN address, especially on networks with devices you do not trust.
+- [ ] Never enable Tailscale Funnel for this dashboard. The script refuses it.
 - [ ] Do not forward ports 8080 or 8787 on your router.
 - [ ] Keep `~/.config/minidash/agent.env` at mode 600.
 - [ ] Rotate the token if a device is lost or shared.

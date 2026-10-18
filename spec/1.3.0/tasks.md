@@ -45,7 +45,7 @@ updated: 2026-10-18
 | T-23 | Drag-to-resize: pure `spanFromPointer`, pointer hook, keyboard slider, live preview, Escape cancels | FR-18 | T-22 | AC-18 | [x] |
 | T-24 | Docs (customising guide, ADR 0010), update illustration if needed, measure bundle, deploy the UI to the Mac mini | all | T-20..T-23 | manual check on the mini | [x] |
 | T-25 | `agentUrl()`: `wss` over HTTPS, `ws` over HTTP, override respected; use it in the app | FR-22 | T-2 | AC-22 | [x] |
-| T-26 | `deploy/tailscale-https.sh` (on, off, status, dry run, refuses Funnel) with stub-based tests | FR-23 | T-25 | AC-23 | [ ] |
+| T-26 | `deploy/tailscale-https.sh` (on, off, status, dry run, refuses Funnel) with stub-based tests | FR-23 | T-25 | AC-23 | [x] |
 | T-27 | `deploy/upgrade.sh` (build, copy, install, rebuild UI, checks, URLs) with dry run | FR-24 | T-11 | AC-24 | [ ] |
 | T-28 | Docs, deploy to the Mac mini through the upgrade script, verify HTTPS live once Serve is enabled | all | T-25..T-27 | AC-23, AC-24 live | [ ] |
 

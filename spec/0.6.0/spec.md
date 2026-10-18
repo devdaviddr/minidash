@@ -2,7 +2,7 @@
 feature: minidash-realtime-mac-mini-monitor
 title: minidash realtime Mac mini monitor
 version: 0.6.0
-status: approved
+status: implemented
 owner: devdaviddr
 created: 2026-10-18
 updated: 2026-10-18
@@ -322,7 +322,7 @@ Open questions:
 
 They are listed with their steps in `docs/deploy.md`. Specs 0.1.0 to 0.5.0 are frozen history; 0.6.0 is the cumulative current contract.
 
-**Checks in 0.6.0 that need the owner's eye** (they will become accepted gaps if no result is recorded at release): AC-28's visual clause, AC-29's live clause, and AC-32's visual clause. AC-35 needs the Mac mini but not the owner: it is a measurement.
+**Accepted gaps for 0.6.0.** Spec 0.6.0 was marked implemented on 2026-10-18 when preparing release 0.6.0, with the owner asking to move quickly. Every task is done; `make check` passes (including `go test -race`, 292 web tests and fuzzed parsers). AC-35 was measured on the Mac mini (1.64-1.70% of a core at the 3 s default; the repeat run was stopped early at the owner's request). No result has been recorded for these owner checks: AC-28's visual clause (side by side at width 2, stacked at width 1 and on a phone; headless Chromium renders looked right), AC-29's live clause (a Metal workload compared with Activity Monitor), and AC-32's visual clause (the GPU column at one-column and full card width).
 
 **Accepted gaps for 0.5.0.** Spec 0.5.0 was marked implemented on 2026-10-18 when preparing release 0.5.0. Every task is done and the web tests pass (270 tests). AC-25 and AC-27 are fully covered by automated tests (`CoresReactor.test.tsx`, `reactor.test.ts`, the reactor contrast check in `contrast.test.ts`, and the Dashboard and Customise tests for hiding the detail). AC-26 is covered by `honeycomb.test.ts` for every count from 1 to 128 and by a structure test that the reactor scales to its container. These parts need a human eye, and no result has been recorded for them:
 
@@ -332,6 +332,8 @@ They are listed with their steps in `docs/deploy.md`. Specs 0.1.0 to 0.5.0 are f
 
 | Version | Date | Level | Note |
 | --- | --- | --- | --- |
+| 0.6.0 | 2026-10-18 | implemented | Marked implemented for release 0.6.0, with the owner's visual and live checks as accepted gaps (section 9) |
+| 0.6.0 | 2026-10-18 | approve | Approved from the owner's answers: GPU % over the interval, attribution as reported, side by side when wide, hotfix 0.5.2 first |
 | 0.6.0 | 2026-10-18 | minor | CPU card side by side; per-process GPU % |
 | 0.5.0 | 2026-10-18 | implemented | Marked implemented for release 0.5.0, with the visual review of the reactor as an accepted gap (section 9) |
 | 0.5.0 | 2026-10-18 | approve | Approved from the owner's request and screenshot: a hexagonal reactor-style core view |

@@ -39,3 +39,24 @@ func TestSoCInterval(t *testing.T) {
 		}
 	}
 }
+
+// T-36, plan DD-24: the GPU interval is 0 (off) or a multiple of the 3 s process refresh.
+func TestProcGPUInterval(t *testing.T) {
+	t.Setenv("MINIDASH_TOKEN", "x")
+	t.Setenv("MINIDASH_PROC_GPU_INTERVAL_MS", "")
+	if c, _ := FromEnv(); c.ProcGPU != DefaultProcGPU {
+		t.Fatalf("default = %v", c.ProcGPU)
+	}
+	for in, want := range map[string]time.Duration{"0": 0, "3000": 3 * time.Second, "9000": 9 * time.Second, "3600000": time.Hour} {
+		t.Setenv("MINIDASH_PROC_GPU_INTERVAL_MS", in)
+		if c, err := FromEnv(); err != nil || c.ProcGPU != want {
+			t.Fatalf("%s: got %v, %v", in, c.ProcGPU, err)
+		}
+	}
+	for _, bad := range []string{"abc", "-3000", "1000", "4500", "3000.0", "3603000", "99999999999999999999"} {
+		t.Setenv("MINIDASH_PROC_GPU_INTERVAL_MS", bad)
+		if _, err := FromEnv(); !errors.Is(err, ErrBadProcGPUInterval) {
+			t.Fatalf("%q should be rejected, got %v", bad, err)
+		}
+	}
+}

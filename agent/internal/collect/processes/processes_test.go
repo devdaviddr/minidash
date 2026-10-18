@@ -30,7 +30,7 @@ func many(n int, rss func(i int) uint64, cpu func(i int) float64) []Raw {
 
 func TestCPUFromDeltaOverElapsedTime(t *testing.T) {
 	f := &fakeOS{raw: []Raw{{PID: 1, CPUSeconds: 10, RSS: 1}}}
-	c := NewWith(f)
+	c := NewWith(f, nil, 0)
 	now := time.Unix(0, 0)
 	c.now = func() time.Time { return now }
 	_, _ = c.Collect(context.Background())
@@ -45,7 +45,7 @@ func TestCPUFromDeltaOverElapsedTime(t *testing.T) {
 func TestListIsUnionOfTopCPUAndTopMemoryWithoutDuplicates(t *testing.T) {
 	// pid 1..100: rss grows with pid, cpu shrinks with pid -> the two top-25 sets are disjoint.
 	f := &fakeOS{raw: many(100, func(i int) uint64 { return uint64(i + 1) }, func(int) float64 { return 0 })}
-	c := NewWith(f)
+	c := NewWith(f, nil, 0)
 	now := time.Unix(0, 0)
 	c.now = func() time.Time { return now }
 	_, _ = c.Collect(context.Background())
@@ -71,7 +71,7 @@ func TestListIsUnionOfTopCPUAndTopMemoryWithoutDuplicates(t *testing.T) {
 func TestDetailOnlyForListedProcesses(t *testing.T) {
 	calls := 0
 	f := &countingOS{fakeOS: fakeOS{raw: many(500, func(i int) uint64 { return uint64(i) }, func(int) float64 { return 0 })}, calls: &calls}
-	_, _ = NewWith(f).Collect(context.Background())
+	_, _ = NewWith(f, nil, 0).Collect(context.Background())
 	if calls > 2*TopN {
 		t.Fatalf("Detail called %d times for 500 processes; want <= %d", calls, 2*TopN)
 	}
@@ -89,7 +89,7 @@ func (c *countingOS) Detail(ctx context.Context, pid int32) (string, string) {
 
 func TestMatchesContract(t *testing.T) {
 	f := &fakeOS{raw: many(5, func(i int) uint64 { return uint64(i) }, func(int) float64 { return 0 })}
-	if r := testutil.AssertMatchesContract(t, NewWith(f)); !r.OK {
+	if r := testutil.AssertMatchesContract(t, NewWith(f, nil, 0)); !r.OK {
 		t.Fatal(r.Error)
 	}
 }
@@ -99,7 +99,7 @@ func TestTopMemoryMatchesPS(t *testing.T) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("uses BSD ps -m")
 	}
-	c := New()
+	c := New(1)
 	r := testutil.AssertMatchesContract(t, c)
 	if !r.OK {
 		t.Fatal(r.Error)

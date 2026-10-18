@@ -75,6 +75,7 @@ Each card reports its own collector. One failing collector never affects the oth
 | --- | --- |
 | `MINIDASH_TOKEN is required` | Empty token. Set it in `agent.env`. |
 | `MINIDASH_SOC_INTERVAL_MS must be an integer >= 250` | Bad interval value. |
+| `MINIDASH_PROC_GPU_INTERVAL_MS must be 0 (off) or a multiple of 3000 up to 3600000` | Bad per-process GPU interval. |
 | `missing ~/.config/minidash/agent.env` (exit 78) | The env file is absent. Re-run `deploy/install-agent.sh install`. |
 | `address already in use` | Something else holds port 8787. `lsof -nP -iTCP:8787 -sTCP:LISTEN`. |
 | Starts, then nothing listens | Check `~/Library/Logs/minidash/agent.log`. |

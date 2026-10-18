@@ -2,7 +2,7 @@
 feature: minidash-realtime-mac-mini-monitor
 title: minidash realtime Mac mini monitor
 version: 0.5.0
-status: approved
+status: implemented
 updated: 2026-10-18
 ---
 # minidash realtime Mac mini monitor — Task Backlog
@@ -51,7 +51,7 @@ updated: 2026-10-18
 | T-29 | `honeycomb(n)`: row lengths, cell centres and size for any core count; unit tests for 1 to 128 | FR-26 | T-3 | AC-26 | [x] |
 | T-30 | `CoresReactor`: hexagon cells with fill, tier colour, percentage, core number, accessible names; component tests | FR-25, FR-27 | T-29 | AC-25, AC-27 | [x] |
 | T-31 | Use it in the CPU card (replace the bars), fill spare height, keep the `cores` detail id; update the catalogue label and tests | FR-25, FR-26 | T-30 | AC-25, AC-26 | [x] |
-| T-32 | Docs, README illustration, deploy to the Mac mini through the upgrade script | all | T-31 | manual visual review | [x] |
+| T-32 | Docs, README illustration, deploy to the Mac mini through the upgrade script | all | T-31 | manual visual review (accepted gap, spec section 9) | [x] |
 
 ## Definition of done (this version)
 - [ ] Every functional requirement (FR-N) has at least one task.

@@ -2,7 +2,7 @@
 feature: minidash-realtime-mac-mini-monitor
 title: minidash realtime Mac mini monitor
 version: 0.5.0
-status: approved
+status: implemented
 owner: devdaviddr
 created: 2026-10-18
 updated: 2026-10-18
@@ -220,12 +220,17 @@ No open questions.
 - **AC-20** (spec 0.3.0): the visual review of cards at one-column and full width.
 - **AC-23, live clause** (spec 0.4.0): the HTTPS page over Tailscale. It needs the owner to enable Tailscale Serve for the tailnet (https://login.tailscale.com/f/serve). The script's behaviour when Serve is off was verified live.
 
-They are listed with their steps in `docs/deploy.md`. Specs 0.1.0, 0.2.0 and 0.3.0 are frozen history; 0.4.0 is the cumulative current contract.
+They are listed with their steps in `docs/deploy.md`. Specs 0.1.0 to 0.4.0 are frozen history; 0.5.0 is the cumulative current contract.
+
+**Accepted gaps for 0.5.0.** Spec 0.5.0 was marked implemented on 2026-10-18 when preparing release 0.5.0. Every task is done and the web tests pass (270 tests). AC-25 and AC-27 are fully covered by automated tests (`CoresReactor.test.tsx`, `reactor.test.ts`, the reactor contrast check in `contrast.test.ts`, and the Dashboard and Customise tests for hiding the detail). AC-26 is covered by `honeycomb.test.ts` for every count from 1 to 128 and by a structure test that the reactor scales to its container. These parts need a human eye, and no result has been recorded for them:
+
+- **AC-26, visual clause** (spec 0.5.0): the owner's review of the reactor in a browser on the Mac mini, at several card widths and heights, including that the CPU card gives the reactor its spare height. The card's flex layout that provides the spare height is not asserted by a test. The UI was deployed with `deploy/upgrade.sh` and all four checks passed (T-32).
 
 ## Changelog
 
 | Version | Date | Level | Note |
 | --- | --- | --- | --- |
+| 0.5.0 | 2026-10-18 | implemented | Marked implemented for release 0.5.0, with the visual review of the reactor as an accepted gap (section 9) |
 | 0.5.0 | 2026-10-18 | approve | Approved from the owner's request and screenshot: a hexagonal reactor-style core view |
 | 0.5.0 | 2026-10-18 | minor | CPU cores shown as a honeycomb reactor of hexagons that fills the card |
 | 0.4.0 | 2026-10-18 | implemented | Marked implemented at the owner's request, with the accepted gaps listed in section 9 |

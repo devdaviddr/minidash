@@ -48,8 +48,8 @@ updated: 2026-10-18
 | T-26 | `deploy/tailscale-https.sh` (on, off, status, dry run, refuses Funnel) with stub-based tests | FR-23 | T-25 | AC-23 | [x] |
 | T-27 | `deploy/upgrade.sh` (build, copy, install, rebuild UI, checks, URLs) with dry run | FR-24 | T-11 | AC-24 | [x] |
 | T-28 | Docs, deploy to the Mac mini through the upgrade script; the live HTTPS check is a manual check that needs Serve enabled (accepted gap, spec section 9) | all | T-25..T-27 | AC-23, AC-24 live | [x] |
-| T-29 | `honeycomb(n)`: row lengths, cell centres and size for any core count; unit tests for 1 to 128 | FR-26 | T-3 | AC-26 | [ ] |
-| T-30 | `CoresReactor`: hexagon cells with fill, tier colour, percentage, core number, accessible names; component tests | FR-25, FR-27 | T-29 | AC-25, AC-27 | [ ] |
+| T-29 | `honeycomb(n)`: row lengths, cell centres and size for any core count; unit tests for 1 to 128 | FR-26 | T-3 | AC-26 | [x] |
+| T-30 | `CoresReactor`: hexagon cells with fill, tier colour, percentage, core number, accessible names; component tests | FR-25, FR-27 | T-29 | AC-25, AC-27 | [x] |
 | T-31 | Use it in the CPU card (replace the bars), fill spare height, keep the `cores` detail id; update the catalogue label and tests | FR-25, FR-26 | T-30 | AC-25, AC-26 | [ ] |
 | T-32 | Docs, README illustration, deploy to the Mac mini through the upgrade script | all | T-31 | manual visual review | [ ] |
 

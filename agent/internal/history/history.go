@@ -9,6 +9,10 @@
 package history
 
 import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/devdaviddr/minidash/agent/internal/snapshot"
@@ -41,17 +45,24 @@ var storedCollectors = map[string]bool{
 	"cpu": true, "memory": true, "soc": true, "disk": true, "network": true,
 }
 
-// Store keeps a bounded, in-memory, age-downsampled history of snapshots. It is the source the
+// Store keeps a bounded, age-downsampled history of snapshots. It is the source the
 // /history endpoint reads. Snapshots older than the retention window are pruned.
+//
+// History is persisted to a JSONL file under dir so it survives an agent restart (FR-34).
+// The in-memory points are the working set; the file is rewritten on Compact, which runs on
+// a slow cadence, not every tick, so persistence adds no measurable per-tick cost (NFR budget).
 type Store struct {
 	window time.Duration
 	now    func() time.Time
+	dir    string
 	points []point
 }
 
-// New returns a Store that keeps history for window.
-func New(window time.Duration) *Store {
-	return &Store{window: window, now: time.Now}
+// New returns a Store that keeps history for window, persisted under dir. An empty dir
+// disables persistence (used by tests); history then lives only in memory. Call Load() to
+// read any existing history from disk; main does this once at startup.
+func New(window time.Duration, dir string) *Store {
+	return &Store{window: window, now: time.Now, dir: dir}
 }
 
 // Add records one snapshot. Ticks arrive in chronological order at age ~0, so each is stored raw.
@@ -80,6 +91,7 @@ func (s *Store) Compact() {
 		out = append(out, p)
 	}
 	s.points = out
+	s.save()
 }
 
 // periodForAge returns the bucket period for a given age.
@@ -121,6 +133,78 @@ func (s *Store) prune() {
 	if i > 0 {
 		s.points = s.points[i:]
 	}
+}
+
+// historyFile is the JSONL file that persists stored history under dir (FR-34).
+func (s *Store) historyFile() string {
+	return filepath.Join(s.dir, "history.jsonl")
+}
+
+// Load reads persisted history from disk into the working set, dropping points older than the
+// window. It is called once at startup so history survives a restart. A missing or unreadable
+// file is treated as empty rather than fatal, so a bad history directory never stops the agent.
+func (s *Store) Load() {
+	if s.dir == "" {
+		return
+	}
+	data, err := os.ReadFile(s.historyFile())
+	if err != nil {
+		return
+	}
+	cutoff := s.now().Add(-s.window)
+	for _, line := range splitLines(data) {
+		var p point
+		if err := json.Unmarshal(line, &p); err != nil {
+			continue
+		}
+		if s.window > 0 && p.TS.Before(cutoff) {
+			continue
+		}
+		s.points = append(s.points, p)
+	}
+}
+
+// save writes the current working set to disk as JSONL. It is called on the Compact cadence,
+// not every tick. Persistence failures are logged to stderr and never crash the agent, since
+// retention is best-effort and the in-memory history still serves /history.
+func (s *Store) save() {
+	if s.dir == "" {
+		return
+	}
+	if err := os.MkdirAll(s.dir, 0o755); err != nil {
+		fmt.Fprintf(os.Stderr, "history: cannot create %s: %v\n", s.dir, err)
+		return
+	}
+	var b []byte
+	for _, p := range s.points {
+		line, err := json.Marshal(p)
+		if err != nil {
+			continue
+		}
+		b = append(b, line...)
+		b = append(b, '\n')
+	}
+	if err := os.WriteFile(s.historyFile(), b, 0o600); err != nil {
+		fmt.Fprintf(os.Stderr, "history: cannot write %s: %v\n", s.historyFile(), err)
+	}
+}
+
+// splitLines splits a JSONL blob into non-empty lines, tolerating a trailing newline.
+func splitLines(data []byte) [][]byte {
+	out := make([][]byte, 0, len(data)+1)
+	start := 0
+	for i := 0; i < len(data); i++ {
+		if data[i] == '\n' {
+			if i > start {
+				out = append(out, data[start:i])
+			}
+			start = i + 1
+		}
+	}
+	if start < len(data) {
+		out = append(out, data[start:])
+	}
+	return out
 }
 
 // inBucket reports whether ts falls in the same period-aligned bucket as base.

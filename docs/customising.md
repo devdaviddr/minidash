@@ -10,23 +10,30 @@ Both themes meet WCAG AA contrast (4.5:1) for text. A test reads the real colour
 ## The customise panel
 Click **Customise** in the header. A panel opens on the right and the dashboard shifts over so you can watch it change as you work. Press **Escape** or the close button to finish; focus returns to the Customise button.
 
-| You can | How |
-| --- | --- |
-| Show or hide a card, or the summary strip | The checkbox next to its name |
-| Change a card's width | 1 column, 2 columns or Full width |
-| Reorder cards | Drag the handle (below), or the ↑ and ↓ buttons |
-| Hide details inside a card | Open **Details shown** on that card and untick what you do not want |
-| Start over | **Reset to default** (asks you to confirm) |
-| Move your layout to another browser | **Export layout** and **Import layout…** |
+<p align="center">
+  <img src="images/customise.svg" alt="Illustration of customising: the CPU card is selected with a resize grip on its right edge, and the sidebar shows that card's visibility, order, width and details" width="100%">
+</p>
 
-Widths apply on large screens, where the grid has four columns. On smaller screens cards stack in one column, in your chosen order.
+The panel has two views.
+
+**Overview** (nothing selected): the summary strip, then every card in display order with a checkbox to show or hide it, a button to select it, and move earlier/later buttons. The save, export, import and reset controls are at the bottom.
+
+**Card view** (a card selected): just that card. You get its show/hide checkbox, move buttons, **Width**, and **Details shown**. Use **← All cards** to go back.
+
+### Selecting a card
+While Customise is open, **click a card** to select it. It is outlined and the sidebar switches to its card view. Click another card to switch. You can also choose a card from the overview list, which works without a mouse. Press **Escape** to deselect (a second Escape closes the panel), or use **← All cards**. Selecting never changes your layout, and nothing is selected when Customise is closed.
+
+### Resizing
+Each card shows a grip on its right edge while Customise is open on a large screen (the grid has four columns from 1024 px). Drag the grip left or right and the card snaps to **1, 2, 3 or 4 columns** with a live "2 / 4" badge. **Escape** cancels and puts the width back. The grip is also a keyboard slider: Tab to it, then **Left/Right** change the width by one column, **Home** and **End** jump to 1 and 4. Screen readers hear it as a slider with its value ("2 of 4 columns"). You can also pick a width in the card view.
+
+Only the width changes. A card's height always follows its content, so nothing is clipped.
 
 ### Reordering
-While the panel is open, every card shows a **⠿ Drag** handle at its top edge.
+While the panel is open, every card shows a **Drag** handle at its top edge.
 
 - **Mouse or touch:** drag the handle. (Touch needs a short press first, so scrolling still works.)
 - **Keyboard:** Tab to a handle, press **Space** to pick the card up, move it with the **arrow keys**, and press **Space** to drop it. **Escape** cancels. Screen readers hear each step announced.
-- **Buttons:** in the panel, **Move … earlier** and **Move … later** shift a card by one place among the cards you can see. Hidden cards never absorb a step. This is the simplest route if dragging is awkward.
+- **Buttons:** **Move … earlier** and **Move … later** shift a card by one place among the cards you can see. Hidden cards never absorb a step. This is the simplest route if dragging is awkward.
 
 ### Details you can hide
 | Card | Details |
@@ -42,6 +49,24 @@ While the panel is open, every card shows a **⠿ Drag** handle at its top edge.
 | Processes | Owner column, GPU note |
 
 Hiding a detail removes only that detail. The rest of the card, and every other card, is untouched.
+
+## Responsive layout
+The page adapts at two levels.
+
+**The screen.** The grid is one column below 768 px (phones), two columns from 768 px (tablets) and four columns from 1024 px. On two columns a card of width 2, 3 or 4 takes the whole row and a width-1 card takes half. On one column everything takes the row. Widths only matter on four columns.
+
+**The card itself.** Everything inside a card responds to the width that card actually has, not to the screen, because the same screen shows narrow and wide cards side by side. For example:
+
+| Card | Narrow (1 column) | Wide |
+| --- | --- | --- |
+| CPU | shorter core bars, load average wraps under the total | taller core bars |
+| GPU & power | tiles in one or two columns | four tiles across |
+| Memory | total and swap stacked | total and swap side by side |
+| Network | rates wrap, cumulative bytes hidden | cumulative bytes shown |
+| Storage | one volume per row | volumes in two columns |
+| Shares & accounts | three sections stacked | three sections side by side |
+| Containers | one runtime per row | two, then three runtimes across |
+| Processes | process name and CPU/memory only | PID, then owner columns appear |
 
 ## Saving, exporting and importing
 Your layout is saved automatically in this browser (`localStorage`, key `minidash.layout`; the theme is `minidash.theme`). Clearing the site's data resets both. If the browser will not let minidash store anything, the panel says so and the layout lasts until you close the page.
@@ -62,20 +87,20 @@ Your layout is saved automatically in this browser (`localStorage`, key `minidas
   ]
 }
 ```
-The order of `cards` is the display order. `span` is 1, 2 or 4. Card ids: `cpu`, `gpu`, `memory`, `network`, `storage`, `shares`, `containers`, `processes`. The theme is not part of the file, because it often differs per device.
+The order of `cards` is the display order. `span` is 1, 2, 3 or 4 (files from 1.1.0, which used only 1, 2 and 4, import unchanged). Card ids: `cpu`, `gpu`, `memory`, `network`, `storage`, `shares`, `containers`, `processes`. The theme is not part of the file, because it often differs per device.
 
 ## Wall display
 `?wall` in the URL, or the **Wall display** button, hides the process table and the shares card and enlarges the type. It is applied on top of your layout and never changes it, so turning it off brings those cards back.
 
 ## Ideas
-- **Wall screen:** hide Processes and Shares, set CPU and Network to full width, and hide the per-core bars.
+- **Wall screen:** hide Processes and Shares, drag CPU and Network to full width, and hide the per-core bars.
 - **Phone:** hide the summary strip, history charts and Containers, and keep CPU, Memory and Storage.
 - **Quiet server:** hide Fans, Temperatures and the process note.
 
 ## Accessibility
-Every control in the panel has an accessible name and a visible focus style, drag and drop has a full keyboard path, the live region announces drags, and animations stop under your system's reduced-motion setting.
+Every control in the panel has an accessible name and a visible focus style, selecting, resizing and drag and drop each have a full keyboard path, the live region announces drags, the resize grip is a labelled slider, and animations stop under your system's reduced-motion setting.
 
 ## Limits
 - One layout per browser. There are no named layouts and no sync between devices (use export and import).
-- Cards flow in a grid. You choose order and width, not exact positions.
+- Cards flow in a grid. You choose order and width, not exact positions or height.
 - Colours are not customisable beyond Light and Dark.

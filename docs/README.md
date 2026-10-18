@@ -14,4 +14,4 @@
 | [Stream protocol](stream-protocol.md) | build a client or debug the WebSocket |
 | [Development](development.md) | build, test, add a collector, follow the workflow |
 | [Decisions (ADRs)](adr/README.md) | learn why it is built this way |
-| [Spec](../spec/0.2.0/spec.md), [plan](../spec/0.2.0/plan.md), [tasks](../spec/0.2.0/tasks.md) | read the requirements and acceptance criteria |
+| [Spec](../spec/0.3.0/spec.md), [plan](../spec/0.3.0/plan.md), [tasks](../spec/0.3.0/tasks.md) | read the requirements and acceptance criteria |

@@ -20,7 +20,7 @@ export function ContainersCard({ history, hidden = NONE }: CardProps) {
       {!d ? (
         <Unavailable error={r?.error} />
       ) : (
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 @xl:grid-cols-2 @4xl:grid-cols-3">
           {runtimes.map((rt) => (
             <div key={rt.name} data-part={rt.status === 'not-running' ? 'stopped' : undefined} className="rounded-xl bg-bg p-3">
               <div className="mb-2 flex items-center justify-between">

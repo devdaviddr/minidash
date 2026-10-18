@@ -20,7 +20,7 @@ export function SharesCard({ history, hidden = NONE }: CardProps) {
       {!d ? (
         <Unavailable error={r?.error} />
       ) : (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 @3xl:grid @3xl:grid-cols-3 @3xl:items-start @3xl:gap-6">
           <Part id="mounts" hidden={hidden}>
           <Section title="Mounted on this Mac" empty="No network shares mounted">
             {d.mounts.map((m) => (

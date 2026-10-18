@@ -144,13 +144,13 @@ How it stays this light: [ADR 0006](docs/adr/0006-cpu-budget-and-throttling.md).
 | [Operations](docs/operations.md) | [Security](docs/security.md) |
 | [Troubleshooting](docs/troubleshooting.md) | [Development](docs/development.md) |
 | [Contributing](CONTRIBUTING.md) | [Decision records](docs/adr/README.md) |
-| [Changelog](CHANGELOG.md) | The [spec](spec/0.5.0/spec.md) and [releasing](docs/releasing.md) |
+| [Changelog](CHANGELOG.md) | The [spec](spec/0.6.0/spec.md) and [releasing](docs/releasing.md) |
 
 The full index is [docs/README.md](docs/README.md).
 
 ## Status
 
-Pre-1.0 and in daily use on a real Mac mini. Every release from 0.1.0 (the monitor) to 0.5.0 (the CPU reactor) is published on the [releases page](https://github.com/devdaviddr/minidash/releases), each with its own spec. Still checked by hand: GPU load under a real workload and a visual review in a browser. See the [current spec](spec/0.5.0/spec.md) and the [changelog](CHANGELOG.md).
+Pre-1.0 and in daily use on a real Mac mini. Every release from 0.1.0 (the monitor) to 0.6.0 (CPU card side by side and per-process GPU) is published on the [releases page](https://github.com/devdaviddr/minidash/releases), each with its own spec. Still checked by hand: GPU load under a real workload and a visual review in a browser. See the [current spec](spec/0.6.0/spec.md) and the [changelog](CHANGELOG.md).
 
 <details>
 <summary><strong>Known limits</strong></summary>

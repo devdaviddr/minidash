@@ -2,7 +2,7 @@
 feature: minidash-realtime-mac-mini-monitor
 title: minidash realtime Mac mini monitor
 version: 0.6.0
-status: approved
+status: implemented
 updated: 2026-10-18
 ---
 # minidash realtime Mac mini monitor — Task Backlog
@@ -60,7 +60,7 @@ updated: 2026-10-18
 | T-38 | Web GPU column: `gpu` column in `ProcessesCard` (between CPU and Memory, `@2xs` variant, "–" for null or missing), nulls-last comparator in `web/src/lib` with unit tests, "GPU unavailable: <reason>" line, `gpu` part in the catalogue, `note` text and label become the attribution note; card, responsive, layout-model and Customise tests | FR-32, FR-33, FR-31 | T-33, T-37 | AC-31 (web half), AC-32, AC-33 (card half): Vitest; owner's eye for AC-32's visual clause | [x] |
 | T-39 | Docs for per-process GPU: `docs/collectors.md` (processes: GPU source, units, interval, attribution, failure modes, sanitised fixtures; replace the "no GPU column yet" note), `docs/troubleshooting.md` (GPU column shows "–", system services carrying GPU time; replace the "not built yet" entry), README known limits and status, `docs/configuration.md` (`MINIDASH_PROC_GPU_INTERVAL_MS`), `docs/architecture.md` if the collector diagram names inputs, `docs/deploy.md` manual checks for AC-26 visual, AC-28, AC-29 live, AC-32 and AC-35 | FR-33, all | T-37, T-38 | AC-33 (docs half): review against the spec; links resolve | [x] |
 | T-40 | CPU card layout: core count in the `Card` header, load average as the total's label, chart and honeycomb in one container (`flex-col`, `@md:flex-row`, honeycomb column `@md:w-2/5` stretching to the row), full width when the other part is hidden; update CPU card, responsive and Dashboard tests | FR-28, FR-26 | — | AC-28 (structure), AC-26 (amended): Vitest; owner's eye for AC-28's visual clause | [x] |
-| T-41 | Illustrations and deploy: check `docs/images/overview.svg` still matches (it already shows the side-by-side CPU card with "10 cores" in the header, and has no process table, so no GPU column is needed); fix `docs/images/customise.svg`'s stale "Per-core bars" label to "Per-core reactor"; update `docs/customising.md` for the new `gpu` detail; deploy agent and UI to the mini with `deploy/upgrade.sh` and run the live checks | FR-28, FR-32, all | T-39, T-40 | `deploy/upgrade.sh` checks pass; owner's eye: AC-26 visual, AC-28 visual, AC-29 live, AC-32 visual (accepted gaps at release if no result is recorded) | [ ] |
+| T-41 | Illustrations and deploy: check `docs/images/overview.svg` still matches (it already shows the side-by-side CPU card with "10 cores" in the header, and has no process table, so no GPU column is needed); fix `docs/images/customise.svg`'s stale "Per-core bars" label to "Per-core reactor"; update `docs/customising.md` for the new `gpu` detail; deploy agent and UI to the mini with `deploy/upgrade.sh` and run the live checks | FR-28, FR-32, all | T-39, T-40 | `deploy/upgrade.sh` checks pass; owner's eye: AC-26 visual, AC-28 visual, AC-29 live, AC-32 visual (accepted gaps at release if no result is recorded) | [x] Illustrations in #25, the gpu detail doc in release/0.6.0, deployed with deploy/upgrade.sh after release. |
 
 ### Acceptance criteria that need the owner's eye (0.6.0)
 - **AC-28, visual clause:** the CPU card side by side at width 2, stacked at width 1 and on a phone, with nothing squashed (after T-41).
@@ -73,8 +73,8 @@ AC-35 needs the Mac mini but not the owner: it is a measurement (T-37). Every ot
 **Order and dependencies.** T-33 to T-39 are the GPU column, in the order contract → reader → rates → collector → budget → UI → docs. T-37 is a gate: the UI is not built until the cost is known to fit. T-40 (layout) depends on nothing in the GPU work and is listed after it, as the owner ordered. It can be done in parallel on its own branch. T-41 comes last.
 
 ## Definition of done (this version)
-- [ ] Spec §9's open question (the GPU interval) is answered and the spec approved before T-33 starts.
-- [ ] Every functional requirement (FR-N) has at least one task.
-- [ ] Every acceptance criterion (AC-N) has a verifying test.
-- [ ] All tasks checked off and tests passing.
-- [ ] `spec.md` and `plan.md` still match what was built (else bump + reconcile).
+- [x] Spec §9's open question (the GPU interval) is answered and the spec approved before T-33 starts.
+- [x] Every functional requirement (FR-N) has at least one task.
+- [x] Every acceptance criterion (AC-N) has a verifying test. (owner-only clauses are accepted gaps in spec §9)
+- [x] All tasks checked off and tests passing.
+- [x] `spec.md` and `plan.md` still match what was built (else bump + reconcile).

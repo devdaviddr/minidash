@@ -4,6 +4,16 @@ All notable changes are recorded here. The format follows [Keep a Changelog](htt
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-18
+Spec 0.6.0.
+
+### Added
+- **GPU per process:** the process table has a sortable, hideable **GPU** column: each process's share of GPU time over the last interval, read without root from the IORegistry (`AGXDeviceUserClient` `accumulatedGPUTime`, ADR 0015). New processes show "–" until a second sample; the list also includes the top processes by GPU. System services such as `runningboardd` and `WindowServer` can carry GPU time on an app's behalf; the card notes this. If the GPU read fails, the table stays and says why. Setting: `MINIDASH_PROC_GPU_INTERVAL_MS` (`0` turns it off).
+
+### Changed
+- **CPU card** is laid out like the README illustration: on a wide card the total and chart sit left and the per-core reactor right; narrow cards stack the reactor under the chart. The core count moved to the card header; the load average sits under the total.
+- Illustrations updated for the new CPU card.
+
 ## [0.5.2] - 2026-10-18
 Hotfix.
 
@@ -114,7 +124,8 @@ First complete implementation of spec 0.1.0. A GPU-load check (AC-2) and a visua
 - Architecture with diagrams, configuration, operations, troubleshooting, security model and development guide; decision records 0002 to 0008.
 - README with a banner, a dashboard layout illustration (clearly labelled, made-up values), badges, requirements, a performance table and a quick start.
 
-[Unreleased]: https://github.com/devdaviddr/minidash/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/devdaviddr/minidash/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/devdaviddr/minidash/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/devdaviddr/minidash/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/devdaviddr/minidash/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/devdaviddr/minidash/compare/v0.4.1...v0.5.0

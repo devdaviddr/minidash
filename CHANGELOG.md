@@ -4,6 +4,12 @@ All notable changes are recorded here. The format follows [Keep a Changelog](htt
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-10-18
+Hotfix.
+
+### Fixed
+- **HTTPS over Tailscale took the dashboard down.** `deploy/tailscale-https.sh on` served the agent on HTTPS 8787, which takes port 8787 from the agent; after its restart the agent could not bind and kept restarting. The stream is now served on the page's own origin at `/ws` on 443 (`wss://<host>/ws`), nothing is served on 8787, and `on` removes a serve on 8787 left by an older version ([ADR 0016](docs/adr/0016-same-origin-stream-over-https.md)). Plain HTTP on the LAN is unchanged.
+
 ## [0.6.1] - 2026-10-18
 Hotfix.
 
@@ -131,7 +137,8 @@ First complete implementation of spec 0.1.0. A GPU-load check (AC-2) and a visua
 - Architecture with diagrams, configuration, operations, troubleshooting, security model and development guide; decision records 0002 to 0008.
 - README with a banner, a dashboard layout illustration (clearly labelled, made-up values), badges, requirements, a performance table and a quick start.
 
-[Unreleased]: https://github.com/devdaviddr/minidash/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/devdaviddr/minidash/compare/v0.6.2...HEAD
+[0.6.2]: https://github.com/devdaviddr/minidash/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/devdaviddr/minidash/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/devdaviddr/minidash/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/devdaviddr/minidash/compare/v0.5.1...v0.5.2

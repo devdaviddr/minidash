@@ -93,4 +93,4 @@ AC-35 needs the Mac mini but not the owner: it is a measurement (T-37). Every ot
 | T-46 | Add authenticated `GET /history` endpoint returning downsampled points | FR-37 | T-45 | AC-38 | [x] |
 | T-47 | Web UI: time-range picker clamped to the agent's window; charts render the range | FR-38 | T-46 | AC-39 (web tests) | [x] |
 | T-48 | Docs: configuration, stream-protocol, collectors; README retention note | FR-34..FR-38 | T-47 | review | [x] |
-| T-49 | Measure agent CPU/memory with retention on; record in collectors.md | NFR budget | T-45 | AC-35-style measurement | [ ] |
+| T-49 | Measure agent CPU/memory with retention on; record in collectors.md | NFR budget | T-45 | AC-35-style measurement | [x] |

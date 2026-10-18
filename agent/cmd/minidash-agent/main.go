@@ -64,7 +64,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.Handle("/ws", h)
-	mux.Handle("/history", historyserver.New(store, cfg.Token))
+	mux.Handle("/history", historyserver.New(store, cfg.Token, cfg.Origins))
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = w.Write([]byte("ok"))
 	})

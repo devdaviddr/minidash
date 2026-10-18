@@ -3,6 +3,12 @@
 All notable changes are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions follow the spec version in `spec/`, and each is published as a [GitHub Release](https://github.com/devdaviddr/minidash/releases) when tagged (see [docs/releasing.md](docs/releasing.md)). Every release so far is below 1.0.
 
 ## [Unreleased]
+### Fixed
+- **View stored data failed in the browser.** `GET /history` sent no CORS headers, so a browser
+  fetch from the dashboard (a different origin than the agent) was blocked and the panel reported
+  "Could not load stored history from the agent." (The 0.7.0 header Range selector had the same
+  bug but swallowed the error.) The endpoint now echoes `Access-Control-Allow-Origin` when the
+  request's `Origin` matches the same `MINIDASH_ORIGINS` patterns as the WebSocket.
 ### Changed
 - **Settings panel:** the header **Customise** button and panel are renamed **Settings**, and the
   chart **Range** selector has moved out of the header into a **Retention** section inside the panel.

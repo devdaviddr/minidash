@@ -4,8 +4,9 @@
 
 <br>
 
-**One page that shows what your Mac mini is doing, every second.**<br>
-CPU, GPU, memory, power, disks, network, processes, containers and shares. Read-only, no root.
+**One page that shows what your machines are doing, every second.**<br>
+CPU, GPU, memory, power, disks, network, processes, containers and shares. Read-only, no root.<br>
+Runs on Apple Silicon Macs today. Linux hosts and several machines on one page are planned for 0.8.0 ([roadmap](#roadmap)).
 
 <br>
 
@@ -17,7 +18,7 @@ CPU, GPU, memory, power, disks, network, processes, containers and shares. Read-
 ![TypeScript](https://img.shields.io/badge/web-React%20%2B%20TypeScript-3178C6?style=flat-square&logo=react&logoColor=white)
 ![CPU budget](https://img.shields.io/badge/CPU%20budget-under%202%25%20of%20one%20core-17a362?style=flat-square)
 
-[Quick start](#quick-start) &nbsp;·&nbsp; [Architecture](docs/architecture.md) &nbsp;·&nbsp; [Docs](docs/README.md) &nbsp;·&nbsp; [Troubleshooting](docs/troubleshooting.md) &nbsp;·&nbsp; [Contributing](CONTRIBUTING.md)
+[Quick start](#quick-start) &nbsp;·&nbsp; [Roadmap](#roadmap) &nbsp;·&nbsp; [Architecture](docs/architecture.md) &nbsp;·&nbsp; [Docs](docs/README.md) &nbsp;·&nbsp; [Troubleshooting](docs/troubleshooting.md) &nbsp;·&nbsp; [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -144,13 +145,13 @@ How it stays this light: [ADR 0006](docs/adr/0006-cpu-budget-and-throttling.md).
 | [Operations](docs/operations.md) | [Security](docs/security.md) |
 | [Troubleshooting](docs/troubleshooting.md) | [Development](docs/development.md) |
 | [Contributing](CONTRIBUTING.md) | [Decision records](docs/adr/README.md) |
-| [Changelog](CHANGELOG.md) | The [spec](spec/0.6.0/spec.md) and [releasing](docs/releasing.md) |
+| [Changelog](CHANGELOG.md) | The [spec](spec/0.7.0/spec.md) and [releasing](docs/releasing.md) |
 
 The full index is [docs/README.md](docs/README.md).
 
 ## Status
 
-Pre-1.0 and in daily use on a real Mac mini. Every release from 0.1.0 (the monitor) to 0.6.0 (CPU card side by side and per-process GPU) is published on the [releases page](https://github.com/devdaviddr/minidash/releases), each with its own spec. Still checked by hand: GPU load under a real workload and a visual review in a browser. See the [current spec](spec/0.6.0/spec.md) and the [changelog](CHANGELOG.md).
+Pre-1.0 and in daily use on a real Mac mini. Every release from 0.1.0 (the monitor) to 0.7.0 (log retention) is published on the [releases page](https://github.com/devdaviddr/minidash/releases), each with its own spec. Still checked by hand: GPU load under a real workload and a visual review in a browser. See the [released spec](spec/0.7.0/spec.md), the [draft for 0.8.0](spec/0.8.0/spec.md) and the [changelog](CHANGELOG.md).
 
 <details>
 <summary><strong>Known limits</strong></summary>
@@ -161,9 +162,39 @@ Pre-1.0 and in daily use on a real Mac mini. Every release from 0.1.0 (the monit
 - Connected-client account names can be blank, because macOS may serve SMB sessions as root.
 - Only SMB and NFS shares are covered (AFP is out of scope).
 - One shared access token, no per-user accounts, and no TLS built in.
-- Built and tested on Apple Silicon only.
+- Built and tested on Apple Silicon only. Linux and multi-host support are planned for 0.8.0 ([roadmap](#roadmap)).
 
 </details>
+
+## Roadmap
+
+minidash started as a monitor for one Mac mini. The next releases turn it into a monitor for a small fleet of machines, Macs and Linux boxes, on one page. The first extra host is a Linux GPU machine that serves local LLMs. None of this is released yet: 0.8.0 is a [draft spec](spec/0.8.0/spec.md) waiting for the owner's answers to its open questions.
+
+| Release | Plan |
+| --- | --- |
+| **0.8.0 multi-host** (draft) | The same agent on Linux, with NVIDIA GPU use, VRAM, power and temperatures, and hwmon sensors. One agent acts as a **hub**: it reads the other agents' streams, keeps every host's history, and serves one page with one token. A **Fleet** card shows a tile per host; a host picker opens any host's full dashboard. A host that is asleep shows as down and nothing else breaks. Linux install as a systemd user service; one upgrade command for every host. |
+| **0.9.0 Linux parity** (idea) | Per-process GPU and VRAM on NVIDIA, AMD and Intel GPUs, Samba and NFS exports, filling history gaps after a hub outage, and an optional probe for an LLM server (loaded model, tokens per second). |
+| **0.10.0 Fleet insight** (idea) | Compare hosts on one chart; thresholds and alerts such as host down, disk nearly full or GPU hot. |
+| Later (idea) | Windows hosts, a layout per host, finding hosts on the tailnet. |
+
+```mermaid
+flowchart LR
+  you(["Your browser"]):::client
+  subgraph hubhost["Mac mini (hub)"]
+    hub["Agent + hub<br/>history for every host"]:::agent
+  end
+  subgraph linux["Linux GPU box"]
+    remote["Agent<br/>Linux, NVIDIA"]:::agent
+  end
+  more["More hosts"]:::host
+  you == "one stream, one token" ==> hub
+  hub -- "reads, never writes" --> remote
+  hub -. "reads" .-> more
+
+  classDef client fill:#eef2ff,stroke:#6c93ff,color:#1e2a52
+  classDef agent fill:#3b6df5,stroke:#2a50c0,color:#ffffff
+  classDef host fill:#f1f3f6,stroke:#8a93a3,color:#2a2f3a
+```
 
 ## Contributing
 

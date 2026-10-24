@@ -20,3 +20,4 @@ Short, numbered, append-only. Supersede a decision with a new ADR rather than ed
 | [0014](0014-per-process-gpu-time-without-root.md) | Per-process GPU time is readable without root | accepted |
 | [0015](0015-read-gpu-time-by-forking-ioreg.md) | Read per-process GPU time by forking `ioreg` | accepted |
 | [0016](0016-same-origin-stream-over-https.md) | Serve the stream on the page's origin over HTTPS | accepted |
+| [0017](0017-multi-host-hub.md) | Watch several hosts through a hub agent | accepted |

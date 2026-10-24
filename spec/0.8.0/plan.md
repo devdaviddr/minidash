@@ -273,8 +273,8 @@ Rollback is the previous agent binary and image. Observability: the history dire
 `/history` response are the surfaces to check.
 ## 0.8.0 additions — multi-host
 
-> Draft. Depends on the owner's answers to spec §9 Q1 to Q7. The plan below follows the
-> recommendations; any answer that differs changes it before approval.
+> Approved 2026-10-25. The owner took every recommendation in spec §9 Q1 to Q7, so the plan below
+> stands as drafted. ADR 0017 records DD-27 to DD-29.
 
 **Approach.** The same `minidash-agent` runs on every machine. On Linux, OS-specific code sits behind
 build-tagged files (`_darwin.go`, `_linux.go`) inside each collector package, so each collector keeps

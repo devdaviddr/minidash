@@ -168,14 +168,14 @@ Pre-1.0 and in daily use on a real Mac mini. Every release from 0.1.0 (the monit
 
 ## Roadmap
 
-minidash started as a monitor for one Mac mini. The next releases turn it into a monitor for a small fleet of machines, Macs and Linux boxes, on one page. The first extra host is a Linux GPU machine that serves local LLMs. None of this is released yet: 0.8.0 is a [draft spec](spec/0.8.0/spec.md) waiting for the owner's answers to its open questions.
+minidash started as a monitor for one Mac mini. The next releases turn it into a monitor for a small fleet of machines, Macs and Linux boxes, on one page. The first extra host is a Linux GPU machine that serves local LLMs. None of this is released yet: the 0.8.0 [spec](spec/0.8.0/spec.md) is approved and in progress, with the Mac mini as the hub ([ADR 0017](docs/adr/0017-multi-host-hub.md)).
 
 | Release | Plan |
 | --- | --- |
-| **0.8.0 multi-host** (draft) | The same agent on Linux, with NVIDIA GPU use, VRAM, power and temperatures, and hwmon sensors. One agent acts as a **hub**: it reads the other agents' streams, keeps every host's history, and serves one page with one token. A **Fleet** card shows a tile per host; a host picker opens any host's full dashboard. A host that is asleep shows as down and nothing else breaks. Linux install as a systemd user service; one upgrade command for every host. |
+| **0.8.0 multi-host** (in progress) | The same agent on Linux, with NVIDIA GPU use, VRAM, power and temperatures, and hwmon sensors. One agent acts as a **hub**: it reads the other agents' streams, keeps every host's history, and serves one page with one token. A **Fleet** card shows a tile per host; a host picker opens any host's full dashboard. A host that is asleep shows as down and nothing else breaks. Linux install as a systemd user service; one upgrade command for every host. |
 | **0.9.0 Linux parity** (idea) | Per-process GPU and VRAM on NVIDIA, AMD and Intel GPUs, Samba and NFS exports, filling history gaps after a hub outage, and an optional probe for an LLM server (loaded model, tokens per second). |
 | **0.10.0 Fleet insight** (idea) | Compare hosts on one chart; thresholds and alerts such as host down, disk nearly full or GPU hot. |
-| Later (idea) | Windows hosts, a layout per host, finding hosts on the tailnet. |
+| Later (idea) | Windows hosts (its own release, after Linux), a layout per host, finding hosts on the tailnet. |
 
 ```mermaid
 flowchart LR

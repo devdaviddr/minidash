@@ -96,33 +96,33 @@ AC-35 needs the Mac mini but not the owner: it is a measurement (T-37). Every ot
 | T-49 | Measure agent CPU/memory with retention on; record in collectors.md | NFR budget | T-45 | AC-35-style measurement | [x] |
 ## 0.8.0 backlog — multi-host
 
-> Blocked until spec §9 Q1 to Q7 are answered and the spec is approved. Order: contract → Linux
-> agent → hub → web → deploy → measure. The Linux agent (T-51 to T-56) is useful on its own: the LLM
+> Spec approved 2026-10-25 (T-50). Order: contract → Linux
+> agent → hub → web → deploy → measure. The Linux agent (T-52 to T-57) is useful on its own: the LLM
 > box can run a single-host dashboard before the hub exists.
 
 | # | Task | Serves | Depends on | Verify by | Done |
 | --- | --- | --- | --- | --- | --- |
-| T-49 | Resolve spec §9 Q1 to Q7 with the owner; amend spec and plan; approve 0.8.0; ADR 0017 (multi-host hub) | all | — | spec status `approved` | [ ] |
-| T-50 | Contract: `host`, `unsupported`, Linux memory fields (relax the macOS ones), `gpus`, `thermal` in `snapshot.schema.json`; new `stream.schema.json` for `auth` and `hosts`; regenerate web types; schema tests | FR-40, FR-43, FR-44, FR-46, FR-49 | T-49 | AC-59 | [ ] |
-| T-51 | `internal/hostinfo` and `MINIDASH_HOST_ID`/`MINIDASH_HOST_NAME` config; `host` in every snapshot | FR-40 | T-50 | AC-40 | [ ] |
-| T-52 | Linux builds in CI (`linux/amd64`, `linux/arm64`, tests on `ubuntu-latest`) and in the release workflow; record and sanitise Linux fixtures on the LLM box | FR-41 | T-50 | AC-41 | [ ] |
-| T-53 | Linux memory, disks, network, containers sockets, shares; `soc` unsupported on Linux; processes GPU no-op on Linux | FR-42, FR-43, FR-45 | T-52 | AC-42, AC-43 (agent half), AC-45 (agent half) | [ ] |
-| T-54 | `collect/gpus`: `nvidia-smi` runner, parser, fuzz test, fixtures | FR-44 | T-52 | AC-44 | [ ] |
-| T-55 | `collect/thermal`: hwmon reader on a fixture tree | FR-46 | T-52 | AC-46 | [ ] |
-| T-56 | Web: `unsupported` notice, Linux memory breakdown, `gpus` panel and `vram` part, Linux temps and fans in the GPU card | FR-43, FR-55, FR-56 | T-50 | AC-43 (web half), AC-45 (web half), AC-55 | [ ] |
-| T-57 | `install-agent.sh` on Linux (systemd user unit, lingering check, dry run); install on the LLM box | FR-58 | T-53..T-55 | AC-57 (installer), live install | [ ] |
-| T-58 | `internal/hostsfile`: load and validate, permission check, token-free errors | FR-47 | T-51 | AC-47 | [ ] |
-| T-59 | `internal/upstream`: client per remote, states, backoff, size cap, typed decode, relabel, no writes | FR-48, FR-51, FR-52 | T-58 | AC-48, AC-51, AC-52 | [ ] |
-| T-60 | Hub subscriptions (`hosts: "all"`), per-host fan-out, `hosts` message; 0.7.0 client path unchanged | FR-49 | T-59 | AC-49 | [ ] |
-| T-61 | History per host, `/history?host=`, move the 0.7.0 file into the own host's directory | FR-50 | T-60 | AC-50 | [ ] |
-| T-62 | Web: per-host state in the connection hook, `useHost`, `HostPicker`, `?host=`, down/stale banner, range picker passes `host` | FR-53, FR-57 | T-60, T-61 | AC-53, AC-56 | [ ] |
-| T-63 | Web: Fleet card (catalogue, registry, tiles, parts, default visibility rule) | FR-54 | T-62 | AC-54 | [ ] |
-| T-64 | `upgrade.sh` with several targets and per-OS builds | FR-59 | T-57 | AC-57 (upgrade) | [ ] |
-| T-65 | Docs: README, architecture (hub diagram), collectors (Linux sources, `gpus`, `thermal`), configuration (`MINIDASH_HOST_*`, `MINIDASH_HOSTS_FILE`), stream protocol (`hosts`), deploy (Linux and adding a host), security (hosts file, remote transport), troubleshooting; `deploy/hosts.example.json` | all | T-63, T-64 | review; links resolve | [ ] |
-| T-66 | Deploy: LLM box as remote, Mac mini as hub, UI; measure the budget (AC-58); live checks AC-44, AC-54, AC-57 | NFR budget, all | T-65 | AC-58; owner's eye for AC-54 | [ ] |
+| T-50 | Resolve spec §9 Q1 to Q7 with the owner; amend spec and plan; approve 0.8.0; ADR 0017 (multi-host hub) | all | — | spec status `approved` | [x] |
+| T-51 | Contract: `host`, `unsupported`, Linux memory fields (relax the macOS ones), `gpus`, `thermal` in `snapshot.schema.json`; new `stream.schema.json` for `auth` and `hosts`; regenerate web types; schema tests | FR-40, FR-43, FR-44, FR-46, FR-49 | T-50 | AC-59 | [ ] |
+| T-52 | `internal/hostinfo` and `MINIDASH_HOST_ID`/`MINIDASH_HOST_NAME` config; `host` in every snapshot | FR-40 | T-51 | AC-40 | [ ] |
+| T-53 | Linux builds in CI (`linux/amd64`, `linux/arm64`, tests on `ubuntu-latest`) and in the release workflow; record and sanitise Linux fixtures on the LLM box | FR-41 | T-51 | AC-41 | [ ] |
+| T-54 | Linux memory, disks, network, containers sockets, shares; `soc` unsupported on Linux; processes GPU no-op on Linux | FR-42, FR-43, FR-45 | T-53 | AC-42, AC-43 (agent half), AC-45 (agent half) | [ ] |
+| T-55 | `collect/gpus`: `nvidia-smi` runner, parser, fuzz test, fixtures | FR-44 | T-53 | AC-44 | [ ] |
+| T-56 | `collect/thermal`: hwmon reader on a fixture tree | FR-46 | T-53 | AC-46 | [ ] |
+| T-57 | Web: `unsupported` notice, Linux memory breakdown, `gpus` panel and `vram` part, Linux temps and fans in the GPU card | FR-43, FR-55, FR-56 | T-51 | AC-43 (web half), AC-45 (web half), AC-55 | [ ] |
+| T-58 | `install-agent.sh` on Linux (systemd user unit, lingering check, dry run); install on the LLM box | FR-58 | T-54..T-56 | AC-57 (installer), live install | [ ] |
+| T-59 | `internal/hostsfile`: load and validate, permission check, token-free errors | FR-47 | T-52 | AC-47 | [ ] |
+| T-60 | `internal/upstream`: client per remote, states, backoff, size cap, typed decode, relabel, no writes | FR-48, FR-51, FR-52 | T-59 | AC-48, AC-51, AC-52 | [ ] |
+| T-61 | Hub subscriptions (`hosts: "all"`), per-host fan-out, `hosts` message; 0.7.0 client path unchanged | FR-49 | T-60 | AC-49 | [ ] |
+| T-62 | History per host, `/history?host=`, move the 0.7.0 file into the own host's directory | FR-50 | T-61 | AC-50 | [ ] |
+| T-63 | Web: per-host state in the connection hook, `useHost`, `HostPicker`, `?host=`, down/stale banner, range picker passes `host` | FR-53, FR-57 | T-61, T-62 | AC-53, AC-56 | [ ] |
+| T-64 | Web: Fleet card (catalogue, registry, tiles, parts, default visibility rule) | FR-54 | T-63 | AC-54 | [ ] |
+| T-65 | `upgrade.sh` with several targets and per-OS builds | FR-59 | T-58 | AC-57 (upgrade) | [ ] |
+| T-66 | Docs: README, architecture (hub diagram), collectors (Linux sources, `gpus`, `thermal`), configuration (`MINIDASH_HOST_*`, `MINIDASH_HOSTS_FILE`), stream protocol (`hosts`), deploy (Linux and adding a host), security (hosts file, remote transport), troubleshooting; `deploy/hosts.example.json` | all | T-64, T-65 | review; links resolve | [ ] |
+| T-67 | Deploy: LLM box as remote, Mac mini as hub, UI; measure the budget (AC-58); live checks AC-44, AC-54, AC-57 | NFR budget, all | T-66 | AC-58; owner's eye for AC-54 | [ ] |
 
 ### Acceptance criteria that need real hardware or the owner's eye (0.8.0)
-- **AC-44, live clause:** model load and a prompt on the LLM box move VRAM, utilisation and power (T-66).
-- **AC-54, visual clause:** the Fleet card on the wall display (T-66).
-- **AC-57, live clause:** the LLM box installed by the script survives a reboot (T-57).
-- **AC-58:** the budget measurement on both machines (T-66).
+- **AC-44, live clause:** model load and a prompt on the LLM box move VRAM, utilisation and power (T-67).
+- **AC-54, visual clause:** the Fleet card on the wall display (T-67).
+- **AC-57, live clause:** the LLM box installed by the script survives a reboot (T-58).
+- **AC-58:** the budget measurement on both machines (T-67).

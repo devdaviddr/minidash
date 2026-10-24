@@ -2,10 +2,10 @@
 feature: minidash-realtime-mac-mini-monitor
 title: minidash realtime host monitor
 version: 0.8.0
-status: draft
+status: approved
 owner: devdaviddr
 created: 2026-10-18
-updated: 2026-10-23
+updated: 2026-10-25
 ---
 # minidash realtime host monitor — Specification
 
@@ -272,13 +272,13 @@ Version 0.6.0 does two things. First, the CPU card is laid out like the README i
   the maximum window (28 d) must stay in the low single-digit MB, not hundreds of MB.
 - The `/history` endpoint is authenticated with the same token as the stream and never exposes data
   to unauthenticated requests.
-- Multi-host budget (0.8.0): the agent on the LLM box stays under 2% of one core on average, measured there with `nvidia-smi` running. The hub's cost grows by at most 0.3% of one core and 15 MB of memory per remote, measured on the Mac mini with the LLM box as a remote. [NEEDS INPUT: how many hosts should the hub be sized and measured for? Recommendation: up to 8.]
+- Multi-host budget (0.8.0): the agent on the LLM box stays under 2% of one core on average, measured there with `nvidia-smi` running. The hub's cost grows by at most 0.3% of one core and 15 MB of memory per remote, measured on the Mac mini with the LLM box as a remote. The hub is sized and measured for up to 8 hosts in total (resolved in §9, Q6).
 - Bandwidth: a browser subscribed to every host receives one snapshot per host per second. At the target host count the page still renders at 1 Hz without dropped frames on the owner's desktop browser (measured).
 - A down remote costs the hub one reconnect attempt per backoff step, never a busy loop.
 - The hosts file holds secrets: mode 600 or the agent refuses to start; it is never in the repo, never logged, and the tokens in it never appear in any HTTP response or WebSocket message.
 - Everything from a remote is untrusted: message size is capped (1 MiB), it is decoded into typed structs (unknown fields dropped), list lengths are bounded as for local collectors, and the host label comes from the hosts file, never from the remote.
 - Remote URLs are `ws://` or `wss://` only, redirects are not followed, and the hub's connections carry no Origin header (the agent accepts non-browser clients without one, as today).
-- Transport: the hub's link to a remote carries that remote's token. Over plain `ws://` on the LAN it is not encrypted, the same known limit as today's browser link. [NEEDS INPUT: should remotes be reached over tailnet addresses only (encrypted by WireGuard), or is the LAN acceptable? Recommendation: tailnet, documented as the default, with the LAN allowed.]
+- Transport: the hub's link to a remote carries that remote's token. Over plain `ws://` on the LAN it is not encrypted, the same known limit as today's browser link. Tailnet addresses (encrypted by WireGuard) are the documented default; LAN addresses are allowed (resolved in §9, Q3).
 - Contract: additive. The schema version stays 1. A 0.7.0 UI against a 0.8.0 hub sees only the hub's own host and works. A 0.8.0 UI against a 0.7.0 agent shows one host with no picker and no Fleet card.
 - Public repo: Linux fixtures (`/proc`, `/sys/class/hwmon`, `nvidia-smi` output, mount tables) are recorded on the LLM box and sanitised: no real hostnames, IP or MAC addresses, usernames, serial numbers, GPU UUIDs, or container names beyond generic ones.
 - Accessibility: the host picker and fleet tiles are keyboard operable with accessible names; a host's state is shown in text, not colour alone.
@@ -502,15 +502,15 @@ Open questions:
   - **Budget:** downsampling runs on a slow cadence (bucket-close), never per tick, so retention adds
     no measurable per-tick CPU. On-disk size for the 28-day window stays in the low single-digit MB.
 
-**Open for 0.8.0 (multi-host).** The owner asked on 2026-10-23 for minidash to monitor several machines at once, with the LLM box as the second host, and to plan the features. These need the owner's answer before approval. Each has a recommendation; none is decided yet.
+**Open for 0.8.0 (multi-host).** The owner asked on 2026-10-23 for minidash to monitor several machines at once, with the LLM box as the second host, and to plan the features. Resolved 2026-10-25 by the owner, who took every recommendation and asked for approval (the owner's words: one PC is the main node that collates the data, keeping the current UX):
 
-- **Q1. Architecture.** [NEEDS INPUT: should one agent act as a hub that reads the other agents and relays them to the browser (recommended), or should the browser connect to every agent directly?] The hub keeps one token in the browser, keeps the HTTPS stream same-origin (ADR 0016), and stores every host's history in one place. Direct connections need no hub but put every host's token in the browser, need HTTPS and an allowed origin on every host, and scatter history. Agents pushing to a central server was rejected: it gives the hub a write endpoint and gives every agent a credential for it (plan DD-27).
-- **Q2. Which machine is the hub.** [NEEDS INPUT: the Mac mini (recommended: it already serves the UI and the tailnet HTTPS, and is always on) or the LLM box?] The LLM box is suspended when idle, so as hub it would take the page down with it.
-- **Q3. Transport to remotes.** [NEEDS INPUT: tailnet addresses as the documented default with the LAN allowed (recommended), tailnet only, or LAN only?] (NFR transport.)
-- **Q4. Windows.** [NEEDS INPUT: are Windows PCs going to be monitored, and if so in which release?] Recommendation: not in 0.8.0. Windows needs its own collectors (performance counters, WMI-free paths for `CGO_ENABLED=0`), a service installer and a GPU source, and is best its own MINOR once Linux has shaken out the multi-OS design.
-- **Q5. Linux service.** [NEEDS INPUT: a systemd user service with lingering enabled (recommended: runs as you, like the macOS LaunchAgent; enabling lingering needs `sudo loginctl enable-linger` once), or a system service under a dedicated `minidash` user in the `docker` group?]
-- **Q6. Scale.** [NEEDS INPUT: how many hosts to size and measure for? Recommendation: up to 8.] It sets the hub budget and whether the browser needs summary-only streams for non-picked hosts (not planned unless the measurement fails).
-- **Q7. LLM serving metrics.** [NEEDS INPUT: should a later release show the LLM server itself (loaded model, tokens per second, queue) from llama-server's `/metrics` and `/slots` endpoints?] Recommendation: yes, in 0.9.0 as an optional, generic "service probe" collector, configured per host and read-only. Out of 0.8.0.
+- **Q1. Architecture.** **Resolved: a hub.** One agent reads the other agents over their `/ws` stream and relays them to the browser. The hub keeps one token in the browser, keeps the HTTPS stream same-origin (ADR 0016), and stores every host's history in one place. Direct connections need no hub but put every host's token in the browser, need HTTPS and an allowed origin on every host, and scatter history. Agents pushing to a central server was rejected: it gives the hub a write endpoint and gives every agent a credential for it (plan DD-27).
+- **Q2. Which machine is the hub.** **Resolved: the Mac mini.** The LLM box is suspended when idle, so as hub it would take the page down with it.
+- **Q3. Transport to remotes.** **Resolved: tailnet addresses as the documented default, LAN allowed.** (NFR transport.)
+- **Q4. Windows.** **Resolved: macOS and Linux in 0.8.0; Windows in a later MINOR of its own.** The owner wants minidash to work on any machine in the end. Windows needs its own collectors (performance counters, WMI-free paths for `CGO_ENABLED=0`), a service installer and a GPU source, and is best its own MINOR once Linux has shaken out the multi-OS design.
+- **Q5. Linux service.** **Resolved: a systemd user service with lingering enabled.**
+- **Q6. Scale.** **Resolved: up to 8 hosts.** It sets the hub budget and whether the browser needs summary-only streams for non-picked hosts (not planned unless the measurement fails).
+- **Q7. LLM serving metrics.** **Resolved: yes, in 0.9.0,** as an optional, generic "service probe" collector (llama-server's `/metrics` and `/slots`), configured per host and read-only. Out of 0.8.0.
 
 Decisions made while drafting 0.8.0, for review before approval:
 
@@ -549,6 +549,7 @@ They are listed with their steps in `docs/deploy.md`. Specs 0.1.0 to 0.5.0 are f
 
 | Version | Date | Level | Note |
 | --- | --- | --- | --- |
+| 0.8.0 | 2026-10-25 | approve | Approved from the owner's answers: hub on the Mac mini, macOS and Linux (Windows later), tailnet default with LAN allowed, up to 8 hosts, systemd user service, LLM probe in 0.9.0 |
 | 0.8.0 | 2026-10-23 | minor | Multi-host: Linux agent, a hub that streams and stores several hosts, fleet view |
 | 0.7.0 | 2026-10-18 | approve | Approved: default 1h, owner delegated bucket/dir/collector choices to the least-resource recommendation |
 | 0.7.0 | 2026-10-18 | minor | Log retention: configurable history storage (5m–28d) with downsampling and a history endpoint |

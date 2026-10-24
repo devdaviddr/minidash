@@ -1,0 +1,5 @@
+{
+  "type": "auth",
+  "token": "<hub token>",
+  "hosts": "all"
+}

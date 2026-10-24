@@ -1,0 +1,204 @@
+{
+  "schema": 1,
+  "seq": 1,
+  "ts": "2023-11-14T22:13:21.000Z",
+  "intervalMs": 1000,
+  "host": {
+    "id": "llm",
+    "name": "LLM box",
+    "os": "linux",
+    "arch": "amd64",
+    "model": "Example CPU 20-thread",
+    "kernel": "6.8.0-generic"
+  },
+  "collectors": {
+    "cpu": {
+      "ok": true,
+      "data": {
+        "total": 42,
+        "cores": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "load": {
+          "one": 1.5,
+          "five": 1.2,
+          "fifteen": 1
+        }
+      }
+    },
+    "memory": {
+      "ok": true,
+      "data": {
+        "total": 51539607552,
+        "used": 21474836480,
+        "available": 27917287424,
+        "buffers": 314572800,
+        "cached": 10737418240,
+        "shared": 536870912,
+        "swapUsed": 0,
+        "swapTotal": 8589934592
+      }
+    },
+    "soc": {
+      "ok": false,
+      "unsupported": true,
+      "error": "Apple silicon only"
+    },
+    "disks": {
+      "ok": true,
+      "data": {
+        "volumes": [
+          {
+            "name": "root",
+            "mount": "/",
+            "fsType": "ext4",
+            "total": 1073741824000,
+            "used": 429496729600,
+            "free": 644245094400,
+            "external": false,
+            "device": "nvme0n1"
+          }
+        ],
+        "devices": [
+          {
+            "name": "nvme0n1",
+            "readBps": 5000000.0,
+            "writeBps": 1000000.0
+          }
+        ]
+      }
+    },
+    "network": {
+      "ok": true,
+      "data": {
+        "interfaces": [
+          {
+            "name": "enp5s0",
+            "ipv4": [
+              "192.0.2.10"
+            ],
+            "rxBps": 2000000.0,
+            "txBps": 1000000.0,
+            "rxBytes": 5368709120,
+            "txBytes": 2147483648
+          }
+        ],
+        "total": {
+          "rxBps": 2000000.0,
+          "txBps": 1000000.0
+        }
+      }
+    },
+    "processes": {
+      "ok": true,
+      "data": {
+        "total": 300,
+        "list": [
+          {
+            "pid": 1,
+            "name": "alpha",
+            "user": "u",
+            "cpu": 80,
+            "rss": 104857600,
+            "threads": 4
+          }
+        ]
+      }
+    },
+    "containers": {
+      "ok": true,
+      "data": {
+        "runtimes": [
+          {
+            "name": "docker",
+            "status": "running",
+            "containers": [
+              {
+                "id": "abc",
+                "name": "web",
+                "image": "nginx:1",
+                "state": "running",
+                "status": "Up",
+                "cpu": 3,
+                "memUsed": 104857600,
+                "memLimit": 1073741824,
+                "rxBps": 100,
+                "txBps": 50
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "shares": {
+      "ok": true,
+      "data": {
+        "mounts": [],
+        "sharing": [],
+        "sessions": []
+      }
+    },
+    "gpus": {
+      "ok": true,
+      "data": {
+        "list": [
+          {
+            "index": 0,
+            "vendor": "nvidia",
+            "name": "Example GPU 16GB",
+            "util": 87,
+            "vramUsed": 12884901888,
+            "vramTotal": 17179869184,
+            "powerW": 180.5,
+            "powerLimitW": 220,
+            "tempC": 71,
+            "fanPct": null,
+            "clockMHz": 2610
+          }
+        ]
+      }
+    },
+    "thermal": {
+      "ok": true,
+      "data": {
+        "temps": [
+          {
+            "chip": "k10temp",
+            "label": "Tctl",
+            "c": 64.5
+          },
+          {
+            "chip": "nvme",
+            "label": "Composite",
+            "c": 41.9
+          }
+        ],
+        "fans": [
+          {
+            "label": "fan1",
+            "rpm": 980
+          }
+        ]
+      }
+    }
+  }
+}

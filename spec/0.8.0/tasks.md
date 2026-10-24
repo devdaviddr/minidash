@@ -103,7 +103,7 @@ AC-35 needs the Mac mini but not the owner: it is a measurement (T-37). Every ot
 | # | Task | Serves | Depends on | Verify by | Done |
 | --- | --- | --- | --- | --- | --- |
 | T-50 | Resolve spec §9 Q1 to Q7 with the owner; amend spec and plan; approve 0.8.0; ADR 0017 (multi-host hub) | all | — | spec status `approved` | [x] |
-| T-51 | Contract: `host`, `unsupported`, Linux memory fields (relax the macOS ones), `gpus`, `thermal` in `snapshot.schema.json`; new `stream.schema.json` for `auth` and `hosts`; regenerate web types; schema tests | FR-40, FR-43, FR-44, FR-46, FR-49 | T-50 | AC-59 | [ ] |
+| T-51 | Contract: `host`, `unsupported`, Linux memory fields (relax the macOS ones), `gpus`, `thermal` in `snapshot.schema.json`; new `stream.schema.json` for `auth` and `hosts`; regenerate web types; schema tests | FR-40, FR-43, FR-44, FR-46, FR-49 | T-50 | AC-59 | [x] |
 | T-52 | `internal/hostinfo` and `MINIDASH_HOST_ID`/`MINIDASH_HOST_NAME` config; `host` in every snapshot | FR-40 | T-51 | AC-40 | [ ] |
 | T-53 | Linux builds in CI (`linux/amd64`, `linux/arm64`, tests on `ubuntu-latest`) and in the release workflow; record and sanitise Linux fixtures on the LLM box | FR-41 | T-51 | AC-41 | [ ] |
 | T-54 | Linux memory, disks, network, containers sockets, shares; `soc` unsupported on Linux; processes GPU no-op on Linux | FR-42, FR-43, FR-45 | T-53 | AC-42, AC-43 (agent half), AC-45 (agent half) | [ ] |

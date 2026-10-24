@@ -1,0 +1,180 @@
+{
+  "schema": 1,
+  "seq": 1,
+  "ts": "2023-11-14T22:13:21.000Z",
+  "intervalMs": 1000,
+  "collectors": {
+    "cpu": {
+      "ok": true,
+      "data": {
+        "total": 42,
+        "cores": [
+          10,
+          90,
+          30,
+          40
+        ],
+        "load": {
+          "one": 1.5,
+          "five": 1.2,
+          "fifteen": 1
+        }
+      }
+    },
+    "memory": {
+      "ok": true,
+      "data": {
+        "total": 17179869184,
+        "used": 8589934592,
+        "available": 6442450944,
+        "wired": 2147483648,
+        "active": 5368709120,
+        "inactive": 3221225472,
+        "compressed": 1073741824,
+        "swapUsed": 1073741824,
+        "swapTotal": 2147483648
+      }
+    },
+    "soc": {
+      "ok": true,
+      "data": {
+        "gpu": {
+          "usage": 25,
+          "freqMhz": 900
+        },
+        "clusters": [
+          {
+            "label": "P",
+            "usage": 50,
+            "freqMhz": 3200
+          }
+        ],
+        "power": {
+          "system": 12.5,
+          "cpu": 4,
+          "gpu": 1,
+          "ane": 0,
+          "ram": 0.5
+        },
+        "tempC": {
+          "cpu": 55,
+          "gpu": 50
+        },
+        "fans": [
+          {
+            "name": "fan0",
+            "rpm": 1200,
+            "maxRpm": 7000
+          }
+        ]
+      }
+    },
+    "disks": {
+      "ok": true,
+      "data": {
+        "volumes": [
+          {
+            "name": "Macintosh HD",
+            "mount": "/System/Volumes/Data",
+            "fsType": "apfs",
+            "total": 536870912000,
+            "used": 214748364800,
+            "free": 322122547200,
+            "external": false,
+            "device": "disk0"
+          }
+        ],
+        "devices": [
+          {
+            "name": "disk0",
+            "readBps": 1000000.0,
+            "writeBps": 2000000.0
+          }
+        ]
+      }
+    },
+    "network": {
+      "ok": true,
+      "data": {
+        "interfaces": [
+          {
+            "name": "en0",
+            "ipv4": [
+              "192.0.2.10"
+            ],
+            "rxBps": 2000000.0,
+            "txBps": 1000000.0,
+            "rxBytes": 5368709120,
+            "txBytes": 2147483648
+          }
+        ],
+        "total": {
+          "rxBps": 2000000.0,
+          "txBps": 1000000.0
+        }
+      }
+    },
+    "processes": {
+      "ok": true,
+      "data": {
+        "total": 300,
+        "list": [
+          {
+            "pid": 1,
+            "name": "alpha",
+            "user": "u",
+            "cpu": 80,
+            "rss": 104857600,
+            "threads": 4
+          }
+        ]
+      }
+    },
+    "containers": {
+      "ok": true,
+      "data": {
+        "runtimes": [
+          {
+            "name": "docker",
+            "status": "running",
+            "containers": [
+              {
+                "id": "abc",
+                "name": "web",
+                "image": "nginx:1",
+                "state": "running",
+                "status": "Up",
+                "cpu": 3,
+                "memUsed": 104857600,
+                "memLimit": 1073741824,
+                "rxBps": 100,
+                "txBps": 50
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "shares": {
+      "ok": true,
+      "data": {
+        "mounts": [
+          {
+            "protocol": "smb",
+            "server": "NAS",
+            "share": "Media",
+            "mount": "/Volumes/Media",
+            "account": "alice",
+            "mountedBy": "admin",
+            "reachable": true,
+            "total": 1073741824000,
+            "used": 107374182400,
+            "free": 966367641600
+          }
+        ],
+        "sharing": [],
+        "sessions": []
+      }
+    }
+  }
+}

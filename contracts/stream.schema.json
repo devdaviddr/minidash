@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/devdaviddr/minidash/contracts/stream.schema.json",
+  "title": "StreamMessage",
+  "description": "Control messages on the /ws stream, other than snapshots (see snapshot.schema.json, which carry no type field). Additive changes only within a major spec version.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/authMessage"
+    },
+    {
+      "$ref": "#/$defs/hostsMessage"
+    }
+  ],
+  "$defs": {
+    "authMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "token"],
+      "description": "Client -> agent, the first message on the socket. Without hosts the client gets the agent's own snapshots only, as before 0.8.0 (FR-49).",
+      "properties": {
+        "type": {
+          "const": "auth"
+        },
+        "token": {
+          "type": "string"
+        },
+        "hosts": {
+          "const": "all",
+          "description": "Ask a hub for every host's snapshots and the hosts message."
+        }
+      }
+    },
+    "hostsMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "hosts"],
+      "description": "Hub -> client that asked for hosts: all. Sent at once, on every state change and at least every 10 s (FR-49).",
+      "properties": {
+        "type": {
+          "const": "hosts"
+        },
+        "hosts": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "$ref": "#/$defs/hostStatus"
+          }
+        }
+      }
+    },
+    "hostStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "state"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,32}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "os": {
+          "enum": ["darwin", "linux"],
+          "description": "Absent until the host has sent a snapshot that names its OS."
+        },
+        "state": {
+          "enum": ["connecting", "live", "stale", "down", "unauthorized"],
+          "description": "FR-48. The hub's own host is always live."
+        },
+        "lastSeen": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Time of the last snapshot; absent when none has arrived."
+        },
+        "self": {
+          "type": "boolean",
+          "description": "True for the hub's own host."
+        }
+      }
+    }
+  }
+}

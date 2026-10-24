@@ -30,6 +30,10 @@
       "minimum": 100,
       "description": "Tick period, used by clients to detect a stalled feed."
     },
+    "host": {
+      "$ref": "#/$defs/hostInfo",
+      "description": "Absent from agents older than 0.8.0."
+    },
     "collectors": {
       "type": "object",
       "description": "One entry per collector. A failing collector reports ok=false and never blanks the others.",
@@ -58,6 +62,12 @@
         },
         "shares": {
           "$ref": "#/$defs/sharesResult"
+        },
+        "gpus": {
+          "$ref": "#/$defs/gpusResult"
+        },
+        "thermal": {
+          "$ref": "#/$defs/thermalResult"
         }
       }
     }
@@ -72,6 +82,10 @@
       "properties": {
         "ok": {
           "type": "boolean"
+        },
+        "unsupported": {
+          "type": "boolean",
+          "description": "True when the collector does not apply to this host (FR-43); ok is then false and error says why."
         },
         "error": {
           "type": "string"
@@ -140,6 +154,10 @@
         "ok": {
           "type": "boolean"
         },
+        "unsupported": {
+          "type": "boolean",
+          "description": "True when the collector does not apply to this host (FR-43); ok is then false and error says why."
+        },
         "error": {
           "type": "string"
         },
@@ -155,14 +173,10 @@
         "total",
         "used",
         "available",
-        "wired",
-        "active",
-        "inactive",
-        "compressed",
         "swapUsed",
         "swapTotal"
       ],
-      "description": "Bytes. used = active + wired + compressed.",
+      "description": "Bytes. macOS sends wired, active, inactive and compressed (used = active + wired + compressed); Linux sends buffers, cached and shared instead (FR-42).",
       "properties": {
         "total": {
           "type": "integer",
@@ -199,6 +213,21 @@
         "swapTotal": {
           "type": "integer",
           "minimum": 0
+        },
+        "buffers": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Linux only."
+        },
+        "cached": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Linux only."
+        },
+        "shared": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Linux only."
         }
       }
     },
@@ -211,6 +240,10 @@
       "properties": {
         "ok": {
           "type": "boolean"
+        },
+        "unsupported": {
+          "type": "boolean",
+          "description": "True when the collector does not apply to this host (FR-43); ok is then false and error says why."
         },
         "error": {
           "type": "string"
@@ -364,6 +397,10 @@
         "ok": {
           "type": "boolean"
         },
+        "unsupported": {
+          "type": "boolean",
+          "description": "True when the collector does not apply to this host (FR-43); ok is then false and error says why."
+        },
         "error": {
           "type": "string"
         },
@@ -464,6 +501,10 @@
         "ok": {
           "type": "boolean"
         },
+        "unsupported": {
+          "type": "boolean",
+          "description": "True when the collector does not apply to this host (FR-43); ok is then false and error says why."
+        },
         "error": {
           "type": "string"
         },
@@ -553,6 +594,10 @@
         "ok": {
           "type": "boolean"
         },
+        "unsupported": {
+          "type": "boolean",
+          "description": "True when the collector does not apply to this host (FR-43); ok is then false and error says why."
+        },
         "error": {
           "type": "string"
         },
@@ -636,6 +681,10 @@
       "properties": {
         "ok": {
           "type": "boolean"
+        },
+        "unsupported": {
+          "type": "boolean",
+          "description": "True when the collector does not apply to this host (FR-43); ok is then false and error says why."
         },
         "error": {
           "type": "string"
@@ -752,6 +801,10 @@
       "properties": {
         "ok": {
           "type": "boolean"
+        },
+        "unsupported": {
+          "type": "boolean",
+          "description": "True when the collector does not apply to this host (FR-43); ok is then false and error says why."
         },
         "error": {
           "type": "string"
@@ -894,11 +947,249 @@
         "ok": {
           "type": "boolean"
         },
+        "unsupported": {
+          "type": "boolean",
+          "description": "True when the collector does not apply to this host (FR-43); ok is then false and error says why."
+        },
         "error": {
           "type": "string"
         },
         "data": {
           "$ref": "#/$defs/sharesData"
+        }
+      }
+    },
+    "hostInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "os",
+        "arch"
+      ],
+      "description": "The host that produced the snapshot (FR-40). On a hub, id and name come from its hosts file, never from the remote.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,32}$",
+          "description": "Stable host id: 1 to 32 of a-z, 0-9 and -."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "os": {
+          "enum": [
+            "darwin",
+            "linux"
+          ]
+        },
+        "arch": {
+          "type": "string",
+          "maxLength": 32,
+          "description": "Go GOARCH, for example arm64 or amd64."
+        },
+        "model": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Hardware model or CPU model; empty or absent when unknown."
+        },
+        "kernel": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Kernel release (uname -r)."
+        }
+      }
+    },
+    "gpusData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "list"
+      ],
+      "description": "Discrete GPUs (FR-44). Any value the driver does not report is null.",
+      "properties": {
+        "list": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "index",
+              "vendor",
+              "name",
+              "util",
+              "vramUsed",
+              "vramTotal",
+              "powerW",
+              "powerLimitW",
+              "tempC",
+              "fanPct",
+              "clockMHz"
+            ],
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "vendor": {
+                "enum": [
+                  "nvidia",
+                  "amd",
+                  "intel",
+                  "apple"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 128
+              },
+              "util": {
+                "type": ["number", "null"],
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Percent busy."
+              },
+              "vramUsed": {
+                "type": ["integer", "null"],
+                "minimum": 0,
+                "description": "Bytes."
+              },
+              "vramTotal": {
+                "type": ["integer", "null"],
+                "minimum": 0,
+                "description": "Bytes."
+              },
+              "powerW": {
+                "type": ["number", "null"],
+                "minimum": 0
+              },
+              "powerLimitW": {
+                "type": ["number", "null"],
+                "minimum": 0
+              },
+              "tempC": {
+                "type": ["number", "null"]
+              },
+              "fanPct": {
+                "type": ["number", "null"],
+                "minimum": 0,
+                "maximum": 100
+              },
+              "clockMHz": {
+                "type": ["number", "null"],
+                "minimum": 0,
+                "description": "Graphics clock."
+              }
+            }
+          }
+        }
+      }
+    },
+    "gpusResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "unsupported": {
+          "type": "boolean",
+          "description": "True when the collector does not apply to this host (FR-43); ok is then false and error says why."
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/gpusData"
+        }
+      }
+    },
+    "thermalData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "temps",
+        "fans"
+      ],
+      "description": "Linux hwmon sensors (FR-46).",
+      "properties": {
+        "temps": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "chip",
+              "label",
+              "c"
+            ],
+            "properties": {
+              "chip": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "c": {
+                "type": "number",
+                "description": "Degrees Celsius."
+              }
+            }
+          }
+        },
+        "fans": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "rpm"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "rpm": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "thermalResult": {
+      "type": "object",
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "unsupported": {
+          "type": "boolean",
+          "description": "True when the collector does not apply to this host (FR-43); ok is then false and error says why."
+        },
+        "error": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/thermalData"
         }
       }
     }

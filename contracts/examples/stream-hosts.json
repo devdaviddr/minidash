@@ -1,0 +1,25 @@
+{
+  "type": "hosts",
+  "hosts": [
+    {
+      "id": "mini",
+      "name": "Mac mini",
+      "os": "darwin",
+      "state": "live",
+      "lastSeen": "2023-11-14T22:13:21Z",
+      "self": true
+    },
+    {
+      "id": "llm",
+      "name": "LLM box",
+      "os": "linux",
+      "state": "stale",
+      "lastSeen": "2023-11-14T22:13:15Z"
+    },
+    {
+      "id": "nas",
+      "name": "NAS",
+      "state": "connecting"
+    }
+  ]
+}

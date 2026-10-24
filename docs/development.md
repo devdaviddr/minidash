@@ -134,7 +134,8 @@ The test `Dashboard.test.tsx` then checks that every declared part renders and d
 ## Changing the contract
 - Additive changes (a new optional field or a new collector) are a MINOR spec bump.
 - Removing, renaming or retyping a field breaks the UI and is a MAJOR bump.
-- After editing the schema run `npm run gen:types` in `web/` and commit the regenerated `src/contract/snapshot.ts`. Never edit that file by hand.
+- After editing either schema (`contracts/snapshot.schema.json` or `contracts/stream.schema.json`) run `npm run gen:types` in `web/` and commit the regenerated `src/contract/snapshot.ts` and `src/contract/stream.ts`. Never edit those files by hand. Bounded arrays (`maxItems`) are generated as plain arrays (`--maxItems=-1`), not tuple unions.
+- Add or update a payload in `contracts/examples/` for every new shape; `agent/internal/snapshot/contract_test.go` validates them all.
 
 ## Conventions
 - **Go:** small functions, early returns, no commented-out code, doc comment on every exported name, errors wrapped with context. `gofmt`, `go vet` and `golangci-lint` must be clean.

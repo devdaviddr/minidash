@@ -215,6 +215,8 @@ flowchart LR
 
 Because both sides are checked against one schema, the agent and the UI cannot drift apart silently: a change that breaks the shape fails a Go test or the TypeScript build. Changes are additive within a major spec version ([development.md](development.md#changing-the-contract)).
 
+From 0.8.0 a second schema, `contracts/stream.schema.json`, holds the stream's control messages: the client's `auth` message (with the optional `"hosts": "all"`) and the hub's `hosts` message. Snapshots carry no `type` field, so a message with `"type": "hosts"` is the only other kind a client receives. Its types are generated to `web/src/contract/stream.ts` by the same command. `contracts/examples/` holds a 0.7.0 snapshot, 0.8.0 macOS and Linux snapshots and the stream messages; the Go contract tests validate every one.
+
 ## Repository layout
 
 ```text

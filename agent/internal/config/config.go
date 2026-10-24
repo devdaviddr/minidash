@@ -4,6 +4,7 @@ package config
 import (
 	"errors"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -19,7 +20,24 @@ type Config struct {
 	Origins     []string      // extra allowed WebSocket Origin host patterns for the dashboard UI
 	Retention   time.Duration // how long collected history is kept (FR-34, FR-35)
 	HistoryDir  string        // directory for stored history JSONL files
+	HostID      string        // stable host id; empty = derived from the hostname (FR-40)
+	HostName    string        // display name; empty = the hostname (FR-40)
 }
+
+// hostIDPattern is the contract's host id: 1 to 32 of a-z, 0-9 and - (FR-40).
+var hostIDPattern = regexp.MustCompile(`^[a-z0-9-]{1,32}$`)
+
+// ValidHostID reports whether id is a usable host id.
+func ValidHostID(id string) bool { return hostIDPattern.MatchString(id) }
+
+// maxHostName is the contract's longest host display name.
+const maxHostName = 64
+
+// ErrBadHostID is returned for an unusable MINIDASH_HOST_ID.
+var ErrBadHostID = errors.New("MINIDASH_HOST_ID must be 1 to 32 characters of a-z, 0-9 and -")
+
+// ErrBadHostName is returned for an unusable MINIDASH_HOST_NAME.
+var ErrBadHostName = errors.New("MINIDASH_HOST_NAME must be at most 64 characters")
 
 // DefaultProcGPU is the per-process GPU interval, set from the measurement on the Mac mini
 // (spec 0.6.0 plan DD-24, docs/collectors.md).
@@ -81,8 +99,9 @@ func defaultHistoryDir() string {
 // MINIDASH_MACMON (macmon binary, default "macmon"), MINIDASH_SOC_INTERVAL_MS
 // (macmon sampling period, default 2000, minimum 250) and MINIDASH_PROC_GPU_INTERVAL_MS
 // (per-process GPU read period, 0 = off or a multiple of 3000, default DefaultProcGPU),
-// MINIDASH_RETENTION (history retention window, default 1h) and MINIDASH_HISTORY_DIR
-// (history directory, default ~/.config/minidash/history).
+// MINIDASH_RETENTION (history retention window, default 1h), MINIDASH_HISTORY_DIR
+// (history directory, default ~/.config/minidash/history), and MINIDASH_HOST_ID and
+// MINIDASH_HOST_NAME (host identity, default derived from the hostname).
 func FromEnv() (Config, error) {
 	c := Config{Addr: os.Getenv("MINIDASH_ADDR"), Token: os.Getenv("MINIDASH_TOKEN")}
 	if o := os.Getenv("MINIDASH_ORIGINS"); o != "" {
@@ -118,6 +137,13 @@ func FromEnv() (Config, error) {
 	c.HistoryDir = os.Getenv("MINIDASH_HISTORY_DIR")
 	if c.HistoryDir == "" {
 		c.HistoryDir = defaultHistoryDir()
+	}
+	c.HostID, c.HostName = os.Getenv("MINIDASH_HOST_ID"), os.Getenv("MINIDASH_HOST_NAME")
+	if c.HostID != "" && !ValidHostID(c.HostID) {
+		return Config{}, ErrBadHostID
+	}
+	if len([]rune(c.HostName)) > maxHostName {
+		return Config{}, ErrBadHostName
 	}
 	if c.Addr == "" {
 		c.Addr = ":8787"

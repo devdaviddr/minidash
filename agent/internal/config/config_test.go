@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"strings"
 	"testing"
 	"time"
 )
@@ -97,5 +98,32 @@ func TestHistoryDir(t *testing.T) {
 	t.Setenv("MINIDASH_HISTORY_DIR", "/tmp/minidash-hist")
 	if c, _ := FromEnv(); c.HistoryDir != "/tmp/minidash-hist" {
 		t.Fatalf("override = %v", c.HistoryDir)
+	}
+}
+
+// AC-40: host id and name come from the environment; an invalid id stops startup.
+func TestHostIdentity(t *testing.T) {
+	t.Setenv("MINIDASH_TOKEN", "x")
+	t.Setenv("MINIDASH_HOST_ID", "llm-box")
+	t.Setenv("MINIDASH_HOST_NAME", "LLM box")
+	c, err := FromEnv()
+	if err != nil || c.HostID != "llm-box" || c.HostName != "LLM box" {
+		t.Fatalf("got %+v, %v", c, err)
+	}
+	t.Setenv("MINIDASH_HOST_ID", "")
+	t.Setenv("MINIDASH_HOST_NAME", "")
+	if c, err := FromEnv(); err != nil || c.HostID != "" || c.HostName != "" {
+		t.Fatalf("unset identity should stay empty for hostinfo to derive, got %+v, %v", c, err)
+	}
+	for _, bad := range []string{"Mini", "mac_mini", "a23456789012345678901234567890123", "mini.local", "é"} {
+		t.Setenv("MINIDASH_HOST_ID", bad)
+		if _, err := FromEnv(); !errors.Is(err, ErrBadHostID) {
+			t.Fatalf("%q should be rejected, got %v", bad, err)
+		}
+	}
+	t.Setenv("MINIDASH_HOST_ID", "")
+	t.Setenv("MINIDASH_HOST_NAME", strings.Repeat("n", 65))
+	if _, err := FromEnv(); !errors.Is(err, ErrBadHostName) {
+		t.Fatalf("a 65-character name should be rejected, got %v", err)
 	}
 }

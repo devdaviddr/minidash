@@ -13,6 +13,8 @@ The agent reads environment variables. Under launchd they come from `~/.config/m
 | `MINIDASH_PROC_GPU_INTERVAL_MS` | `3000` | How often the agent reads per-process GPU time for the process table's GPU column (one `ioreg` run per read). `0` turns it off: the column shows "–" and the card says why. Otherwise a multiple of 3000 (the process list refreshes every 3 s), up to 3600000. Longer is cheaper and less fresh. Invalid values stop the agent at startup. |
 | `MINIDASH_RETENTION` | `1h` | How long collected history is kept (log retention, spec 0.7.0). One of `5m`, `10m`, `20m`, `30m`, `1h`, `7h`, `1d`, `7d`, `28d`. Older data is downsampled into coarser buckets so a 28-day window stays small. Invalid values stop the agent at startup. |
 | `MINIDASH_HISTORY_DIR` | `~/.config/minidash/history` | Directory where history is persisted as JSONL (`history.jsonl`), so it survives an agent restart. |
+| `MINIDASH_HOST_ID` | slug of the hostname | Stable id for this machine in every snapshot (spec 0.8.0), for example `mini` or `llm`. 1 to 32 characters of `a-z`, `0-9` and `-`; anything else stops the agent at startup. Without it, the short hostname is lower-cased and every other run of characters becomes `-` (`Alices-Mac-mini.local` gives `alices-mac-mini`). A hub labels its remotes from its hosts file instead, so a remote's own id does not need to match. |
+| `MINIDASH_HOST_NAME` | short hostname | Display name for this machine, at most 64 characters. |
 
 An unset origin list means only same-origin pages can connect, which is not what you want when the UI runs in its own container.
 

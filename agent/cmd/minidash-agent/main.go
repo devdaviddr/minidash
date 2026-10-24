@@ -18,6 +18,7 @@ import (
 	"github.com/devdaviddr/minidash/agent/internal/config"
 	"github.com/devdaviddr/minidash/agent/internal/history"
 	"github.com/devdaviddr/minidash/agent/internal/historyserver"
+	"github.com/devdaviddr/minidash/agent/internal/hostinfo"
 	"github.com/devdaviddr/minidash/agent/internal/hub"
 	"github.com/devdaviddr/minidash/agent/internal/macmon"
 	"github.com/devdaviddr/minidash/agent/internal/snapshot"
@@ -40,7 +41,7 @@ func main() {
 		snapshot.Throttle(processes.New(int(cfg.ProcGPU/processes.Refresh)), processes.Refresh),
 		snapshot.Throttle(containers.New(), 2*time.Second),
 		snapshot.Throttle(shares.New(), 10*time.Second),
-	)
+	).WithHost(hostinfo.Detect(cfg.HostID, cfg.HostName))
 	ctx := context.Background()
 	store := history.New(cfg.Retention, cfg.HistoryDir)
 	store.Load()

@@ -61,6 +61,7 @@ type Collector interface {
 type Aggregator struct {
 	interval   time.Duration
 	collectors []Collector
+	host       *Host
 	now        func() time.Time
 	seq        uint64
 }
@@ -68,6 +69,12 @@ type Aggregator struct {
 // NewAggregator builds an aggregator ticking every interval.
 func NewAggregator(interval time.Duration, cs ...Collector) *Aggregator {
 	return &Aggregator{interval: interval, collectors: cs, now: time.Now}
+}
+
+// WithHost labels every snapshot with h (FR-40) and returns the aggregator.
+func (a *Aggregator) WithHost(h Host) *Aggregator {
+	a.host = &h
+	return a
 }
 
 // Sample runs all collectors concurrently and returns the next snapshot.
@@ -88,7 +95,7 @@ func (a *Aggregator) Sample(ctx context.Context) Snapshot {
 		}(c)
 	}
 	wg.Wait()
-	return Snapshot{Schema: SchemaVersion, Seq: a.seq, TS: a.now().UTC(), IntervalMS: a.interval.Milliseconds(), Collectors: res}
+	return Snapshot{Schema: SchemaVersion, Seq: a.seq, TS: a.now().UTC(), IntervalMS: a.interval.Milliseconds(), Host: a.host, Collectors: res}
 }
 
 // Run publishes a snapshot every interval until ctx is cancelled.

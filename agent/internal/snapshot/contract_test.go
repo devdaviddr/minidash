@@ -147,7 +147,10 @@ func TestHostOnTheWire(t *testing.T) {
 	if _, ok := v["host"]; ok {
 		t.Fatal("host must be omitted when unset")
 	}
-	s.Host = &Host{ID: "llm", Name: "LLM box", OS: "linux", Arch: "amd64"}
+	s = NewAggregator(time.Second).WithHost(Host{ID: "llm", Name: "LLM box", OS: "linux", Arch: "amd64"}).Sample(context.Background())
+	if s.Host == nil || s.Host.ID != "llm" {
+		t.Fatalf("host not carried: %+v", s.Host)
+	}
 	assertValid(t, s)
 }
 

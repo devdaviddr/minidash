@@ -21,7 +21,7 @@ export function MemoryCard({ history, hidden = NONE }: CardProps) {
         { label: 'Active', v: d.active, color: 'bg-accent2' },
         { label: 'Compressed', v: d.compressed, color: 'bg-warn' },
         { label: 'Inactive', v: d.inactive, color: 'bg-line' },
-      ]
+      ].filter((p): p is { label: string; v: number; color: string } => p.v !== undefined)
     : []
   return (
     <Card title="Unified memory">

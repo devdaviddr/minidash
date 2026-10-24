@@ -19,6 +19,7 @@ export interface Snapshot {
    * Tick period, used by clients to detect a stalled feed.
    */
   intervalMs: number;
+  host?: HostInfo;
   /**
    * One entry per collector. A failing collector reports ok=false and never blanks the others.
    */
@@ -31,10 +32,39 @@ export interface Snapshot {
     processes?: ProcessesResult;
     containers?: ContainersResult;
     shares?: SharesResult;
+    gpus?: GpusResult;
+    thermal?: ThermalResult;
   };
+}
+/**
+ * Absent from agents older than 0.8.0.
+ */
+export interface HostInfo {
+  /**
+   * Stable host id: 1 to 32 of a-z, 0-9 and -.
+   */
+  id: string;
+  name: string;
+  os: "darwin" | "linux";
+  /**
+   * Go GOARCH, for example arm64 or amd64.
+   */
+  arch: string;
+  /**
+   * Hardware model or CPU model; empty or absent when unknown.
+   */
+  model?: string;
+  /**
+   * Kernel release (uname -r).
+   */
+  kernel?: string;
 }
 export interface CpuResult {
   ok: boolean;
+  /**
+   * True when the collector does not apply to this host (FR-43); ok is then false and error says why.
+   */
+  unsupported?: boolean;
   error?: string;
   data?: CpuData;
 }
@@ -55,25 +85,45 @@ export interface CpuData {
 }
 export interface MemoryResult {
   ok: boolean;
+  /**
+   * True when the collector does not apply to this host (FR-43); ok is then false and error says why.
+   */
+  unsupported?: boolean;
   error?: string;
   data?: MemoryData;
 }
 /**
- * Bytes. used = active + wired + compressed.
+ * Bytes. macOS sends wired, active, inactive and compressed (used = active + wired + compressed); Linux sends buffers, cached and shared instead (FR-42).
  */
 export interface MemoryData {
   total: number;
   used: number;
   available: number;
-  wired: number;
-  active: number;
-  inactive: number;
-  compressed: number;
+  wired?: number;
+  active?: number;
+  inactive?: number;
+  compressed?: number;
   swapUsed: number;
   swapTotal: number;
+  /**
+   * Linux only.
+   */
+  buffers?: number;
+  /**
+   * Linux only.
+   */
+  cached?: number;
+  /**
+   * Linux only.
+   */
+  shared?: number;
 }
 export interface SocResult {
   ok: boolean;
+  /**
+   * True when the collector does not apply to this host (FR-43); ok is then false and error says why.
+   */
+  unsupported?: boolean;
   error?: string;
   data?: SocData;
 }
@@ -112,6 +162,10 @@ export interface SocData {
 }
 export interface DisksResult {
   ok: boolean;
+  /**
+   * True when the collector does not apply to this host (FR-43); ok is then false and error says why.
+   */
+  unsupported?: boolean;
   error?: string;
   data?: DisksData;
 }
@@ -137,6 +191,10 @@ export interface DisksData {
 }
 export interface NetworkResult {
   ok: boolean;
+  /**
+   * True when the collector does not apply to this host (FR-43); ok is then false and error says why.
+   */
+  unsupported?: boolean;
   error?: string;
   data?: NetworkData;
 }
@@ -159,6 +217,10 @@ export interface NetworkData {
 }
 export interface ProcessesResult {
   ok: boolean;
+  /**
+   * True when the collector does not apply to this host (FR-43); ok is then false and error says why.
+   */
+  unsupported?: boolean;
   error?: string;
   data?: ProcessesData;
 }
@@ -195,6 +257,10 @@ export interface ProcessesData {
 }
 export interface ContainersResult {
   ok: boolean;
+  /**
+   * True when the collector does not apply to this host (FR-43); ok is then false and error says why.
+   */
+  unsupported?: boolean;
   error?: string;
   data?: ContainersData;
 }
@@ -225,6 +291,10 @@ export interface ContainersData {
 }
 export interface SharesResult {
   ok: boolean;
+  /**
+   * True when the collector does not apply to this host (FR-43); ok is then false and error says why.
+   */
+  unsupported?: boolean;
   error?: string;
   data?: SharesData;
 }
@@ -264,5 +334,79 @@ export interface SharesData {
      * Empty when the owner is not visible without privileges.
      */
     account: string;
+  }[];
+}
+export interface GpusResult {
+  ok: boolean;
+  /**
+   * True when the collector does not apply to this host (FR-43); ok is then false and error says why.
+   */
+  unsupported?: boolean;
+  error?: string;
+  data?: GpusData;
+}
+/**
+ * Discrete GPUs (FR-44). Any value the driver does not report is null.
+ */
+export interface GpusData {
+  /**
+   * @maxItems 16
+   */
+  list: {
+    index: number;
+    vendor: "nvidia" | "amd" | "intel" | "apple";
+    name: string;
+    /**
+     * Percent busy.
+     */
+    util: number | null;
+    /**
+     * Bytes.
+     */
+    vramUsed: number | null;
+    /**
+     * Bytes.
+     */
+    vramTotal: number | null;
+    powerW: number | null;
+    powerLimitW: number | null;
+    tempC: number | null;
+    fanPct: number | null;
+    /**
+     * Graphics clock.
+     */
+    clockMHz: number | null;
+  }[];
+}
+export interface ThermalResult {
+  ok: boolean;
+  /**
+   * True when the collector does not apply to this host (FR-43); ok is then false and error says why.
+   */
+  unsupported?: boolean;
+  error?: string;
+  data?: ThermalData;
+}
+/**
+ * Linux hwmon sensors (FR-46).
+ */
+export interface ThermalData {
+  /**
+   * @maxItems 64
+   */
+  temps: {
+    chip: string;
+    label: string;
+    /**
+     * Degrees Celsius.
+     */
+    c: number;
+  }[];
+  /**
+   * @maxItems 16
+   */
+  fans: {
+    label: string;
+    rpm: number;
   }[];
 }

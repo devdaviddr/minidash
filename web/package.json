@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "gen:types": "json2ts -i ../contracts/snapshot.schema.json -o src/contract/snapshot.ts --additionalProperties=false",
+    "gen:types": "json2ts -i ../contracts/snapshot.schema.json -o src/contract/snapshot.ts --additionalProperties=false --maxItems=-1 && json2ts -i ../contracts/stream.schema.json -o src/contract/stream.ts --additionalProperties=false --maxItems=-1",
     "test": "vitest run"
   },
   "dependencies": {
